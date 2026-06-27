@@ -1,566 +1,350 @@
-@php
-    $slug = request()->path();
-    $slug = $slug === '/' ? 'home' : $slug;
-
-    $pageData = [
-        'register' => [
-            'title' => 'Register',
-            'category' => 'Pendaftaran Anggota',
-            'description' => 'Halaman ini nantinya digunakan untuk pendaftaran anggota perpustakaan baru.'
-        ],
-        'log-in' => [
-            'title' => 'Log In',
-            'category' => 'Masuk ke Sistem',
-            'description' => 'Halaman ini nantinya digunakan oleh anggota dan admin untuk masuk ke sistem.'
-        ],
-        'home' => [
-            'title' => 'Home',
-            'category' => 'Halaman Utama',
-            'description' => 'Halaman utama perpustakaan yang menampilkan katalog, informasi, dan akses layanan.'
-        ],
-        'katalog' => [
-            'title' => 'Katalog',
-            'category' => 'Koleksi Buku',
-            'description' => 'Halaman ini nantinya digunakan untuk melihat dan mencari koleksi buku perpustakaan.'
-        ],
-        'tentang-perpustakaan' => [
-            'title' => 'Tentang Perpustakaan',
-            'category' => 'Informasi Perpustakaan',
-            'description' => 'Halaman ini nantinya berisi profil, layanan, dan informasi umum perpustakaan.'
-        ],
-        'dashboard-anggota' => [
-            'title' => 'Dashboard Anggota',
-            'category' => 'Area Anggota',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan pinjaman, denda, dan notifikasi anggota.'
-        ],
-        'informasi-buku' => [
-            'title' => 'Informasi Buku',
-            'category' => 'Detail Buku',
-            'description' => 'Halaman ini nantinya menampilkan informasi detail buku, stok, lokasi rak, dan ulasan.'
-        ],
-        'riwayat-peminjaman' => [
-            'title' => 'Riwayat Peminjaman',
-            'category' => 'Data Peminjaman',
-            'description' => 'Halaman ini nantinya menampilkan riwayat peminjaman dan pengembalian buku.'
-        ],
-        'status-denda' => [
-            'title' => 'Status Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan denda aktif dan riwayat pembayaran denda.'
-        ],
-        'profil-anggota' => [
-            'title' => 'Profil Anggota',
-            'category' => 'Data Anggota',
-            'description' => 'Halaman ini nantinya digunakan anggota untuk melihat dan mengubah data profil.'
-        ],
-        'dashboard-admin' => [
-            'title' => 'Dashboard Admin',
-            'category' => 'Area Admin',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan data perpustakaan untuk admin.'
-        ],
-        'kelola-buku' => [
-            'title' => 'Kelola Buku',
-            'category' => 'Manajemen Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data koleksi buku.'
-        ],
-        'tambah-buku' => [
-            'title' => 'Tambah Buku',
-            'category' => 'Input Buku Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan buku baru.'
-        ],
-        'edit-buku' => [
-            'title' => 'Edit Buku',
-            'category' => 'Ubah Data Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengubah data buku.'
-        ],
-        'kelola-anggota' => [
-            'title' => 'Kelola Anggota',
-            'category' => 'Manajemen Anggota',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data dan status anggota.'
-        ],
-        'riwayat-transaksi' => [
-            'title' => 'Riwayat Transaksi',
-            'category' => 'Data Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan data peminjaman dan pengembalian buku.'
-        ],
-        'input-peminjaman' => [
-            'title' => 'Input Peminjaman',
-            'category' => 'Transaksi Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mencatat peminjaman buku.'
-        ],
-        'kelola-denda' => [
-            'title' => 'Kelola Denda',
-            'category' => 'Manajemen Denda',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola denda anggota.'
-        ],
-        'detail-transaksi' => [
-            'title' => 'Detail Transaksi',
-            'category' => 'Informasi Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan detail transaksi peminjaman buku.'
-        ],
-        'detail-denda' => [
-            'title' => 'Detail Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan detail denda dan validasi pembayaran.'
-        ],
-        'laporan' => [
-            'title' => 'Laporan',
-            'category' => 'Laporan Perpustakaan',
-            'description' => 'Halaman ini nantinya digunakan admin untuk melihat dan mengekspor laporan.'
-        ],
-        'setting' => [
-            'title' => 'Setting',
-            'category' => 'Pengaturan Sistem',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengatur konfigurasi sistem.'
-        ],
-        'kategori-rak' => [
-            'title' => 'Kategori Rak',
-            'category' => 'Kategori dan Rak Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola kategori dan lokasi rak buku.'
-        ],
-        'tambah-anggota' => [
-            'title' => 'Tambah Anggota',
-            'category' => 'Input Anggota Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan anggota secara manual.'
-        ],
-    ];
-
-    $page = $pageData[$slug] ?? [
-        'title' => ucwords(str_replace('-', ' ', $slug)),
-        'category' => 'Halaman Sementara',
-        'description' => 'Halaman ini masih berupa placeholder sementara.'
-    ];
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $page['title'] }} - Perpustakaan SMAIT Al-Uswah</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --deep-waters: #2D7076;
-            --waves: #90C3C6;
-            --seashell: #F8F7F2;
-            --sand: #E9D9C4;
-            --orchid: #D5C5DB;
-            --pebble: #484441;
-            --white: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: "Montserrat", sans-serif;
-            color: var(--pebble);
-            background:
-                radial-gradient(circle at 8% 12%, rgba(213, 197, 219, 0.45), transparent 24%),
-                radial-gradient(circle at 92% 8%, rgba(144, 195, 198, 0.48), transparent 26%),
-                radial-gradient(circle at 80% 85%, rgba(233, 217, 196, 0.65), transparent 25%),
-                var(--seashell);
-            overflow-x: hidden;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .pattern {
-            position: fixed;
-            inset: 0;
-            opacity: 0.055;
-            pointer-events: none;
-            background-image:
-                radial-gradient(circle, var(--deep-waters) 2px, transparent 2px);
-            background-size: 34px 34px;
-        }
-
-        .navbar {
-            width: min(1180px, calc(100% - 40px));
-            margin: 22px auto 0;
-            padding: 14px 18px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.12);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.11);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
-            position: sticky;
-            top: 18px;
-            z-index: 10;
-            backdrop-filter: blur(14px);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--deep-waters);
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 12px 24px rgba(45, 112, 118, 0.24);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .nav-links a {
-            padding: 9px 13px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            background: var(--sand);
-            color: var(--deep-waters);
-        }
-
-        .nav-links .login-btn {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        .container {
-            width: min(1120px, calc(100% - 40px));
-            margin: 54px auto 70px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: 64px;
-            border-radius: 40px;
-            background:
-                linear-gradient(135deg, rgba(45, 112, 118, 0.97), rgba(45, 112, 118, 0.84)),
-                var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 30px 80px rgba(45, 112, 118, 0.26);
-        }
-
-        .hero::before {
-            content: "📚 ✦ 🔖 ✦ 📖 ✦";
-            position: absolute;
-            top: 30px;
-            right: 42px;
-            font-size: 52px;
-            letter-spacing: 12px;
-            opacity: 0.12;
-        }
-
-        .hero::after {
-            content: "";
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: rgba(213, 197, 219, 0.28);
-            position: absolute;
-            right: -90px;
-            bottom: -110px;
-        }
-
-        .badge {
-            width: fit-content;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 15px;
-            margin-bottom: 20px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            max-width: 720px;
-            margin-bottom: 16px;
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: clamp(44px, 7vw, 88px);
-            line-height: 0.95;
-            letter-spacing: -1px;
-        }
-
-        .accent {
-            margin-bottom: 18px;
-            font-family: "Brittany", "Allura", cursive;
-            font-size: 38px;
-            color: var(--orchid);
-        }
-
-        .description {
-            max-width: 680px;
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.8;
-            color: rgba(248, 247, 242, 0.88);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 13px 18px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 800;
-            transition: 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: var(--seashell);
-            color: var(--deep-waters);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 24px;
-        }
-
-        .card {
-            padding: 24px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.09);
-        }
-
-        .card-icon {
-            width: 46px;
-            height: 46px;
-            margin-bottom: 14px;
-            display: grid;
-            place-items: center;
-            border-radius: 16px;
-            background: var(--sand);
-            color: var(--deep-waters);
-            font-size: 20px;
-        }
-
-        .card h3 {
-            margin-bottom: 8px;
-            color: var(--deep-waters);
-            font-size: 18px;
-        }
-
-        .card p {
-            margin-bottom: 14px;
-            color: rgba(72, 68, 65, 0.75);
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .card a {
-            color: var(--deep-waters);
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .quick-section {
-            margin-top: 24px;
-            padding: 28px;
-            border-radius: 34px;
-            background:
-                linear-gradient(135deg, rgba(233, 217, 196, 0.80), rgba(144, 195, 198, 0.26));
-            border: 1px solid rgba(45, 112, 118, 0.10);
-        }
-
-        .quick-section h2 {
-            margin-bottom: 16px;
-            color: var(--deep-waters);
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: 36px;
-        }
-
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .chip {
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.68);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            color: var(--pebble);
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .chip:hover {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        @media (max-width: 900px) {
-            .navbar {
-                align-items: flex-start;
-                flex-direction: column;
-                border-radius: 28px;
-            }
-
-            .nav-links {
-                justify-content: flex-start;
-            }
-
-            .hero {
-                padding: 40px 26px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Profil Saya – Perpustakaan SMAIT Al-Uswah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/style-home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-home-anggota.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-profil-anggota.css') }}">
 </head>
-
 <body>
-    <div class="pattern"></div>
 
-    <nav class="navbar">
-        <a href="{{ url('/home') }}" class="brand">
-            <span class="brand-icon">📚</span>
-            <span>Perpustakaan Al-Uswah</span>
-        </a>
+    {{-- ===== NAVBAR ===== --}}
+    <header class="navbar">
+        <div class="navbar-inner">
+            <a href="{{ route('home-anggota') }}" class="nav-brand">
+                <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
+                <span class="nav-brand-name">Al-Uswah Library</span>
+            </a>
 
-        <div class="nav-links">
-            <a href="{{ url('/home') }}">Home</a>
-            <a href="{{ url('/katalog') }}">Katalog</a>
-            <a href="{{ url('/tentang-perpustakaan') }}">Tentang</a>
-            <a href="{{ url('/dashboard-anggota') }}">Anggota</a>
-            <a href="{{ url('/dashboard-admin') }}">Admin</a>
-            <a href="{{ url('/register') }}">Register</a>
-            <a href="{{ url('/log-in') }}" class="login-btn">Login</a>
+            <nav class="nav-links">
+                <a href="{{ route('dashboard-anggota') }}" class="nav-link">Dashboard</a>
+                <a href="{{ route('katalog-anggota') }}" class="nav-link">Katalog</a>
+                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
+                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
+                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
+            </nav>
+
+            <a href="{{ route('profil-anggota') }}" class="nav-profile active-profile">
+                <div class="nav-avatar">
+                    @if(auth()->user()?->foto)
+                        <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil" class="avatar-img">
+                    @else
+                        <div class="avatar-placeholder">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
+                    @endif
+                </div>
+                <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Anggota' }}</span>
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <main class="container">
-        <section class="hero">
-            <div class="badge">Halaman Sementara</div>
-
-            <h1>{{ $page['title'] }}</h1>
-
-            <div class="accent">{{ $page['category'] }}</div>
-
-            <p class="description">
-                {{ $page['description'] }}
-                Tampilan ini masih placeholder sementara supaya tombol dan navigasi bisa langsung terhubung ke halaman yang dituju.
-            </p>
-
-            <div class="actions">
-                <a href="{{ url('/home') }}" class="btn btn-primary">Kembali ke Home</a>
-                <a href="{{ url('/katalog') }}" class="btn btn-secondary">Lihat Katalog</a>
+    {{-- ===== HERO ===== --}}
+    <section class="profil-hero">
+        <div class="profil-hero-inner">
+            <span class="profil-eyebrow">identitas literasimu</span>
+            <h1 class="profil-title">Profil Saya</h1>
+            <div class="profil-divider">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#90C3C6" stroke="none"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+                <span class="divider-line"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#b8742f" stroke="none"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="cards">
-            <div class="card">
-                <div class="card-icon">🔗</div>
-                <h3>Link Sudah Aktif</h3>
-                <p>Halaman ini sudah bisa dibuka melalui tombol, menu, atau URL sesuai route yang dibuat.</p>
-                <a href="{{ url()->current() }}">Buka halaman ini</a>
+    {{-- ===== MAIN ===== --}}
+    <section class="profil-main">
+        <div class="profil-main-inner">
+
+            {{-- ===== LEFT: kartu identitas ===== --}}
+            <aside class="profil-side">
+                <div class="profil-card">
+                    <div class="profil-photo-wrap">
+                        <div class="profil-photo" id="photoPreview">
+                            @if(auth()->user()?->foto)
+                                <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil" id="photoImg">
+                            @else
+                                <div class="photo-placeholder" id="photoInitial">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
+                            @endif
+                        </div>
+                        <button type="button" class="photo-edit-btn" id="photoEditBtn" title="Ganti foto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        </button>
+                        <input type="file" id="photoInput" accept="image/*" hidden>
+                    </div>
+
+                    {{-- Menu kecil ganti/hapus foto --}}
+                    <div class="photo-actions" id="photoActions">
+                        <button type="button" class="photo-action" id="btnChangePhoto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Ganti Foto
+                        </button>
+                        <button type="button" class="photo-action photo-action-danger hidden" id="btnDeletePhoto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Hapus Foto
+                        </button>
+                    </div>
+
+                    <h2 class="profil-name">{{ auth()->user()?->nama_lengkap ?? 'Adelia Putri Ramadhani' }}</h2>
+                    <p class="profil-meta">{{ auth()->user()?->kelas ?? 'XII MIPA 1' }} &bull; {{ auth()->user()?->nis ?? '2026.08.0125' }}</p>
+
+                    <div class="profil-divider-line"></div>
+
+                    <ul class="profil-info-list">
+                        <li>
+                            <span class="info-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                            <div>
+                                <span class="info-label">EMAIL</span>
+                                <span class="info-value">{{ auth()->user()?->email ?? 'adelia.putri@gmail.com' }}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="info-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </span>
+                            <div>
+                                <span class="info-label">NO. TELEPON</span>
+                                <span class="info-value">{{ auth()->user()?->nomor_hp ?? '0812-3456-7890' }}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="info-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </span>
+                            <div>
+                                <span class="info-label">ALAMAT</span>
+                                <span class="info-value">{{ auth()->user()?->alamat ?? 'Jl. Ketintang Madya No. 81, Surabaya' }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Kartu Anggota --}}
+                <div class="kartu-anggota-block">
+                    <h3 class="kartu-anggota-heading">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><circle cx="8" cy="10" r="2"/><path d="M14 9h4"/><path d="M14 13h4"/><path d="M5 16h6"/></svg>
+                        Kartu Anggota
+                    </h3>
+
+                    <div class="ecard" id="ecardTrigger">
+                        <div class="ecard-star">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </div>
+                        <span class="ecard-org">SMAIT AL-USWAH SURABAYA</span>
+                        <span class="ecard-type">E-LIBRARY CARD</span>
+                        <h4 class="ecard-name">{{ strtoupper(auth()->user()?->nama_lengkap ?? 'Adelia Putri R.') }}</h4>
+                        <span class="ecard-id">Member ID: {{ auth()->user()?->nis ?? '2026.08.0125' }}</span>
+                        <div class="ecard-qr">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
+                        </div>
+                    </div>
+                    <p class="ecard-hint">Klik kartu untuk memperbesar &amp; unduh</p>
+                </div>
+            </aside>
+
+            {{-- ===== RIGHT: form ===== --}}
+            <div class="profil-content">
+
+                {{-- Informasi Personal --}}
+                <div class="profil-panel">
+                    <div class="panel-head">
+                        <h2 class="panel-title">Informasi Personal</h2>
+                        <span class="panel-edit-ic">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </span>
+                    </div>
+
+                    <form id="profilForm" novalidate>
+                        <div class="form-group">
+                            <label for="nama_lengkap">Nama Lengkap</label>
+                            <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ auth()->user()?->nama_lengkap ?? 'Adelia Putri Ramadhani' }}">
+                            <span class="form-err" id="err-nama"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nis">NIS (Nomor Induk Siswa)</label>
+                                <input type="text" id="nis" name="nis" value="{{ auth()->user()?->nis ?? '2026.08.0125' }}" disabled class="input-locked">
+                                <span class="form-hint">NIS tidak dapat diubah secara mandiri</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="kelas">Kelas</label>
+                                <div class="select-wrap">
+                                    <select id="kelas" name="kelas">
+                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'X MIPA 1') selected @endif>X MIPA 1</option>
+                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'XI MIPA 1') selected @endif>XI MIPA 1</option>
+                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'XII MIPA 1') selected @endif>XII MIPA 1</option>
+                                        <option @if((auth()->user()?->kelas ?? '') === 'XII IPS 1') selected @endif>XII IPS 1</option>
+                                    </select>
+                                    <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Sekolah</label>
+                                <input type="email" id="email" name="email" value="{{ auth()->user()?->email ?? 'adelia.putri@gmail.com' }}">
+                                <span class="form-err" id="err-email"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="nomor_hp">Nomor Telepon/WA</label>
+                                <input type="text" id="nomor_hp" name="nomor_hp" value="{{ auth()->user()?->nomor_hp ?? '081234567890' }}">
+                                <span class="form-err" id="err-hp"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="alamat">Alamat Lengkap</label>
+                            <textarea id="alamat" name="alamat" rows="3">{{ auth()->user()?->alamat ?? 'Jl. Ketintang Madya No. 81, Gayungan, Surabaya, Jawa Timur 60232' }}</textarea>
+                            <span class="form-err" id="err-alamat"></span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-batal" id="btnBatal">Batalkan</button>
+                            <button type="submit" class="btn-simpan">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Keamanan Akun --}}
+                <div class="profil-panel panel-security">
+                    <div class="panel-head security-head" id="securityToggle">
+                        <h2 class="panel-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Keamanan Akun
+                        </h2>
+                        <button type="button" class="btn-toggle-security" id="btnToggleSecurity">
+                            <span id="securityToggleText">Ubah Password</span>
+                            <svg class="security-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="security-body hidden" id="securityBody">
+                        <form id="passwordForm" novalidate>
+                            <div class="form-row form-row-3">
+                                <div class="form-group">
+                                    <label for="pass_lama">Kata Sandi Lama</label>
+                                    <div class="pass-wrap">
+                                        <input type="password" id="pass_lama" name="pass_lama" placeholder="••••••••">
+                                        <button type="button" class="pass-toggle" data-target="pass_lama" aria-label="Lihat sandi">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="form-err" id="err-pass-lama"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pass_baru">Kata Sandi Baru</label>
+                                    <div class="pass-wrap">
+                                        <input type="password" id="pass_baru" name="pass_baru" placeholder="••••••••">
+                                        <button type="button" class="pass-toggle" data-target="pass_baru" aria-label="Lihat sandi">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="form-err" id="err-pass-baru"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pass_konfirmasi">Konfirmasi Sandi Baru</label>
+                                    <div class="pass-wrap">
+                                        <input type="password" id="pass_konfirmasi" name="pass_konfirmasi" placeholder="••••••••">
+                                        <button type="button" class="pass-toggle" data-target="pass_konfirmasi" aria-label="Lihat sandi">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="form-err" id="err-pass-konfirmasi"></span>
+                                </div>
+                            </div>
+
+                            <div class="security-footer">
+                                <p class="security-note">Gunakan minimal 8 karakter dengan kombinasi huruf besar, kecil, dan angka untuk keamanan ekstra.</p>
+                                <button type="submit" class="btn-update-pass">Update Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ===== MODAL KARTU ANGGOTA ===== --}}
+    <div class="ecard-modal" id="ecardModal">
+        <div class="ecard-modal-inner">
+            <button class="ecard-modal-close" id="ecardModalClose" aria-label="Tutup">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <div class="ecard ecard-large">
+                <div class="ecard-star">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <span class="ecard-org">SMAIT AL-USWAH SURABAYA</span>
+                <span class="ecard-type">E-LIBRARY CARD</span>
+                <h4 class="ecard-name">{{ strtoupper(auth()->user()?->nama_lengkap ?? 'Adelia Putri R.') }}</h4>
+                <span class="ecard-id">Member ID: {{ auth()->user()?->nis ?? '2026.08.0125' }}</span>
+                <div class="ecard-qr">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
+                </div>
             </div>
 
-            <div class="card">
-                <div class="card-icon">🧩</div>
-                <h3>Masih Placeholder</h3>
-                <p>Isi halaman belum final, jadi nanti bisa diganti dengan desain asli tanpa mengubah link.</p>
-                <a href="{{ url('/dashboard-admin') }}">Cek dashboard admin</a>
+            <button class="btn-download-card" id="btnDownloadCard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Unduh Kartu
+            </button>
+        </div>
+    </div>
+
+    {{-- ===== TOAST ===== --}}
+    <div class="toast" id="toast"></div>
+
+    {{-- ===== FOOTER ===== --}}
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-brand-top">
+                    <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="footer-logo">
+                    <span class="footer-brand-name">Al-Uswah Library</span>
+                </div>
+                <p class="footer-tagline">© 2026 SMAIT Al-Uswah Library.<br>Menumbuhkan Literasi,<br>Mengukir Prestasi.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="social-btn" aria-label="Email">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+                    </a>
+                </div>
             </div>
-
-            <div class="card">
-                <div class="card-icon">✨</div>
-                <h3>Siap Dikembangkan</h3>
-                <p>File halaman sudah tersedia, tinggal lanjutkan desain dan fitur sesuai kebutuhan sistem.</p>
-                <a href="{{ url('/riwayat-transaksi') }}">Cek transaksi</a>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Layanan</h4>
+                <ul>
+                    <li><a href="#">Visi &amp; Misi</a></li>
+                    <li><a href="#">Kebijakan Layanan</a></li>
+                </ul>
             </div>
-        </section>
-
-        <section class="quick-section">
-            <h2>Daftar Halaman</h2>
-
-            <div class="chips">
-                <a class="chip" href="{{ url('/register') }}">Register</a>
-                <a class="chip" href="{{ url('/log-in') }}">Log In</a>
-                <a class="chip" href="{{ url('/home') }}">Home</a>
-                <a class="chip" href="{{ url('/katalog') }}">Katalog</a>
-                <a class="chip" href="{{ url('/tentang-perpustakaan') }}">Tentang Perpustakaan</a>
-
-                <a class="chip" href="{{ url('/dashboard-anggota') }}">Dashboard Anggota</a>
-                <a class="chip" href="{{ url('/informasi-buku') }}">Informasi Buku</a>
-                <a class="chip" href="{{ url('/riwayat-peminjaman') }}">Riwayat Peminjaman</a>
-                <a class="chip" href="{{ url('/status-denda') }}">Status Denda</a>
-                <a class="chip" href="{{ url('/profil-anggota') }}">Profil Anggota</a>
-
-                <a class="chip" href="{{ url('/dashboard-admin') }}">Dashboard Admin</a>
-                <a class="chip" href="{{ url('/kelola-buku') }}">Kelola Buku</a>
-                <a class="chip" href="{{ url('/tambah-buku') }}">Tambah Buku</a>
-                <a class="chip" href="{{ url('/edit-buku') }}">Edit Buku</a>
-                <a class="chip" href="{{ url('/kelola-anggota') }}">Kelola Anggota</a>
-                <a class="chip" href="{{ url('/tambah-anggota') }}">Tambah Anggota</a>
-                <a class="chip" href="{{ url('/riwayat-transaksi') }}">Riwayat Transaksi</a>
-                <a class="chip" href="{{ url('/input-peminjaman') }}">Input Peminjaman</a>
-                <a class="chip" href="{{ url('/kelola-denda') }}">Kelola Denda</a>
-                <a class="chip" href="{{ url('/detail-transaksi') }}">Detail Transaksi</a>
-                <a class="chip" href="{{ url('/detail-denda') }}">Detail Denda</a>
-                <a class="chip" href="{{ url('/laporan') }}">Laporan</a>
-                <a class="chip" href="{{ url('/setting') }}">Setting</a>
-                <a class="chip" href="{{ url('/kategori-rak') }}">Kategori Rak</a>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Dukungan</h4>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">Donasi Buku</a></li>
+                </ul>
             </div>
-        </section>
-    </main>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Kontak</h4>
+                <address>
+                    Jl. Al-Uswah No. 123, Surabaya<br>
+                    perpus@smait-aluswah.sch.id
+                </address>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/script-profil-anggota.js') }}"></script>
 </body>
 </html>

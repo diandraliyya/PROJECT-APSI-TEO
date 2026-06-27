@@ -35,7 +35,7 @@
                         <div class="avatar-placeholder">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
                     @endif
                 </div>
-                <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Pengguna' }}</span>
+                <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Anggota' }}</span>
             </a>
         </div>
     </header>
