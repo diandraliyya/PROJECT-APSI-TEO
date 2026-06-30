@@ -1,566 +1,364 @@
-@php
-    $slug = request()->path();
-    $slug = $slug === '/' ? 'home' : $slug;
-
-    $pageData = [
-        'register' => [
-            'title' => 'Register',
-            'category' => 'Pendaftaran Anggota',
-            'description' => 'Halaman ini nantinya digunakan untuk pendaftaran anggota perpustakaan baru.'
-        ],
-        'log-in' => [
-            'title' => 'Log In',
-            'category' => 'Masuk ke Sistem',
-            'description' => 'Halaman ini nantinya digunakan oleh anggota dan admin untuk masuk ke sistem.'
-        ],
-        'home' => [
-            'title' => 'Home',
-            'category' => 'Halaman Utama',
-            'description' => 'Halaman utama perpustakaan yang menampilkan katalog, informasi, dan akses layanan.'
-        ],
-        'katalog' => [
-            'title' => 'Katalog',
-            'category' => 'Koleksi Buku',
-            'description' => 'Halaman ini nantinya digunakan untuk melihat dan mencari koleksi buku perpustakaan.'
-        ],
-        'tentang-perpustakaan' => [
-            'title' => 'Tentang Perpustakaan',
-            'category' => 'Informasi Perpustakaan',
-            'description' => 'Halaman ini nantinya berisi profil, layanan, dan informasi umum perpustakaan.'
-        ],
-        'dashboard-anggota' => [
-            'title' => 'Dashboard Anggota',
-            'category' => 'Area Anggota',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan pinjaman, denda, dan notifikasi anggota.'
-        ],
-        'informasi-buku' => [
-            'title' => 'Informasi Buku',
-            'category' => 'Detail Buku',
-            'description' => 'Halaman ini nantinya menampilkan informasi detail buku, stok, lokasi rak, dan ulasan.'
-        ],
-        'riwayat-peminjaman' => [
-            'title' => 'Riwayat Peminjaman',
-            'category' => 'Data Peminjaman',
-            'description' => 'Halaman ini nantinya menampilkan riwayat peminjaman dan pengembalian buku.'
-        ],
-        'status-denda' => [
-            'title' => 'Status Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan denda aktif dan riwayat pembayaran denda.'
-        ],
-        'profil-anggota' => [
-            'title' => 'Profil Anggota',
-            'category' => 'Data Anggota',
-            'description' => 'Halaman ini nantinya digunakan anggota untuk melihat dan mengubah data profil.'
-        ],
-        'dashboard-admin' => [
-            'title' => 'Dashboard Admin',
-            'category' => 'Area Admin',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan data perpustakaan untuk admin.'
-        ],
-        'kelola-buku' => [
-            'title' => 'Kelola Buku',
-            'category' => 'Manajemen Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data koleksi buku.'
-        ],
-        'tambah-buku' => [
-            'title' => 'Tambah Buku',
-            'category' => 'Input Buku Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan buku baru.'
-        ],
-        'edit-buku' => [
-            'title' => 'Edit Buku',
-            'category' => 'Ubah Data Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengubah data buku.'
-        ],
-        'kelola-anggota' => [
-            'title' => 'Kelola Anggota',
-            'category' => 'Manajemen Anggota',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data dan status anggota.'
-        ],
-        'riwayat-transaksi' => [
-            'title' => 'Riwayat Transaksi',
-            'category' => 'Data Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan data peminjaman dan pengembalian buku.'
-        ],
-        'input-peminjaman' => [
-            'title' => 'Input Peminjaman',
-            'category' => 'Transaksi Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mencatat peminjaman buku.'
-        ],
-        'kelola-denda' => [
-            'title' => 'Kelola Denda',
-            'category' => 'Manajemen Denda',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola denda anggota.'
-        ],
-        'detail-transaksi' => [
-            'title' => 'Detail Transaksi',
-            'category' => 'Informasi Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan detail transaksi peminjaman buku.'
-        ],
-        'detail-denda' => [
-            'title' => 'Detail Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan detail denda dan validasi pembayaran.'
-        ],
-        'laporan' => [
-            'title' => 'Laporan',
-            'category' => 'Laporan Perpustakaan',
-            'description' => 'Halaman ini nantinya digunakan admin untuk melihat dan mengekspor laporan.'
-        ],
-        'setting' => [
-            'title' => 'Setting',
-            'category' => 'Pengaturan Sistem',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengatur konfigurasi sistem.'
-        ],
-        'kategori-rak' => [
-            'title' => 'Kategori Rak',
-            'category' => 'Kategori dan Rak Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola kategori dan lokasi rak buku.'
-        ],
-        'tambah-anggota' => [
-            'title' => 'Tambah Anggota',
-            'category' => 'Input Anggota Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan anggota secara manual.'
-        ],
-    ];
-
-    $page = $pageData[$slug] ?? [
-        'title' => ucwords(str_replace('-', ' ', $slug)),
-        'category' => 'Halaman Sementara',
-        'description' => 'Halaman ini masih berupa placeholder sementara.'
-    ];
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $page['title'] }} - Perpustakaan SMAIT Al-Uswah</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --deep-waters: #2D7076;
-            --waves: #90C3C6;
-            --seashell: #F8F7F2;
-            --sand: #E9D9C4;
-            --orchid: #D5C5DB;
-            --pebble: #484441;
-            --white: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: "Montserrat", sans-serif;
-            color: var(--pebble);
-            background:
-                radial-gradient(circle at 8% 12%, rgba(213, 197, 219, 0.45), transparent 24%),
-                radial-gradient(circle at 92% 8%, rgba(144, 195, 198, 0.48), transparent 26%),
-                radial-gradient(circle at 80% 85%, rgba(233, 217, 196, 0.65), transparent 25%),
-                var(--seashell);
-            overflow-x: hidden;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .pattern {
-            position: fixed;
-            inset: 0;
-            opacity: 0.055;
-            pointer-events: none;
-            background-image:
-                radial-gradient(circle, var(--deep-waters) 2px, transparent 2px);
-            background-size: 34px 34px;
-        }
-
-        .navbar {
-            width: min(1180px, calc(100% - 40px));
-            margin: 22px auto 0;
-            padding: 14px 18px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.12);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.11);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
-            position: sticky;
-            top: 18px;
-            z-index: 10;
-            backdrop-filter: blur(14px);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--deep-waters);
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 12px 24px rgba(45, 112, 118, 0.24);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .nav-links a {
-            padding: 9px 13px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            background: var(--sand);
-            color: var(--deep-waters);
-        }
-
-        .nav-links .login-btn {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        .container {
-            width: min(1120px, calc(100% - 40px));
-            margin: 54px auto 70px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: 64px;
-            border-radius: 40px;
-            background:
-                linear-gradient(135deg, rgba(45, 112, 118, 0.97), rgba(45, 112, 118, 0.84)),
-                var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 30px 80px rgba(45, 112, 118, 0.26);
-        }
-
-        .hero::before {
-            content: "📚 ✦ 🔖 ✦ 📖 ✦";
-            position: absolute;
-            top: 30px;
-            right: 42px;
-            font-size: 52px;
-            letter-spacing: 12px;
-            opacity: 0.12;
-        }
-
-        .hero::after {
-            content: "";
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: rgba(213, 197, 219, 0.28);
-            position: absolute;
-            right: -90px;
-            bottom: -110px;
-        }
-
-        .badge {
-            width: fit-content;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 15px;
-            margin-bottom: 20px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            max-width: 720px;
-            margin-bottom: 16px;
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: clamp(44px, 7vw, 88px);
-            line-height: 0.95;
-            letter-spacing: -1px;
-        }
-
-        .accent {
-            margin-bottom: 18px;
-            font-family: "Brittany", "Allura", cursive;
-            font-size: 38px;
-            color: var(--orchid);
-        }
-
-        .description {
-            max-width: 680px;
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.8;
-            color: rgba(248, 247, 242, 0.88);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 13px 18px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 800;
-            transition: 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: var(--seashell);
-            color: var(--deep-waters);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 24px;
-        }
-
-        .card {
-            padding: 24px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.09);
-        }
-
-        .card-icon {
-            width: 46px;
-            height: 46px;
-            margin-bottom: 14px;
-            display: grid;
-            place-items: center;
-            border-radius: 16px;
-            background: var(--sand);
-            color: var(--deep-waters);
-            font-size: 20px;
-        }
-
-        .card h3 {
-            margin-bottom: 8px;
-            color: var(--deep-waters);
-            font-size: 18px;
-        }
-
-        .card p {
-            margin-bottom: 14px;
-            color: rgba(72, 68, 65, 0.75);
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .card a {
-            color: var(--deep-waters);
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .quick-section {
-            margin-top: 24px;
-            padding: 28px;
-            border-radius: 34px;
-            background:
-                linear-gradient(135deg, rgba(233, 217, 196, 0.80), rgba(144, 195, 198, 0.26));
-            border: 1px solid rgba(45, 112, 118, 0.10);
-        }
-
-        .quick-section h2 {
-            margin-bottom: 16px;
-            color: var(--deep-waters);
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: 36px;
-        }
-
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .chip {
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.68);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            color: var(--pebble);
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .chip:hover {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        @media (max-width: 900px) {
-            .navbar {
-                align-items: flex-start;
-                flex-direction: column;
-                border-radius: 28px;
-            }
-
-            .nav-links {
-                justify-content: flex-start;
-            }
-
-            .hero {
-                padding: 40px 26px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Pengelolaan Buku – Perpustakaan SMAIT Al-Uswah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/style-home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-home-anggota.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-home-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-kelola-buku.css') }}">
 </head>
+<body class="admin-page">
 
-<body>
-    <div class="pattern"></div>
-
-    <nav class="navbar">
-        <a href="{{ url('/home') }}" class="brand">
-            <span class="brand-icon">📚</span>
-            <span>Perpustakaan Al-Uswah</span>
-        </a>
-
-        <div class="nav-links">
-            <a href="{{ url('/home') }}">Home</a>
-            <a href="{{ url('/katalog') }}">Katalog</a>
-            <a href="{{ url('/tentang-perpustakaan') }}">Tentang</a>
-            <a href="{{ url('/dashboard-anggota') }}">Anggota</a>
-            <a href="{{ url('/dashboard-admin') }}">Admin</a>
-            <a href="{{ url('/register') }}">Register</a>
-            <a href="{{ url('/log-in') }}" class="login-btn">Login</a>
+    {{-- ===== NAVBAR ADMIN ===== --}}
+    <header class="navbar">
+        <div class="navbar-inner">
+            <a href="{{ route('home-admin') }}" class="nav-brand">
+                <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
+                <span class="nav-brand-name">Al-Uswah Library</span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
+                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ route('kelola-buku') }}" class="nav-link active">Buku</a>
+                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
+                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
+                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+            </nav>
+            <a href="{{ route('setting') }}" class="nav-profile">
+                <div class="nav-avatar">
+                    <div class="avatar-placeholder admin-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                </div>
+                <div class="nav-profile-info">
+                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-role">Administrator</span>
+                </div>
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <main class="container">
-        <section class="hero">
-            <div class="badge">Halaman Sementara</div>
-
-            <h1>{{ $page['title'] }}</h1>
-
-            <div class="accent">{{ $page['category'] }}</div>
-
-            <p class="description">
-                {{ $page['description'] }}
-                Tampilan ini masih placeholder sementara supaya tombol dan navigasi bisa langsung terhubung ke halaman yang dituju.
-            </p>
-
-            <div class="actions">
-                <a href="{{ url('/home') }}" class="btn btn-primary">Kembali ke Home</a>
-                <a href="{{ url('/katalog') }}" class="btn btn-secondary">Lihat Katalog</a>
+    {{-- ===== HERO ===== --}}
+    <section class="kb-hero">
+        <div class="kb-hero-inner">
+            <div class="kb-hero-left">
+                <span class="kb-eyebrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#b8742f" stroke="none"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
+                    ADMIN DASHBOARD
+                </span>
+                <h1 class="kb-title">Pengelolaan Buku</h1>
+                <p class="kb-desc">Kelola dan awasi koleksi literasimu dengan penuh ketelitian.</p>
             </div>
-        </section>
-
-        <section class="cards">
-            <div class="card">
-                <div class="card-icon">🔗</div>
-                <h3>Link Sudah Aktif</h3>
-                <p>Halaman ini sudah bisa dibuka melalui tombol, menu, atau URL sesuai route yang dibuat.</p>
-                <a href="{{ url()->current() }}">Buka halaman ini</a>
+            <div class="kb-hero-right">
+                <div class="kb-hero-deco">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(45,112,118,.15)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
+                <a href="{{ route('tambah-buku') }}" class="btn-tambah-buku">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Tambah Buku Baru
+                </a>
             </div>
+        </div>
+    </section>
 
-            <div class="card">
-                <div class="card-icon">🧩</div>
-                <h3>Masih Placeholder</h3>
-                <p>Isi halaman belum final, jadi nanti bisa diganti dengan desain asli tanpa mengubah link.</p>
-                <a href="{{ url('/dashboard-admin') }}">Cek dashboard admin</a>
+    {{-- ===== FILTER ===== --}}
+    <section class="kb-filter-section">
+        <div class="kb-filter-inner">
+            <div class="kb-filter-bar">
+                <div class="kb-search-wrap">
+                    <svg class="kb-search-ic" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" id="searchInput" class="kb-search" placeholder="Cari judul, ISBN, atau penulis...">
+                </div>
+
+                <div class="kb-select-wrap">
+                    <select id="kategoriSelect" class="kb-select">
+                        <option value="semua">Semua Kategori</option>
+                        <option value="fiksi">Fiksi</option>
+                        <option value="sejarah">Sejarah</option>
+                        <option value="sains">Sains</option>
+                        <option value="agama">Agama</option>
+                        <option value="filsafat">Filsafat</option>
+                        <option value="motivasi">Motivasi</option>
+                    </select>
+                    <svg class="kb-select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+
+                <div class="kb-select-wrap">
+                    <select id="statusSelect" class="kb-select">
+                        <option value="semua">Semua Status</option>
+                        <option value="tersedia">Tersedia</option>
+                        <option value="sedikit">Stok Sedikit</option>
+                        <option value="habis">Tidak Tersedia</option>
+                    </select>
+                    <svg class="kb-select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="card">
-                <div class="card-icon">✨</div>
-                <h3>Siap Dikembangkan</h3>
-                <p>File halaman sudah tersedia, tinggal lanjutkan desain dan fitur sesuai kebutuhan sistem.</p>
-                <a href="{{ url('/riwayat-transaksi') }}">Cek transaksi</a>
+    {{-- ===== TABEL BUKU ===== --}}
+    <section class="kb-table-section">
+        <div class="kb-table-inner">
+            <div class="kb-table-card">
+                <table class="kb-table">
+                    <thead>
+                        <tr>
+                            <th>Cover</th>
+                            <th>Info Buku</th>
+                            <th>ISBN</th>
+                            <th>Kategori</th>
+                            <th>Stok</th>
+                            <th>Rak</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bukuTbody">
+
+                        <tr class="kb-row" data-id="1"
+                            data-judul="Laskar Pelangi" data-penulis="Andrea Hirata"
+                            data-isbn="979-3062-79-7" data-kategori="fiksi"
+                            data-stok="8" data-status="tersedia">
+                            <td><img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Cover" class="kb-cover"></td>
+                            <td>
+                                <span class="kb-judul">Laskar Pelangi</span>
+                                <span class="kb-penulis">Andrea Hirata</span>
+                            </td>
+                            <td class="kb-isbn">979-3062-79-7</td>
+                            <td><span class="kb-kat kat-fiksi">FIKSI</span></td>
+                            <td class="kb-stok">8</td>
+                            <td class="kb-rak">F-001</td>
+                            <td><span class="kb-status st-tersedia"><span class="st-dot"></span> Tersedia</span></td>
+                            <td>
+                                <div class="kb-aksi">
+                                    <a href="{{ route('informasi-buku-admin', ['id' => 1]) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a href="{{ route('edit-buku', ['id' => 1]) }}" class="kb-btn-aksi btn-edit" title="Edit Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <button class="kb-btn-aksi btn-hapus" data-id="1" data-judul="Laskar Pelangi" title="Hapus Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="kb-row" data-id="2"
+                            data-judul="Dunia Sophie" data-penulis="Jostein Gaarder"
+                            data-isbn="978-602-441-020-9" data-kategori="filsafat"
+                            data-stok="5" data-status="tersedia">
+                            <td><img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Cover" class="kb-cover"></td>
+                            <td>
+                                <span class="kb-judul">Dunia Sophie</span>
+                                <span class="kb-penulis">Jostein Gaarder</span>
+                            </td>
+                            <td class="kb-isbn">978-602-441-020-9</td>
+                            <td><span class="kb-kat kat-filsafat">FILSAFAT</span></td>
+                            <td class="kb-stok">5</td>
+                            <td class="kb-rak">F-010</td>
+                            <td><span class="kb-status st-tersedia"><span class="st-dot"></span> Tersedia</span></td>
+                            <td>
+                                <div class="kb-aksi">
+                                    <a href="{{ route('informasi-buku-admin', ['id' => 2]) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a href="{{ route('edit-buku', ['id' => 2]) }}" class="kb-btn-aksi btn-edit" title="Edit Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <button class="kb-btn-aksi btn-hapus" data-id="2" data-judul="Dunia Sophie" title="Hapus Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="kb-row" data-id="3"
+                            data-judul="Sejarah Peradaban Islam" data-penulis="Badri Yatim"
+                            data-isbn="979-421-337-3" data-kategori="sejarah"
+                            data-stok="2" data-status="sedikit">
+                            <td><img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Cover" class="kb-cover"></td>
+                            <td>
+                                <span class="kb-judul">Sejarah Peradaban Islam</span>
+                                <span class="kb-penulis">Prof. Dr. Badri Yatim, M.A.</span>
+                            </td>
+                            <td class="kb-isbn">979-421-337-3</td>
+                            <td><span class="kb-kat kat-sejarah">SEJARAH</span></td>
+                            <td class="kb-stok stok-sedikit">2</td>
+                            <td class="kb-rak">S-105</td>
+                            <td><span class="kb-status st-sedikit"><span class="st-dot"></span> Stok Sedikit</span></td>
+                            <td>
+                                <div class="kb-aksi">
+                                    <a href="{{ route('informasi-buku-admin', ['id' => 3]) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a href="{{ route('edit-buku', ['id' => 3]) }}" class="kb-btn-aksi btn-edit" title="Edit Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <button class="kb-btn-aksi btn-hapus" data-id="3" data-judul="Sejarah Peradaban Islam" title="Hapus Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="kb-row" data-id="4"
+                            data-judul="The Things You Can See Only When You Slow Down" data-penulis="Haemin Sunim"
+                            data-isbn="978-602-481-365-9" data-kategori="motivasi"
+                            data-stok="0" data-status="habis">
+                            <td><img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Cover" class="kb-cover"></td>
+                            <td>
+                                <span class="kb-judul">The Things You Can See Only When You Slow Down</span>
+                                <span class="kb-penulis">Haemin Sunim</span>
+                            </td>
+                            <td class="kb-isbn">978-602-481-365-9</td>
+                            <td><span class="kb-kat kat-motivasi">MOTIVASI</span></td>
+                            <td class="kb-stok stok-habis">0</td>
+                            <td class="kb-rak">M-022</td>
+                            <td><span class="kb-status st-habis"><span class="st-dot"></span> Tidak Tersedia</span></td>
+                            <td>
+                                <div class="kb-aksi">
+                                    <a href="{{ route('informasi-buku-admin', ['id' => 4]) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                    <a href="{{ route('edit-buku', ['id' => 4]) }}" class="kb-btn-aksi btn-edit" title="Edit Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </a>
+                                    <button class="kb-btn-aksi btn-hapus" data-id="4" data-judul="The Things You Can See..." title="Hapus Buku">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+                <div class="kb-empty hidden" id="kbEmpty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    <p>Tidak ada buku yang cocok dengan filter ini.</p>
+                </div>
+
+                <div class="kb-table-footer">
+                    <span class="kb-info" id="kbInfo">Menampilkan 1–4 dari 450 buku</span>
+                    <div class="kb-pagination">
+                        <button class="kb-page-btn" id="kbPrev">Sebelumnya</button>
+                        <button class="kb-page-btn active" data-page="1">1</button>
+                        <button class="kb-page-btn" data-page="2">2</button>
+                        <button class="kb-page-btn" data-page="3">3</button>
+                        <button class="kb-page-btn" id="kbNext">Berikutnya</button>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="quick-section">
-            <h2>Daftar Halaman</h2>
+    {{-- ===== MANAJEMEN KATEGORI & RAK ===== --}}
+    <section class="kb-manajemen-section">
+        <div class="kb-manajemen-inner">
+            <h2 class="kb-manajemen-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Manajemen Koleksi
+            </h2>
+            <p class="kb-manajemen-sub">Atur kategori dan lokasi rak untuk memudahkan pengelolaan koleksi perpustakaan.</p>
 
-            <div class="chips">
-                <a class="chip" href="{{ url('/register') }}">Register</a>
-                <a class="chip" href="{{ url('/log-in') }}">Log In</a>
-                <a class="chip" href="{{ url('/home') }}">Home</a>
-                <a class="chip" href="{{ url('/katalog') }}">Katalog</a>
-                <a class="chip" href="{{ url('/tentang-perpustakaan') }}">Tentang Perpustakaan</a>
+            <div class="kb-manajemen-cards">
+                <a href="{{ route('kategori-rak') }}" class="kb-mana-card">
+                    <div class="kb-mana-ic ic-teal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    </div>
+                    <div class="kb-mana-info">
+                        <span class="kb-mana-label">Manajemen Kategori</span>
+                        <span class="kb-mana-desc">Tambah, edit, dan atur kategori buku</span>
+                    </div>
+                    <svg class="kb-mana-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
 
-                <a class="chip" href="{{ url('/dashboard-anggota') }}">Dashboard Anggota</a>
-                <a class="chip" href="{{ url('/informasi-buku') }}">Informasi Buku</a>
-                <a class="chip" href="{{ url('/riwayat-peminjaman') }}">Riwayat Peminjaman</a>
-                <a class="chip" href="{{ url('/status-denda') }}">Status Denda</a>
-                <a class="chip" href="{{ url('/profil-anggota') }}">Profil Anggota</a>
-
-                <a class="chip" href="{{ url('/dashboard-admin') }}">Dashboard Admin</a>
-                <a class="chip" href="{{ url('/kelola-buku') }}">Kelola Buku</a>
-                <a class="chip" href="{{ url('/tambah-buku') }}">Tambah Buku</a>
-                <a class="chip" href="{{ url('/edit-buku') }}">Edit Buku</a>
-                <a class="chip" href="{{ url('/kelola-anggota') }}">Kelola Anggota</a>
-                <a class="chip" href="{{ url('/tambah-anggota') }}">Tambah Anggota</a>
-                <a class="chip" href="{{ url('/riwayat-transaksi') }}">Riwayat Transaksi</a>
-                <a class="chip" href="{{ url('/input-peminjaman') }}">Input Peminjaman</a>
-                <a class="chip" href="{{ url('/kelola-denda') }}">Kelola Denda</a>
-                <a class="chip" href="{{ url('/detail-transaksi') }}">Detail Transaksi</a>
-                <a class="chip" href="{{ url('/detail-denda') }}">Detail Denda</a>
-                <a class="chip" href="{{ url('/laporan') }}">Laporan</a>
-                <a class="chip" href="{{ url('/setting') }}">Setting</a>
-                <a class="chip" href="{{ url('/kategori-rak') }}">Kategori Rak</a>
+                <a href="{{ route('kategori-rak') }}" class="kb-mana-card">
+                    <div class="kb-mana-ic ic-orange">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="17" width="20" height="5" rx="1"/></svg>
+                    </div>
+                    <div class="kb-mana-info">
+                        <span class="kb-mana-label">Manajemen Rak</span>
+                        <span class="kb-mana-desc">Atur posisi dan kode rak koleksi</span>
+                    </div>
+                    <svg class="kb-mana-arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b8742f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+
+    {{-- ===== MODAL KONFIRMASI HAPUS ===== --}}
+    <div class="hapus-modal" id="hapusModal">
+        <div class="hapus-modal-inner">
+            <div class="hapus-modal-ic">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </div>
+            <h3 class="hapus-modal-title">Hapus Buku?</h3>
+            <p class="hapus-modal-desc">Kamu yakin ingin menghapus buku <strong id="hapusJudul">"Laskar Pelangi"</strong>? Tindakan ini tidak bisa dibatalkan.</p>
+            <div class="hapus-modal-btns">
+                <button class="btn-hapus-konfirm" id="btnHapusKonfirm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Ya, Hapus
+                </button>
+                <button class="btn-hapus-batal" id="btnHapusBatal">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== TOAST ===== --}}
+    <div class="toast" id="toast"></div>
+
+    {{-- ===== FOOTER ===== --}}
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-brand-top">
+                    <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="footer-logo">
+                    <span class="footer-brand-name">Al-Uswah Library</span>
+                </div>
+                <p class="footer-tagline">© 2026 SMAIT Al-Uswah Library.<br>Menumbuhkan Literasi,<br>Mengukir Prestasi.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="social-btn" aria-label="Email">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Navigasi</h4>
+                <ul>
+                    <li><a href="{{ route('dashboard-admin') }}">Dashboard</a></li>
+                    <li><a href="{{ route('tambah-buku') }}">Tambah Buku</a></li>
+                    <li><a href="{{ route('kategori-rak') }}">Kategori &amp; Rak</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Dukungan</h4>
+                <ul>
+                    <li><a href="#">Pusat Bantuan</a></li>
+                    <li><a href="#">SOP Peminjaman</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Hubungi Kami</h4>
+                <address>
+                    Jl. Al-Uswah No. 123, Surabaya<br>
+                    library@smait-aluswah.sch.id
+                </address>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/script-kelola-buku.js') }}"></script>
 </body>
 </html>

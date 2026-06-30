@@ -1,0 +1,453 @@
+/* =========================================================
+   style-detail-transaksi.css
+   Perpustakaan SMAIT Al-Uswah
+   ========================================================= */
+
+.dt-header-inner,
+.dt-main-inner,
+.dt-alert-inner,
+.dt-books-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.dt-header { background: var(--bg); padding: 36px 0 24px; }
+
+.dt-header-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.dt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+}
+
+.dt-kode {
+    font-family: 'Georgia', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 14px;
+}
+
+.dt-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.dt-status-badge {
+    font-size: .82rem;
+    font-weight: 700;
+    padding: 7px 18px;
+    border-radius: 999px;
+}
+
+.badge-late { background: rgba(192,57,43,.12); color: #c0392b; }
+.badge-safe { background: rgba(144,195,198,.4); color: #1f555a; }
+
+.dt-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .9rem;
+    color: var(--text);
+    opacity: .7;
+}
+
+.btn-catat-kembali {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--primary);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .92rem;
+    font-weight: 700;
+    padding: 16px 30px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28);
+    transition: background .2s ease, transform .2s ease;
+}
+.btn-catat-kembali:hover { background: #1f555a; transform: translateY(-2px); }
+
+.dt-returned-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(144,195,198,.3);
+    color: #1f555a;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .92rem;
+    font-weight: 700;
+    padding: 16px 30px;
+    border-radius: var(--radius);
+}
+
+/* =========================================================
+   INFO + RINGKASAN
+   ========================================================= */
+.dt-main { background: var(--bg); padding: 16px 0 24px; }
+
+.dt-main-inner {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* Anggota card */
+.dt-anggota-card {
+    background: var(--form-card);
+    border-radius: var(--radius-lg);
+    padding: 30px 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dt-card-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #b8742f;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.dt-card-title.primary { color: var(--primary); }
+
+.title-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(184,116,47,.4);
+    border-radius: 2px;
+    max-width: 60px;
+}
+
+.dt-anggota-body {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dt-anggota-foto {
+    width: 92px;
+    height: 92px;
+    border-radius: var(--radius);
+    background: linear-gradient(145deg, #2D7076, #1a4a50);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 3px solid var(--white);
+    box-shadow: 0 6px 16px rgba(45,112,118,.2);
+}
+
+.dt-anggota-nama {
+    font-family: 'Georgia', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.dt-anggota-detail {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .85rem;
+    color: var(--text);
+    opacity: .75;
+    margin-bottom: 5px;
+}
+
+.dt-anggota-status {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #1f555a;
+    background: rgba(144,195,198,.5);
+    padding: 6px 20px;
+    border-radius: 999px;
+    margin-top: 8px;
+}
+
+/* Ringkasan card */
+.dt-ringkasan-card {
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.12);
+    border-radius: var(--radius-lg);
+    padding: 30px 36px;
+}
+
+.dt-ringkasan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px 24px;
+}
+
+.dt-ring-item { display: flex; flex-direction: column; gap: 6px; }
+
+.dt-ring-label {
+    font-size: .82rem;
+    color: var(--text);
+    opacity: .6;
+}
+
+.dt-ring-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.dt-ring-value.primary { color: var(--primary); }
+.dt-ring-value.danger { color: #c0392b; }
+
+/* =========================================================
+   ALERT DENDA
+   ========================================================= */
+.dt-alert-section { background: var(--bg); padding: 8px 0 24px; }
+
+.dt-alert {
+    background: var(--form-card);
+    border: 1.5px solid rgba(184,116,47,.3);
+    border-radius: var(--radius-lg);
+    padding: 24px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dt-alert-ic {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.dt-alert-text { flex: 1; }
+
+.dt-alert-text strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #b8742f;
+    margin-bottom: 4px;
+}
+
+.dt-alert-text p {
+    font-size: .88rem;
+    color: var(--text);
+    opacity: .8;
+}
+
+.dt-alert-denda { text-align: right; flex-shrink: 0; }
+
+.dt-alert-denda-label {
+    display: block;
+    font-size: .8rem;
+    color: var(--text);
+    opacity: .7;
+    margin-bottom: 2px;
+}
+
+.dt-alert-denda-value {
+    font-family: 'Georgia', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #b8742f;
+}
+
+/* =========================================================
+   DAFTAR BUKU
+   ========================================================= */
+.dt-books-section { background: var(--bg); padding: 8px 0 64px; }
+
+.dt-books-card {
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.1);
+    border-radius: var(--radius-lg);
+    padding: 8px 0 12px;
+    overflow: hidden;
+}
+
+.dt-books-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    border-bottom: 1px solid rgba(45,112,118,.1);
+}
+
+.dt-books-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dt-books-count {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(144,195,198,.25);
+    padding: 5px 14px;
+    border-radius: 999px;
+}
+
+.dt-table-wrap { overflow-x: auto; }
+
+.dt-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dt-table thead th {
+    text-align: left;
+    font-size: .74rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .6;
+    letter-spacing: .04em;
+    padding: 16px 32px;
+}
+
+.dt-table tbody td {
+    padding: 18px 32px;
+    border-top: 1px solid rgba(45,112,118,.08);
+    font-size: .9rem;
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.dt-book {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dt-book-cover {
+    width: 48px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.15);
+    flex-shrink: 0;
+}
+
+.dt-book-judul {
+    display: block;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+}
+
+.dt-book-isbn {
+    font-size: .78rem;
+    color: var(--text);
+    opacity: .55;
+}
+
+.dt-jumlah { font-weight: 700; }
+
+.dt-item-status {
+    font-size: .76rem;
+    font-weight: 700;
+    color: #1f555a;
+    background: rgba(144,195,198,.4);
+    padding: 5px 14px;
+    border-radius: 999px;
+}
+
+.dt-kembali {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.dt-kembali-belum { color: #c0392b; }
+.dt-kembali-sudah { color: #16a085; }
+
+.dt-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(144,195,198,.2);
+    transition: background .2s ease;
+}
+.dt-action:hover { background: rgba(144,195,198,.45); }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--primary);
+    color: var(--white);
+    font-size: .88rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(45,112,118,.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease;
+    z-index: 1100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1024px) {
+    .dt-main-inner { grid-template-columns: 1fr; }
+    .dt-ringkasan-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .dt-header-inner, .dt-main-inner, .dt-alert-inner, .dt-books-inner {
+        padding-left: 24px; padding-right: 24px;
+    }
+    .dt-ringkasan-grid { grid-template-columns: 1fr; }
+    .dt-alert { flex-direction: column; align-items: flex-start; }
+    .dt-alert-denda { text-align: left; }
+    .dt-table thead th, .dt-table tbody td { padding-left: 18px; padding-right: 18px; }
+    .btn-catat-kembali, .dt-returned-badge { width: 100%; justify-content: center; }
+}

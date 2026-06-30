@@ -1,566 +1,292 @@
-@php
-    $slug = request()->path();
-    $slug = $slug === '/' ? 'home' : $slug;
-
-    $pageData = [
-        'register' => [
-            'title' => 'Register',
-            'category' => 'Pendaftaran Anggota',
-            'description' => 'Halaman ini nantinya digunakan untuk pendaftaran anggota perpustakaan baru.'
-        ],
-        'log-in' => [
-            'title' => 'Log In',
-            'category' => 'Masuk ke Sistem',
-            'description' => 'Halaman ini nantinya digunakan oleh anggota dan admin untuk masuk ke sistem.'
-        ],
-        'home' => [
-            'title' => 'Home',
-            'category' => 'Halaman Utama',
-            'description' => 'Halaman utama perpustakaan yang menampilkan katalog, informasi, dan akses layanan.'
-        ],
-        'katalog' => [
-            'title' => 'Katalog',
-            'category' => 'Koleksi Buku',
-            'description' => 'Halaman ini nantinya digunakan untuk melihat dan mencari koleksi buku perpustakaan.'
-        ],
-        'tentang-perpustakaan' => [
-            'title' => 'Tentang Perpustakaan',
-            'category' => 'Informasi Perpustakaan',
-            'description' => 'Halaman ini nantinya berisi profil, layanan, dan informasi umum perpustakaan.'
-        ],
-        'dashboard-anggota' => [
-            'title' => 'Dashboard Anggota',
-            'category' => 'Area Anggota',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan pinjaman, denda, dan notifikasi anggota.'
-        ],
-        'informasi-buku' => [
-            'title' => 'Informasi Buku',
-            'category' => 'Detail Buku',
-            'description' => 'Halaman ini nantinya menampilkan informasi detail buku, stok, lokasi rak, dan ulasan.'
-        ],
-        'riwayat-peminjaman' => [
-            'title' => 'Riwayat Peminjaman',
-            'category' => 'Data Peminjaman',
-            'description' => 'Halaman ini nantinya menampilkan riwayat peminjaman dan pengembalian buku.'
-        ],
-        'status-denda' => [
-            'title' => 'Status Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan denda aktif dan riwayat pembayaran denda.'
-        ],
-        'profil-anggota' => [
-            'title' => 'Profil Anggota',
-            'category' => 'Data Anggota',
-            'description' => 'Halaman ini nantinya digunakan anggota untuk melihat dan mengubah data profil.'
-        ],
-        'dashboard-admin' => [
-            'title' => 'Dashboard Admin',
-            'category' => 'Area Admin',
-            'description' => 'Halaman ini nantinya menampilkan ringkasan data perpustakaan untuk admin.'
-        ],
-        'kelola-buku' => [
-            'title' => 'Kelola Buku',
-            'category' => 'Manajemen Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data koleksi buku.'
-        ],
-        'tambah-buku' => [
-            'title' => 'Tambah Buku',
-            'category' => 'Input Buku Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan buku baru.'
-        ],
-        'edit-buku' => [
-            'title' => 'Edit Buku',
-            'category' => 'Ubah Data Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengubah data buku.'
-        ],
-        'kelola-anggota' => [
-            'title' => 'Kelola Anggota',
-            'category' => 'Manajemen Anggota',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola data dan status anggota.'
-        ],
-        'riwayat-transaksi' => [
-            'title' => 'Riwayat Transaksi',
-            'category' => 'Data Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan data peminjaman dan pengembalian buku.'
-        ],
-        'input-peminjaman' => [
-            'title' => 'Input Peminjaman',
-            'category' => 'Transaksi Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mencatat peminjaman buku.'
-        ],
-        'kelola-denda' => [
-            'title' => 'Kelola Denda',
-            'category' => 'Manajemen Denda',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola denda anggota.'
-        ],
-        'detail-transaksi' => [
-            'title' => 'Detail Transaksi',
-            'category' => 'Informasi Transaksi',
-            'description' => 'Halaman ini nantinya menampilkan detail transaksi peminjaman buku.'
-        ],
-        'detail-denda' => [
-            'title' => 'Detail Denda',
-            'category' => 'Informasi Denda',
-            'description' => 'Halaman ini nantinya menampilkan detail denda dan validasi pembayaran.'
-        ],
-        'laporan' => [
-            'title' => 'Laporan',
-            'category' => 'Laporan Perpustakaan',
-            'description' => 'Halaman ini nantinya digunakan admin untuk melihat dan mengekspor laporan.'
-        ],
-        'setting' => [
-            'title' => 'Setting',
-            'category' => 'Pengaturan Sistem',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengatur konfigurasi sistem.'
-        ],
-        'kategori-rak' => [
-            'title' => 'Kategori Rak',
-            'category' => 'Kategori dan Rak Buku',
-            'description' => 'Halaman ini nantinya digunakan admin untuk mengelola kategori dan lokasi rak buku.'
-        ],
-        'tambah-anggota' => [
-            'title' => 'Tambah Anggota',
-            'category' => 'Input Anggota Baru',
-            'description' => 'Halaman ini nantinya digunakan admin untuk menambahkan anggota secara manual.'
-        ],
-    ];
-
-    $page = $pageData[$slug] ?? [
-        'title' => ucwords(str_replace('-', ' ', $slug)),
-        'category' => 'Halaman Sementara',
-        'description' => 'Halaman ini masih berupa placeholder sementara.'
-    ];
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $page['title'] }} - Perpustakaan SMAIT Al-Uswah</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Serif+Display&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --deep-waters: #2D7076;
-            --waves: #90C3C6;
-            --seashell: #F8F7F2;
-            --sand: #E9D9C4;
-            --orchid: #D5C5DB;
-            --pebble: #484441;
-            --white: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: "Montserrat", sans-serif;
-            color: var(--pebble);
-            background:
-                radial-gradient(circle at 8% 12%, rgba(213, 197, 219, 0.45), transparent 24%),
-                radial-gradient(circle at 92% 8%, rgba(144, 195, 198, 0.48), transparent 26%),
-                radial-gradient(circle at 80% 85%, rgba(233, 217, 196, 0.65), transparent 25%),
-                var(--seashell);
-            overflow-x: hidden;
-        }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .pattern {
-            position: fixed;
-            inset: 0;
-            opacity: 0.055;
-            pointer-events: none;
-            background-image:
-                radial-gradient(circle, var(--deep-waters) 2px, transparent 2px);
-            background-size: 34px 34px;
-        }
-
-        .navbar {
-            width: min(1180px, calc(100% - 40px));
-            margin: 22px auto 0;
-            padding: 14px 18px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.12);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.11);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
-            position: sticky;
-            top: 18px;
-            z-index: 10;
-            backdrop-filter: blur(14px);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--deep-waters);
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            display: grid;
-            place-items: center;
-            border-radius: 50%;
-            background: var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 12px 24px rgba(45, 112, 118, 0.24);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .nav-links a {
-            padding: 9px 13px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            background: var(--sand);
-            color: var(--deep-waters);
-        }
-
-        .nav-links .login-btn {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        .container {
-            width: min(1120px, calc(100% - 40px));
-            margin: 54px auto 70px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: 64px;
-            border-radius: 40px;
-            background:
-                linear-gradient(135deg, rgba(45, 112, 118, 0.97), rgba(45, 112, 118, 0.84)),
-                var(--deep-waters);
-            color: var(--seashell);
-            box-shadow: 0 30px 80px rgba(45, 112, 118, 0.26);
-        }
-
-        .hero::before {
-            content: "📚 ✦ 🔖 ✦ 📖 ✦";
-            position: absolute;
-            top: 30px;
-            right: 42px;
-            font-size: 52px;
-            letter-spacing: 12px;
-            opacity: 0.12;
-        }
-
-        .hero::after {
-            content: "";
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: rgba(213, 197, 219, 0.28);
-            position: absolute;
-            right: -90px;
-            bottom: -110px;
-        }
-
-        .badge {
-            width: fit-content;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 9px 15px;
-            margin-bottom: 20px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            max-width: 720px;
-            margin-bottom: 16px;
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: clamp(44px, 7vw, 88px);
-            line-height: 0.95;
-            letter-spacing: -1px;
-        }
-
-        .accent {
-            margin-bottom: 18px;
-            font-family: "Brittany", "Allura", cursive;
-            font-size: 38px;
-            color: var(--orchid);
-        }
-
-        .description {
-            max-width: 680px;
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.8;
-            color: rgba(248, 247, 242, 0.88);
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 13px 18px;
-            border-radius: 999px;
-            font-size: 14px;
-            font-weight: 800;
-            transition: 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: var(--seashell);
-            color: var(--deep-waters);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.14);
-            color: var(--seashell);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 24px;
-        }
-
-        .card {
-            padding: 24px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            box-shadow: 0 18px 45px rgba(45, 112, 118, 0.09);
-        }
-
-        .card-icon {
-            width: 46px;
-            height: 46px;
-            margin-bottom: 14px;
-            display: grid;
-            place-items: center;
-            border-radius: 16px;
-            background: var(--sand);
-            color: var(--deep-waters);
-            font-size: 20px;
-        }
-
-        .card h3 {
-            margin-bottom: 8px;
-            color: var(--deep-waters);
-            font-size: 18px;
-        }
-
-        .card p {
-            margin-bottom: 14px;
-            color: rgba(72, 68, 65, 0.75);
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .card a {
-            color: var(--deep-waters);
-            font-size: 13px;
-            font-weight: 800;
-        }
-
-        .quick-section {
-            margin-top: 24px;
-            padding: 28px;
-            border-radius: 34px;
-            background:
-                linear-gradient(135deg, rgba(233, 217, 196, 0.80), rgba(144, 195, 198, 0.26));
-            border: 1px solid rgba(45, 112, 118, 0.10);
-        }
-
-        .quick-section h2 {
-            margin-bottom: 16px;
-            color: var(--deep-waters);
-            font-family: "Alstoria", "DM Serif Display", serif;
-            font-size: 36px;
-        }
-
-        .chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .chip {
-            padding: 10px 14px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.68);
-            border: 1px solid rgba(45, 112, 118, 0.10);
-            color: var(--pebble);
-            font-size: 13px;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .chip:hover {
-            background: var(--deep-waters);
-            color: var(--seashell);
-        }
-
-        @media (max-width: 900px) {
-            .navbar {
-                align-items: flex-start;
-                flex-direction: column;
-                border-radius: 28px;
-            }
-
-            .nav-links {
-                justify-content: flex-start;
-            }
-
-            .hero {
-                padding: 40px 26px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Input Peminjaman Baru – Perpustakaan SMAIT Al-Uswah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/style-home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-home-anggota.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-home-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style-input-peminjaman.css') }}">
 </head>
+<body class="admin-page">
 
-<body>
-    <div class="pattern"></div>
-
-    <nav class="navbar">
-        <a href="{{ url('/home') }}" class="brand">
-            <span class="brand-icon">📚</span>
-            <span>Perpustakaan Al-Uswah</span>
-        </a>
-
-        <div class="nav-links">
-            <a href="{{ url('/home') }}">Home</a>
-            <a href="{{ url('/katalog') }}">Katalog</a>
-            <a href="{{ url('/tentang-perpustakaan') }}">Tentang</a>
-            <a href="{{ url('/dashboard-anggota') }}">Anggota</a>
-            <a href="{{ url('/dashboard-admin') }}">Admin</a>
-            <a href="{{ url('/register') }}">Register</a>
-            <a href="{{ url('/log-in') }}" class="login-btn">Login</a>
+    {{-- ===== NAVBAR ===== --}}
+    <header class="navbar">
+        <div class="navbar-inner">
+            <a href="{{ route('home-admin') }}" class="nav-brand">
+                <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
+                <span class="nav-brand-name">Al-Uswah Library</span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
+                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ route('kelola-buku') }}" class="nav-link">Buku</a>
+                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
+                <a href="{{ route('riwayat-transaksi') }}" class="nav-link active">Transaksi</a>
+                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+            </nav>
+            <a href="{{ route('setting') }}" class="nav-profile">
+                <div class="nav-avatar"><div class="avatar-placeholder admin-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div></div>
+                <div class="nav-profile-info">
+                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-role">Administrator</span>
+                </div>
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <main class="container">
-        <section class="hero">
-            <div class="badge">Halaman Sementara</div>
-
-            <h1>{{ $page['title'] }}</h1>
-
-            <div class="accent">{{ $page['category'] }}</div>
-
-            <p class="description">
-                {{ $page['description'] }}
-                Tampilan ini masih placeholder sementara supaya tombol dan navigasi bisa langsung terhubung ke halaman yang dituju.
-            </p>
-
-            <div class="actions">
-                <a href="{{ url('/home') }}" class="btn btn-primary">Kembali ke Home</a>
-                <a href="{{ url('/katalog') }}" class="btn btn-secondary">Lihat Katalog</a>
+    {{-- ===== STEPPER ===== --}}
+    <section class="ip-stepper-section">
+        <div class="ip-stepper-inner">
+            <div class="ip-stepper">
+                <div class="ip-step active" id="step-ind-1">
+                    <div class="ip-step-circle">1</div>
+                    <span class="ip-step-label">Pilih Anggota</span>
+                </div>
+                <div class="ip-step-line" id="line-1"></div>
+                <div class="ip-step" id="step-ind-2">
+                    <div class="ip-step-circle">2</div>
+                    <span class="ip-step-label">Pilih Buku</span>
+                </div>
+                <div class="ip-step-line" id="line-2"></div>
+                <div class="ip-step" id="step-ind-3">
+                    <div class="ip-step-circle">3</div>
+                    <span class="ip-step-label">Konfirmasi</span>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="cards">
-            <div class="card">
-                <div class="card-icon">🔗</div>
-                <h3>Link Sudah Aktif</h3>
-                <p>Halaman ini sudah bisa dibuka melalui tombol, menu, atau URL sesuai route yang dibuat.</p>
-                <a href="{{ url()->current() }}">Buka halaman ini</a>
+    {{-- ===== HERO ===== --}}
+    <section class="ip-hero">
+        <div class="ip-hero-inner">
+            <div>
+                <span class="ip-eyebrow">Formulir Digital</span>
+                <h1 class="ip-title">Input Peminjaman Baru</h1>
+                <p class="ip-desc">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Silakan isi data peminjaman dengan teliti.
+                </p>
             </div>
-
-            <div class="card">
-                <div class="card-icon">🧩</div>
-                <h3>Masih Placeholder</h3>
-                <p>Isi halaman belum final, jadi nanti bisa diganti dengan desain asli tanpa mengubah link.</p>
-                <a href="{{ url('/dashboard-admin') }}">Cek dashboard admin</a>
+            <div class="ip-hero-deco">
+                <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(45,112,118,.15)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
+        </div>
+    </section>
 
-            <div class="card">
-                <div class="card-icon">✨</div>
-                <h3>Siap Dikembangkan</h3>
-                <p>File halaman sudah tersedia, tinggal lanjutkan desain dan fitur sesuai kebutuhan sistem.</p>
-                <a href="{{ url('/riwayat-transaksi') }}">Cek transaksi</a>
+    {{-- ===== MAIN GRID ===== --}}
+    <section class="ip-main">
+        <div class="ip-main-inner">
+            <div class="ip-grid">
+
+                {{-- ===== LEFT COLUMN ===== --}}
+                <div class="ip-left">
+
+                    {{-- PANEL 1: Informasi Anggota --}}
+                    <div class="ip-panel" id="panelAnggota">
+                        <div class="ip-panel-head">
+                            <div class="ip-panel-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <h2 class="ip-panel-title">Informasi Anggota</h2>
+                        </div>
+
+                        <label class="ip-label">Cari Nama atau NIS Anggota</label>
+                        <div class="ip-anggota-search-wrap">
+                            <svg class="ip-search-ic" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="searchAnggota" class="ip-anggota-search" placeholder="Ketik nama atau NIS...">
+                            <div class="ip-anggota-dropdown" id="anggotaDropdown"></div>
+                        </div>
+                        <span class="ip-err" id="err-anggota"></span>
+
+                        {{-- Card anggota terpilih --}}
+                        <div class="ip-anggota-selected hidden" id="anggotaSelected">
+                            <div class="ip-anggota-card">
+                                <div class="ip-anggota-avatar" id="selAvatar">AF</div>
+                                <div class="ip-anggota-info">
+                                    <span class="ip-anggota-nama" id="selNama">Ahmad Fathoni</span>
+                                    <span class="ip-anggota-meta" id="selMeta">NIS: 20210045 · XI-MIPA 1</span>
+                                    <span class="ip-anggota-email" id="selEmail">ahmad.f@uswah.sch.id</span>
+                                </div>
+                                <button type="button" class="ip-anggota-clear" id="btnClearAnggota" title="Ganti anggota">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- PANEL 2: Daftar Buku --}}
+                    <div class="ip-panel" id="panelBuku">
+                        <div class="ip-panel-head">
+                            <div class="ip-panel-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            </div>
+                            <h2 class="ip-panel-title">Daftar Buku</h2>
+                        </div>
+
+                        <label class="ip-label">Tambah Buku ke Daftar</label>
+                        <div class="ip-buku-search-row">
+                            <div class="ip-buku-search-wrap">
+                                <input type="text" id="searchBuku" class="ip-buku-search" placeholder="Judul Buku, Pengarang, atau ISBN...">
+                            </div>
+                            <button type="button" class="btn-ip-cari" id="btnCariSaran">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Cari
+                            </button>
+                        </div>
+                        <div class="ip-buku-saran hidden" id="bukuSaran"></div>
+                        <span class="ip-err" id="err-buku"></span>
+
+                        <div class="ip-buku-terpilih-head hidden" id="bukuTerpilihHead">
+                            <span class="ip-buku-terpilih-label" id="bukuTerpilihLabel">Buku Terpilih (0)</span>
+                        </div>
+                        <ul class="ip-buku-list" id="bukuList"></ul>
+                    </div>
+
+                    {{-- PANEL 3: Detail Transaksi --}}
+                    <div class="ip-panel" id="panelDetail">
+                        <div class="ip-panel-head">
+                            <div class="ip-panel-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
+                            <h2 class="ip-panel-title">Detail Transaksi</h2>
+                        </div>
+
+                        <div class="ip-form-row">
+                            <div class="ip-form-group">
+                                <label class="ip-label" for="tglPinjam">Tanggal Pinjam <span class="ip-req">*</span></label>
+                                <input type="date" id="tglPinjam" name="tglPinjam">
+                                <span class="ip-err" id="err-tglPinjam"></span>
+                            </div>
+                            <div class="ip-form-group">
+                                <label class="ip-label" for="tglTempo">Tanggal Jatuh Tempo <span class="ip-req">*</span></label>
+                                <input type="date" id="tglTempo" name="tglTempo">
+                                <span class="ip-err" id="err-tglTempo"></span>
+                            </div>
+                        </div>
+
+                        <div class="ip-form-group">
+                            <label class="ip-label" for="catatan">Catatan Tambahan (Opsional)</label>
+                            <textarea id="catatan" name="catatan" rows="4" placeholder="Contoh: Kondisi buku sedikit menguning..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- ===== RIGHT: RINGKASAN ===== --}}
+                <div class="ip-right">
+                    <div class="ip-ringkasan">
+                        <div class="ip-ring-head">
+                            <h3 class="ip-ring-title">Ringkasan</h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(45,112,118,.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+
+                        <div class="ip-ring-rows">
+                            <div class="ip-ring-row">
+                                <span class="ip-ring-lbl">Total Buku</span>
+                                <span class="ip-ring-val" id="ringTotalBuku">0 Eksemplar</span>
+                            </div>
+                            <div class="ip-ring-row">
+                                <span class="ip-ring-lbl">Lama Pinjam</span>
+                                <span class="ip-ring-val" id="ringLamaPinjam">– Hari</span>
+                            </div>
+                            <div class="ip-ring-row">
+                                <span class="ip-ring-lbl">Jatuh Tempo</span>
+                                <span class="ip-ring-val" id="ringJatuhTempo">–</span>
+                            </div>
+                            <div class="ip-ring-row">
+                                <span class="ip-ring-lbl">Status</span>
+                                <span class="ip-ring-badge" id="ringStatus">DRAFT</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-ip-simpan" id="btnSimpan">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Simpan Transaksi
+                        </button>
+
+                        <button type="button" class="btn-ip-batal" id="btnBatal">Batal &amp; Bersihkan</button>
+
+                        <div class="ip-tips">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <span>Tips: Pastikan anggota dan buku sudah benar sebelum menyimpan transaksi.</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="quick-section">
-            <h2>Daftar Halaman</h2>
-
-            <div class="chips">
-                <a class="chip" href="{{ url('/register') }}">Register</a>
-                <a class="chip" href="{{ url('/log-in') }}">Log In</a>
-                <a class="chip" href="{{ url('/home') }}">Home</a>
-                <a class="chip" href="{{ url('/katalog') }}">Katalog</a>
-                <a class="chip" href="{{ url('/tentang-perpustakaan') }}">Tentang Perpustakaan</a>
-
-                <a class="chip" href="{{ url('/dashboard-anggota') }}">Dashboard Anggota</a>
-                <a class="chip" href="{{ url('/informasi-buku') }}">Informasi Buku</a>
-                <a class="chip" href="{{ url('/riwayat-peminjaman') }}">Riwayat Peminjaman</a>
-                <a class="chip" href="{{ url('/status-denda') }}">Status Denda</a>
-                <a class="chip" href="{{ url('/profil-anggota') }}">Profil Anggota</a>
-
-                <a class="chip" href="{{ url('/dashboard-admin') }}">Dashboard Admin</a>
-                <a class="chip" href="{{ url('/kelola-buku') }}">Kelola Buku</a>
-                <a class="chip" href="{{ url('/tambah-buku') }}">Tambah Buku</a>
-                <a class="chip" href="{{ url('/edit-buku') }}">Edit Buku</a>
-                <a class="chip" href="{{ url('/kelola-anggota') }}">Kelola Anggota</a>
-                <a class="chip" href="{{ url('/tambah-anggota') }}">Tambah Anggota</a>
-                <a class="chip" href="{{ url('/riwayat-transaksi') }}">Riwayat Transaksi</a>
-                <a class="chip" href="{{ url('/input-peminjaman') }}">Input Peminjaman</a>
-                <a class="chip" href="{{ url('/kelola-denda') }}">Kelola Denda</a>
-                <a class="chip" href="{{ url('/detail-transaksi') }}">Detail Transaksi</a>
-                <a class="chip" href="{{ url('/detail-denda') }}">Detail Denda</a>
-                <a class="chip" href="{{ url('/laporan') }}">Laporan</a>
-                <a class="chip" href="{{ url('/setting') }}">Setting</a>
-                <a class="chip" href="{{ url('/kategori-rak') }}">Kategori Rak</a>
+    {{-- ===== MODAL SUKSES ===== --}}
+    <div class="ip-modal" id="ipModalSukses">
+        <div class="ip-modal-inner">
+            <div class="ip-modal-ic ic-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a085" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
-        </section>
-    </main>
+            <h3 class="ip-modal-title" style="color:#16a085;">Transaksi Berhasil Disimpan!</h3>
+            <p class="ip-modal-desc" id="modalSuksesDesc">Peminjaman atas nama <strong id="modalSuksesNama"></strong> sebanyak <strong id="modalSuksesBuku"></strong> buku telah berhasil dicatat.</p>
+            <div class="ip-modal-detail" id="modalSuksesDetail"></div>
+            <div class="ip-modal-btns">
+                <button class="ip-modal-btn btn-ip-ok" id="btnModalOk">OK, Lihat Riwayat Transaksi</button>
+                <button class="ip-modal-btn-sec" id="btnModalBaru">Input Peminjaman Baru</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== MODAL KONFIRMASI BATAL ===== --}}
+    <div class="ip-modal" id="ipModalBatal">
+        <div class="ip-modal-inner">
+            <div class="ip-modal-ic ic-red">
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <h3 class="ip-modal-title" style="color:#c0392b;">Batal &amp; Bersihkan Form?</h3>
+            <p class="ip-modal-desc">Semua data yang sudah diisi akan direset. Tindakan ini tidak bisa dibatalkan.</p>
+            <div class="ip-modal-btns">
+                <button class="ip-modal-btn btn-ip-konfirm-batal" id="btnKonfirmBatal">Ya, Bersihkan</button>
+                <button class="ip-modal-btn-sec" id="btnBatalTutup">Kembali</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ===== TOAST ===== --}}
+    <div class="toast" id="toast"></div>
+
+    {{-- ===== FOOTER ===== --}}
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-brand-top">
+                    <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="footer-logo">
+                    <span class="footer-brand-name">Al-Uswah Library</span>
+                </div>
+                <p class="footer-tagline">© 2026 SMAIT Al-Uswah Library.<br>Menumbuhkan Literasi,<br>Mengukir Prestasi.</p>
+                <div class="footer-socials">
+                    <a href="#" class="social-btn" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+                    <a href="#" class="social-btn" aria-label="Email"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Navigasi</h4>
+                <ul><li><a href="{{ route('riwayat-transaksi') }}">Riwayat Transaksi</a></li><li><a href="{{ route('kelola-buku') }}">Kelola Buku</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Kebijakan</h4>
+                <ul><li><a href="#">SOP Peminjaman</a></li><li><a href="#">Aturan Denda</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h4 class="footer-col-title">Hubungi Kami</h4>
+                <address>library@smait-aluswah.sch.id<br>Surabaya, Jawa Timur</address>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p></div>
+    </footer>
+
+    <script src="{{ asset('js/script-input-peminjaman.js') }}"></script>
 </body>
 </html>

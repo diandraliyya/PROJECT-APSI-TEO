@@ -1,0 +1,335 @@
+/* =========================================================
+   style-tambah-anggota.css
+   Perpustakaan SMAIT Al-Uswah
+   ========================================================= */
+
+.ta-hero-inner, .ta-main-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.ta-hero { background: var(--bg); padding: 36px 0 24px; }
+
+.ta-hero-inner {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 24px;
+}
+
+.ta-eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'Georgia', serif; font-style: italic;
+    font-size: 1rem; color: #b8742f; margin-bottom: 8px;
+}
+
+.ta-title {
+    font-family: 'Georgia', serif;
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-weight: 700; color: var(--primary); margin-bottom: 10px;
+}
+
+.ta-desc {
+    font-size: .92rem; line-height: 1.75;
+    color: var(--text); opacity: .72; max-width: 460px;
+}
+
+/* Hero decoration */
+.ta-hero-deco { position: relative; flex-shrink: 0; }
+
+.ta-deco-card {
+    width: 160px; height: 110px;
+    background: rgba(144,195,198,.2);
+    border-radius: var(--radius-lg);
+    border: 2px solid rgba(144,195,198,.4);
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; padding: 18px;
+}
+
+.ta-deco-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(145deg, #2D7076, #1a4a50);
+    flex-shrink: 0;
+}
+
+.ta-deco-lines { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.ta-deco-lines span { display: block; height: 8px; border-radius: 4px; background: rgba(45,112,118,.25); }
+.ta-deco-lines span:first-child { width: 80%; }
+.ta-deco-lines span:last-child  { width: 55%; }
+
+.ta-deco-star {
+    position: absolute; top: -12px; right: -12px;
+    display: flex; flex-direction: column; gap: 3px; align-items: flex-end;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+.ta-main { background: var(--bg); padding: 16px 0 24px; }
+
+.ta-grid { display: grid; grid-template-columns: 1fr; gap: 0; margin-bottom: 32px; }
+
+/* =========================================================
+   CARD TUNGGAL
+   ========================================================= */
+.ta-card {
+    background: var(--form-card);
+    border-radius: var(--radius-lg);
+    padding: 30px 36px;
+}
+
+.ta-card-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+}
+
+.ta-card-ic {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(255,255,255,.7);
+    display: flex; align-items: center; justify-content: center;
+}
+
+.ta-card-title {
+    font-family: 'Georgia', serif; font-size: 1.4rem;
+    font-weight: 700; color: #b8742f;
+}
+
+/* =========================================================
+   FOTO PROFIL
+   ========================================================= */
+.ta-foto-row {
+    display: flex; align-items: center; gap: 18px;
+    background: rgba(255,255,255,.55);
+    border: 1.5px dashed rgba(45,112,118,.25);
+    border-radius: var(--radius); padding: 16px 20px;
+    margin-bottom: 22px;
+}
+
+.ta-foto-preview {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: linear-gradient(145deg, #2D7076, #1a4a50);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(45,112,118,.2);
+    position: relative; cursor: pointer;
+}
+
+.ta-foto-placeholder {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+}
+
+.ta-foto-img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; inset: 0;
+}
+
+.ta-foto-info { flex: 1; }
+
+.ta-foto-label {
+    display: block; font-size: .9rem; font-weight: 700;
+    color: var(--text); margin-bottom: 2px;
+}
+
+.ta-foto-hint {
+    display: block; font-size: .76rem; color: var(--text); opacity: .6; margin-bottom: 10px;
+}
+
+.ta-foto-btns { display: flex; gap: 8px; }
+
+.btn-ganti-foto, .btn-hapus-foto {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Montserrat', sans-serif; font-size: .78rem; font-weight: 700;
+    padding: 7px 14px; border-radius: 999px; cursor: pointer;
+    transition: all .2s ease; border: none;
+}
+
+.btn-ganti-foto {
+    background: var(--white); color: var(--primary);
+    border: 1.5px solid rgba(45,112,118,.3);
+}
+.btn-ganti-foto:hover { background: var(--primary); color: var(--white); }
+
+.btn-hapus-foto {
+    background: rgba(192,57,43,.08); color: #c0392b;
+    border: 1.5px solid rgba(192,57,43,.25);
+}
+.btn-hapus-foto:hover { background: #c0392b; color: var(--white); }
+
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
+.ta-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+
+.ta-form-group { margin-bottom: 18px; }
+.ta-form-group:last-child { margin-bottom: 0; }
+
+.ta-form-group-half { max-width: 50%; padding-right: 10px; }
+
+.ta-form-group label {
+    display: block; font-size: .86rem; font-weight: 700;
+    color: var(--primary); margin-bottom: 8px;
+}
+
+.ta-req { color: #c0392b; }
+
+.ta-form-group input,
+.ta-form-group textarea,
+.ta-form-group select {
+    width: 100%; font-family: 'Montserrat', sans-serif;
+    font-size: .92rem; color: var(--text);
+    background: var(--white);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius); padding: 13px 16px; outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.ta-form-group input:focus,
+.ta-form-group textarea:focus,
+.ta-form-group select:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(144,195,198,.2);
+}
+
+.ta-form-group.is-error input,
+.ta-form-group.is-error select,
+.ta-form-group.is-error textarea { border-color: #c0392b; }
+
+.ta-form-group textarea { resize: vertical; line-height: 1.65; }
+
+.ta-err { display: block; font-size: .75rem; color: #c0392b; margin-top: 5px; }
+
+/* Select */
+.ta-select-wrap { position: relative; }
+.ta-select-wrap select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+.ta-select-arrow { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+/* Password */
+.ta-pass-wrap { position: relative; }
+.ta-pass-wrap input { padding-right: 46px; }
+.ta-pass-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--primary); opacity: .5;
+    cursor: pointer; padding: 4px; display: flex; transition: opacity .2s ease;
+}
+.ta-pass-toggle:hover { opacity: 1; }
+
+/* =========================================================
+   DIVIDER SECTION
+   ========================================================= */
+.ta-section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 28px 0 22px;
+}
+
+.ta-section-ic {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: rgba(255,255,255,.7);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.ta-section-label {
+    font-family: 'Georgia', serif; font-size: 1.1rem;
+    font-weight: 700; color: var(--primary); white-space: nowrap;
+}
+
+.ta-section-line {
+    flex: 1; height: 1.5px;
+    background: linear-gradient(to right, rgba(45,112,118,.2), transparent);
+    border-radius: 2px;
+}
+
+/* =========================================================
+   TOMBOL AKSI
+   ========================================================= */
+.ta-actions {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 16px; padding-bottom: 48px;
+}
+
+.btn-ta-batal {
+    font-family: 'Montserrat', sans-serif; font-size: .92rem; font-weight: 700;
+    color: var(--text); background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.25);
+    border-radius: 999px; padding: 14px 32px;
+    text-decoration: none; transition: all .2s ease;
+}
+.btn-ta-batal:hover { border-color: var(--primary); color: var(--primary); }
+
+.btn-ta-simpan {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--primary); color: var(--white);
+    font-family: 'Montserrat', sans-serif; font-size: .92rem; font-weight: 700;
+    padding: 14px 32px; border: none; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28);
+    transition: background .2s ease, transform .2s ease;
+}
+.btn-ta-simpan:hover { background: #1f555a; transform: translateY(-2px); }
+
+/* =========================================================
+   MODAL SUKSES
+   ========================================================= */
+.ta-modal {
+    position: fixed; inset: 0; background: rgba(20,57,61,.6);
+    backdrop-filter: blur(6px); display: flex; align-items: center;
+    justify-content: center; z-index: 1000;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease; padding: 24px;
+}
+.ta-modal.active { opacity: 1; pointer-events: all; }
+
+.ta-modal-inner {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 44px 40px 36px; max-width: 420px; width: 100%; text-align: center;
+    transform: scale(.92); transition: transform .3s ease;
+}
+.ta-modal.active .ta-modal-inner { transform: scale(1); }
+
+.ta-modal-ic {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(22,160,133,.1);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+}
+
+.ta-modal-title {
+    font-family: 'Georgia', serif; font-size: 1.35rem;
+    font-weight: 700; color: #16a085; margin-bottom: 10px;
+}
+
+.ta-modal-desc {
+    font-size: .9rem; line-height: 1.7;
+    color: var(--text); opacity: .75; margin-bottom: 28px;
+}
+
+.btn-ta-modal-ok {
+    width: 100%; background: #16a085; color: var(--white);
+    font-family: 'Montserrat', sans-serif; font-size: .92rem; font-weight: 700;
+    padding: 15px; border: none; border-radius: var(--radius); cursor: pointer;
+    box-shadow: 0 6px 18px rgba(22,160,133,.28); transition: background .2s ease, transform .2s ease;
+}
+.btn-ta-modal-ok:hover { background: #138d75; transform: translateY(-2px); }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    color: var(--white); font-size: .88rem; font-weight: 600;
+    padding: 14px 28px; border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease; z-index: 1100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 768px) {
+    .ta-hero-inner, .ta-main-inner { padding-left: 24px; padding-right: 24px; }
+    .ta-hero-inner { flex-wrap: wrap; }
+    .ta-form-row { grid-template-columns: 1fr; }
+    .ta-form-group-half { max-width: 100%; padding-right: 0; }
+    .ta-card { padding: 22px 20px; }
+    .ta-actions { flex-direction: column-reverse; align-items: stretch; }
+    .btn-ta-batal, .btn-ta-simpan { text-align: center; justify-content: center; }
+}
+
+.hidden { display: none !important; }

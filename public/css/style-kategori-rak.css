@@ -1,0 +1,342 @@
+/* =========================================================
+   style-kategori-rak.css
+   Perpustakaan SMAIT Al-Uswah
+   ========================================================= */
+
+.kr-hero-inner, .kr-toggle-inner, .kr-main-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 48px;
+}
+
+/* HERO */
+.kr-hero { background: var(--bg); padding: 36px 0 20px; }
+.kr-hero-inner { display: flex; align-items: flex-start; justify-content: space-between; }
+
+.kr-title {
+    font-family: 'Georgia', serif;
+    font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+    font-weight: 700; color: var(--primary); margin-bottom: 8px;
+}
+
+.kr-desc { font-size: .92rem; color: var(--text); opacity: .72; max-width: 500px; }
+
+.kr-hero-deco { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+
+/* MODE TOGGLE */
+.kr-toggle-section { background: var(--bg); padding: 12px 0 24px; }
+
+.kr-toggle {
+    display: inline-flex;
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.15);
+    border-radius: 999px;
+    padding: 5px;
+    gap: 4px;
+}
+
+.kr-toggle-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Montserrat', sans-serif; font-size: .9rem; font-weight: 600;
+    color: var(--text); opacity: .6; background: none; border: none;
+    border-radius: 999px; padding: 11px 24px; cursor: pointer;
+    transition: all .25s ease;
+}
+.kr-toggle-btn:hover { opacity: 1; }
+.kr-toggle-btn.active {
+    background: var(--primary); color: var(--white); opacity: 1;
+    box-shadow: 0 4px 12px rgba(45,112,118,.25);
+}
+
+/* MAIN GRID */
+.kr-main-section { background: var(--bg); padding: 8px 0 64px; }
+
+.kr-main-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 28px; align-items: start;
+}
+
+/* FORM CARD */
+.kr-form-card {
+    background: var(--form-card);
+    border-radius: var(--radius-lg); padding: 28px 28px; position: sticky; top: 88px;
+}
+
+.kr-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+
+.kr-card-ic {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ic-teal   { background: var(--primary); }
+.ic-orange { background: #b8742f; }
+
+.kr-card-title {
+    font-family: 'Georgia', serif; font-size: 1.35rem; font-weight: 700; color: var(--primary);
+}
+
+.kr-form-group { margin-bottom: 18px; }
+.kr-form-group:last-of-type { margin-bottom: 0; }
+
+.kr-form-group label {
+    display: block; font-size: .85rem; font-weight: 700;
+    color: var(--primary); margin-bottom: 8px;
+}
+
+.kr-req { color: #c0392b; }
+
+.kr-form-group input,
+.kr-form-group textarea {
+    width: 100%; font-family: 'Montserrat', sans-serif; font-size: .9rem;
+    color: var(--text); background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.18); border-radius: var(--radius);
+    padding: 13px 16px; outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+.kr-form-group input:focus,
+.kr-form-group textarea:focus {
+    border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(144,195,198,.2);
+    background: var(--white);
+}
+.kr-form-group.is-error input { border-color: #c0392b; }
+
+.kr-form-group textarea { resize: none; }
+
+.kr-err { display: block; font-size: .75rem; color: #c0392b; margin-top: 5px; }
+
+.kr-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+
+.btn-kr-submit {
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 20px; background: var(--primary); color: var(--white);
+    font-family: 'Montserrat', sans-serif; font-size: .92rem; font-weight: 700;
+    padding: 14px; border: none; border-radius: var(--radius); cursor: pointer;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28); transition: background .2s ease, transform .2s ease;
+}
+.btn-kr-submit:hover { background: #1f555a; transform: translateY(-2px); }
+.btn-kr-submit.btn-rak { background: #b8742f; box-shadow: 0 6px 18px rgba(184,116,47,.25); }
+.btn-kr-submit.btn-rak:hover { background: #8a5a2b; }
+
+/* LIST CARD */
+.kr-list-card {
+    background: var(--white); border: 1.5px solid rgba(45,112,118,.1);
+    border-radius: var(--radius-lg); padding: 24px 28px;
+}
+
+.kr-list-head {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+}
+
+.kr-list-title {
+    font-family: 'Georgia', serif; font-size: 1.25rem; font-weight: 700; color: var(--text);
+}
+
+.kr-list-count {
+    font-size: .76rem; font-weight: 700; color: var(--primary);
+    background: rgba(144,195,198,.3); padding: 5px 14px; border-radius: 999px;
+}
+.kr-list-count.rak-count { background: rgba(184,116,47,.15); color: #b8742f; }
+
+/* Search buku global */
+.kr-search-wrap {
+    position: relative; margin-bottom: 16px;
+}
+.kr-search-ic { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.kr-search {
+    width: 100%; font-family: 'Montserrat', sans-serif; font-size: .88rem;
+    color: var(--text); background: var(--bg); border: 1.5px solid rgba(45,112,118,.15);
+    border-radius: 999px; padding: 11px 16px 11px 40px; outline: none;
+    transition: border-color .2s ease;
+}
+.kr-search:focus { border-color: var(--primary); }
+
+/* List items */
+.kr-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+
+.kr-item {
+    border-bottom: 1px solid rgba(45,112,118,.08);
+}
+.kr-item:last-child { border-bottom: none; }
+
+.kr-item-main {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 0; cursor: default;
+}
+
+.kr-item-ic {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ic-fiksi    { background: #c0392b; }
+.ic-sejarah  { background: #2D7076; }
+.ic-sains    { background: #2980b9; }
+.ic-agama    { background: #b8742f; }
+.ic-filsafat { background: #8e6fa8; }
+.ic-motivasi { background: #16a085; }
+
+/* Kode rak badge */
+.kr-item-kode {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(145deg, #2D7076, #1a4a50);
+    color: var(--white); font-size: .72rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.kr-item-info { flex: 1; }
+
+.kr-item-nama { display: block; font-size: .95rem; font-weight: 700; color: var(--text); }
+
+.kr-rak-lokasi { font-size: .8rem; font-weight: 400; color: var(--text); opacity: .55; }
+
+.kr-item-sub { font-size: .78rem; color: var(--text); opacity: .55; margin-top: 1px; display: block; }
+
+.kr-item-actions { display: flex; gap: 6px; align-items: center; }
+
+.kr-btn-expand {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: rgba(144,195,198,.2); color: var(--primary); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s ease;
+}
+.kr-btn-expand:hover { background: var(--primary); color: var(--white); }
+.kr-btn-expand.open svg { transform: rotate(180deg); }
+.kr-btn-expand svg { transition: transform .25s ease; }
+
+.kr-btn-hapus {
+    width: 32px; height: 32px; border-radius: 8px; border: none;
+    background: rgba(192,57,43,.1); color: #c0392b; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s ease;
+}
+.kr-btn-hapus:hover { background: rgba(192,57,43,.2); }
+
+/* Books panel (expand) */
+.kr-item-books {
+    max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .2s ease;
+    border-top: none;
+}
+.kr-item-books.open {
+    max-height: 600px;
+    border-top: 1px solid rgba(45,112,118,.08);
+    padding-top: 14px; padding-bottom: 14px;
+}
+
+.kr-books-search-wrap { position: relative; margin-bottom: 12px; }
+.kr-books-search-wrap input {
+    width: 100%; font-family: 'Montserrat', sans-serif; font-size: .82rem; color: var(--text);
+    background: var(--bg); border: 1px solid rgba(45,112,118,.15); border-radius: 999px;
+    padding: 9px 14px; outline: none; transition: border-color .2s ease;
+}
+.kr-books-search-wrap input:focus { border-color: var(--primary); }
+
+.kr-book-list { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+
+.kr-book-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 8px; border-radius: var(--radius);
+    transition: background .15s ease;
+}
+.kr-book-item:hover { background: rgba(144,195,198,.08); }
+.kr-book-item.hidden { display: none; }
+
+.kr-book-cover {
+    width: 36px; height: 48px; object-fit: cover;
+    border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.12); flex-shrink: 0;
+}
+
+.kr-book-info { flex: 1; }
+.kr-book-judul { display: block; font-size: .86rem; font-weight: 700; color: var(--text); }
+.kr-book-penulis { font-size: .74rem; color: var(--text); opacity: .55; }
+
+.kr-book-stok {
+    font-size: .72rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+}
+.stok-ok    { background: rgba(22,160,133,.12); color: #16a085; }
+.stok-warn  { background: rgba(184,116,47,.12);  color: #b8742f; }
+.stok-empty { background: rgba(192,57,43,.1);    color: #c0392b; }
+
+.kr-book-link {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(144,195,198,.2); display: flex;
+    align-items: center; justify-content: center;
+    text-decoration: none; transition: background .2s ease; flex-shrink: 0;
+}
+.kr-book-link:hover { background: rgba(144,195,198,.45); }
+
+.kr-no-book {
+    font-size: .82rem; color: var(--text); opacity: .5;
+    text-align: center; padding: 16px 0;
+}
+
+/* MODAL HAPUS */
+.kr-modal {
+    position: fixed; inset: 0; background: rgba(20,57,61,.6);
+    backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity .3s ease; padding: 24px;
+}
+.kr-modal.active { opacity: 1; pointer-events: all; }
+
+.kr-modal-inner {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 40px 36px 32px; max-width: 400px; width: 100%; text-align: center;
+    transform: scale(.92); transition: transform .3s ease;
+}
+.kr-modal.active .kr-modal-inner { transform: scale(1); }
+
+.kr-modal-ic {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(192,57,43,.1);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
+}
+
+.kr-modal-title {
+    font-family: 'Georgia', serif; font-size: 1.3rem;
+    font-weight: 700; color: #c0392b; margin-bottom: 8px;
+}
+
+.kr-modal-desc {
+    font-size: .88rem; line-height: 1.7; color: var(--text);
+    opacity: .75; margin-bottom: 24px;
+}
+
+.kr-modal-btns { display: flex; flex-direction: column; gap: 10px; }
+
+.btn-kr-konfirm {
+    width: 100%; background: #c0392b; color: var(--white);
+    font-family: 'Montserrat', sans-serif; font-size: .92rem; font-weight: 700;
+    padding: 14px; border: none; border-radius: var(--radius); cursor: pointer;
+    box-shadow: 0 6px 18px rgba(192,57,43,.28); transition: background .2s ease;
+}
+.btn-kr-konfirm:hover { background: #a93226; }
+
+.btn-kr-batal {
+    background: none; border: none; font-family: 'Montserrat', sans-serif;
+    font-size: .88rem; font-weight: 600; color: var(--text); opacity: .6;
+    cursor: pointer; padding: 10px; transition: opacity .2s ease;
+}
+.btn-kr-batal:hover { opacity: 1; }
+
+/* TOAST */
+.toast {
+    position: fixed; bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    color: var(--white); font-size: .88rem; font-weight: 600;
+    padding: 14px 28px; border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease; z-index: 1100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .kr-main-inner { grid-template-columns: 1fr; }
+    .kr-form-card { position: static; }
+}
+@media (max-width: 768px) {
+    .kr-hero-inner, .kr-toggle-inner, .kr-main-inner { padding-left: 24px; padding-right: 24px; }
+    .kr-form-row { grid-template-columns: 1fr; }
+    .kr-toggle { width: 100%; }
+    .kr-toggle-btn { flex: 1; justify-content: center; }
+}

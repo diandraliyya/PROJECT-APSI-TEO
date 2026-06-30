@@ -1,0 +1,461 @@
+/* =========================================================
+   style-detail-denda.css
+   Perpustakaan SMAIT Al-Uswah
+   ========================================================= */
+
+.dd-header-inner,
+.dd-main-inner { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.dd-header { background: var(--bg); padding: 36px 0 24px; }
+
+.dd-header-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.dd-eyebrow {
+    font-family: 'Georgia', serif;
+    font-size: 1.1rem;
+    color: #b8742f;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.dd-title-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 10px;
+}
+
+.dd-title {
+    font-family: 'Georgia', serif;
+    font-size: clamp(2rem, 3.8vw, 2.8rem);
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.dd-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .82rem;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 999px;
+}
+
+.badge-belum { background: rgba(255,221,210,.8); color: #b8742f; }
+.badge-lunas { background: rgba(144,195,198,.4); color: #1f555a; }
+
+.dd-id {
+    font-size: .9rem;
+    color: var(--text);
+    opacity: .65;
+}
+
+.dd-id-hash {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 2px;
+}
+
+.btn-cetak {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    color: var(--primary);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    padding: 14px 26px;
+    border: 1.5px solid rgba(45,112,118,.35);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.btn-cetak:hover { background: var(--primary); color: var(--white); }
+
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
+.dd-main { background: var(--bg); padding: 16px 0 64px; }
+
+.dd-main-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+/* =========================================================
+   LEFT — Info Peminjam
+   ========================================================= */
+.dd-info-card {
+    background: var(--form-card);
+    border-radius: var(--radius-lg);
+    padding: 30px 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dd-info-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.dd-info-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #b8742f;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-expand {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.6);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s ease;
+}
+.btn-expand:hover { background: rgba(255,255,255,.9); }
+
+.dd-anggota-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.dd-anggota-col { display: flex; flex-direction: column; gap: 4px; }
+
+.dd-field-label {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .55;
+    letter-spacing: .06em;
+}
+
+.dd-field-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+.dd-field-value.accent { color: #b8742f; }
+
+/* Buku row */
+.dd-buku-row {
+    background: rgba(255,255,255,.7);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.dd-buku-cover {
+    width: 52px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    flex-shrink: 0;
+}
+
+.dd-buku-judul {
+    display: block;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 4px 0 3px;
+}
+
+.dd-buku-isbn {
+    font-size: .76rem;
+    color: var(--text);
+    opacity: .55;
+}
+
+/* Stats row */
+.dd-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.dd-stat {
+    background: rgba(255,255,255,.6);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dd-stat-red { background: rgba(192,57,43,.12); }
+.dd-stat-peach { background: rgba(255,221,210,.7); }
+
+.dd-stat-label {
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .55;
+}
+
+.dd-stat-value {
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.dd-stat-red .dd-stat-value { color: #c0392b; }
+.dd-stat-peach .dd-stat-value { color: #b8742f; }
+
+/* Total denda */
+.dd-total {
+    background: linear-gradient(135deg, #2D7076, #1a4a50);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dd-total-label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.75);
+    margin-bottom: 4px;
+}
+
+.dd-total-value {
+    font-family: 'Georgia', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.dd-total-ic {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   RIGHT — Validasi Bayar
+   ========================================================= */
+.dd-validasi-card {
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.12);
+    border-radius: var(--radius-lg);
+    padding: 30px 32px;
+}
+
+.dd-validasi-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+/* Form */
+.dd-form-group { margin-bottom: 18px; }
+
+.dd-form-group label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.dd-form-group input[type="date"],
+.dd-form-group textarea,
+.dd-form-group select {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .92rem;
+    color: var(--text);
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color .2s ease;
+}
+
+.dd-form-group input:focus,
+.dd-form-group textarea:focus,
+.dd-form-group select:focus { border-color: var(--primary); }
+
+.dd-form-group textarea { resize: vertical; }
+
+.dd-input-prefix-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid rgba(45,112,118,.2);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color .2s ease;
+}
+.dd-input-prefix-wrap:focus-within { border-color: var(--primary); }
+
+.dd-input-prefix {
+    background: var(--bg);
+    padding: 14px 16px;
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .7;
+    border-right: 1.5px solid rgba(45,112,118,.15);
+    flex-shrink: 0;
+}
+
+.dd-input-prefix-wrap input {
+    flex: 1;
+    border: none;
+    padding: 14px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--primary);
+    outline: none;
+}
+
+.dd-select-wrap { position: relative; }
+.dd-select-wrap select { appearance: none; -webkit-appearance: none; padding-right: 44px; cursor: pointer; }
+.dd-select-arrow { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+.dd-form-err {
+    display: block;
+    font-size: .76rem;
+    color: #c0392b;
+    margin-top: 5px;
+}
+
+.btn-tandai-lunas {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--primary);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28);
+    transition: background .2s ease, transform .2s ease;
+    margin-bottom: 12px;
+}
+.btn-tandai-lunas:hover { background: #1f555a; transform: translateY(-2px); }
+
+.btn-kembali {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background .2s ease;
+    margin-bottom: 20px;
+}
+.btn-kembali:hover { background: rgba(45,112,118,.1); }
+
+/* Catatan pustakawan */
+.dd-catatan {
+    background: rgba(144,195,198,.15);
+    border: 1px dashed rgba(45,112,118,.3);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.dd-catatan svg { flex-shrink: 0; margin-top: 2px; }
+
+.dd-catatan strong {
+    display: block;
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.dd-catatan p { font-size: .82rem; line-height: 1.65; color: var(--text); opacity: .8; }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--primary);
+    color: var(--white);
+    font-size: .88rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(45,112,118,.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease;
+    z-index: 1100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1024px) {
+    .dd-main-inner { grid-template-columns: 1fr; }
+    .dd-stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .dd-header-inner, .dd-main-inner { padding-left: 24px; padding-right: 24px; }
+    .dd-anggota-grid { grid-template-columns: 1fr; }
+    .dd-stats-row { grid-template-columns: 1fr 1fr; }
+    .btn-cetak { width: 100%; justify-content: center; }
+}

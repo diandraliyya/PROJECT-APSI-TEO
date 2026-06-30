@@ -1,0 +1,703 @@
+/* =========================================================
+   style-profil-anggota.css
+   Perpustakaan SMAIT Al-Uswah
+   ========================================================= */
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.profil-hero {
+    background: var(--bg);
+    padding: 44px 0 28px;
+    text-align: center;
+}
+
+.profil-hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+}
+
+.profil-eyebrow {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--secondary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.profil-title {
+    font-family: 'Georgia', serif;
+    font-size: clamp(1.6rem, 2.6vw, 2rem);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.profil-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.divider-line {
+    width: 80px;
+    height: 2px;
+    background: var(--secondary);
+    border-radius: 2px;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+.profil-main {
+    background: var(--bg);
+    padding: 16px 0 64px;
+}
+
+.profil-main-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* =========================================================
+   LEFT — kartu identitas
+   ========================================================= */
+.profil-card {
+    background: #EEF2F1;
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.profil-photo-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 8px;
+}
+
+.profil-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--white);
+    box-shadow: 0 6px 20px rgba(45,112,118,.18);
+    background: var(--secondary);
+}
+
+.profil-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--white);
+    background: linear-gradient(145deg, #2D7076, #1a4a50);
+}
+
+.photo-edit-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s ease;
+}
+
+.photo-edit-btn:hover { background: #1f555a; }
+
+.photo-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.photo-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(45,112,118,.3);
+    background: var(--white);
+    color: var(--primary);
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.photo-action:hover { background: var(--primary); color: var(--white); }
+
+.photo-action-danger {
+    border-color: rgba(192,57,43,.3);
+    color: #c0392b;
+}
+.photo-action-danger:hover { background: #c0392b; color: var(--white); }
+
+.profil-name {
+    font-family: 'Georgia', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.profil-meta {
+    font-size: .88rem;
+    color: var(--text);
+    opacity: .7;
+}
+
+.profil-divider-line {
+    height: 1px;
+    background: rgba(45,112,118,.15);
+    margin: 22px 0;
+}
+
+.profil-info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    text-align: left;
+}
+
+.profil-info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.info-ic {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(144,195,198,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-label {
+    display: block;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .55;
+    letter-spacing: .05em;
+    margin-bottom: 2px;
+}
+
+.info-value {
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+}
+
+/* =========================================================
+   KARTU ANGGOTA (e-card)
+   ========================================================= */
+.kartu-anggota-block {
+    background: #EEF2F1;
+    border-radius: var(--radius-lg);
+    padding: 24px 22px;
+}
+
+.kartu-anggota-heading {
+    font-family: 'Georgia', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.ecard {
+    background: linear-gradient(145deg, #2D7076, #14393d);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+    min-height: 150px;
+}
+
+.ecard:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 12px 30px rgba(45,112,118,.35);
+}
+
+.ecard-star { position: absolute; bottom: 14px; right: 18px; }
+
+.ecard-org {
+    font-size: .62rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.65);
+    letter-spacing: .12em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.ecard-type {
+    font-family: 'Georgia', serif;
+    font-size: .92rem;
+    color: rgba(255,255,255,.85);
+    letter-spacing: .08em;
+    display: block;
+}
+
+.ecard-name {
+    font-family: 'Georgia', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--white);
+    margin: 2px 0 4px;
+}
+
+.ecard-id {
+    font-size: .7rem;
+    color: rgba(255,255,255,.6);
+}
+
+.ecard-qr {
+    position: absolute;
+    top: 50%;
+    right: 22px;
+    transform: translateY(-50%);
+    width: 56px;
+    height: 56px;
+    background: var(--white);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ecard-hint {
+    text-align: center;
+    font-size: .76rem;
+    color: var(--text);
+    opacity: .6;
+    margin-top: 12px;
+}
+
+/* =========================================================
+   RIGHT — panels
+   ========================================================= */
+.profil-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.profil-panel {
+    background: #EEF2F1;
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+}
+
+.panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.panel-title {
+    font-family: 'Georgia', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel-edit-ic {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(144,195,198,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .92rem;
+    color: var(--text);
+    background: var(--white);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.form-group textarea { resize: vertical; line-height: 1.6; }
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(144,195,198,.25);
+}
+
+.input-locked {
+    background: #e8ebe9 !important;
+    color: var(--text);
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.form-hint {
+    display: block;
+    font-size: .72rem;
+    color: var(--text);
+    opacity: .5;
+    margin-top: 6px;
+}
+
+.form-err {
+    display: block;
+    font-size: .75rem;
+    color: #c0392b;
+    margin-top: 6px;
+    min-height: 0;
+}
+
+.form-group.is-error input,
+.form-group.is-error textarea {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 3px rgba(192,57,43,.12);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+}
+
+.form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.select-wrap { position: relative; }
+
+.select-wrap select {
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Password toggle */
+.pass-wrap { position: relative; }
+
+.pass-wrap input { padding-right: 46px; }
+
+.pass-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--primary);
+    opacity: .6;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    transition: opacity .2s ease;
+}
+.pass-toggle:hover { opacity: 1; }
+
+/* Actions */
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.btn-batal {
+    background: none;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: .7;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+.btn-batal:hover { opacity: 1; }
+
+.btn-simpan {
+    background: var(--primary);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    padding: 14px 30px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28);
+    transition: background .2s ease, transform .2s ease;
+}
+.btn-simpan:hover { background: #1f555a; transform: translateY(-2px); }
+
+/* =========================================================
+   KEAMANAN AKUN
+   ========================================================= */
+.security-head { cursor: default; }
+
+.btn-toggle-security {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--white);
+    border: 1.5px solid rgba(45,112,118,.3);
+    border-radius: 999px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.btn-toggle-security:hover { background: var(--primary); color: var(--white); }
+
+.security-chevron { transition: transform .25s ease; }
+
+.security-body {
+    margin-top: 8px;
+    animation: slideDown .25s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.security-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 6px;
+}
+
+.security-note {
+    font-size: .8rem;
+    line-height: 1.6;
+    color: var(--text);
+    opacity: .65;
+    max-width: 480px;
+}
+
+.btn-update-pass {
+    background: var(--primary);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(45,112,118,.28);
+    transition: background .2s ease, transform .2s ease;
+}
+.btn-update-pass:hover { background: #1f555a; transform: translateY(-2px); }
+
+/* =========================================================
+   MODAL KARTU
+   ========================================================= */
+.ecard-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,57,61,.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    padding: 24px;
+}
+
+.ecard-modal.active { opacity: 1; pointer-events: all; }
+
+.ecard-modal-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    transform: scale(.9);
+    transition: transform .3s ease;
+}
+
+.ecard-modal.active .ecard-modal-inner { transform: scale(1); }
+
+.ecard-modal-close {
+    position: absolute;
+    top: -48px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    border: none;
+    color: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s ease;
+}
+.ecard-modal-close:hover { background: rgba(255,255,255,.3); }
+
+.ecard-large {
+    width: 420px;
+    max-width: 90vw;
+    min-height: 240px;
+    padding: 32px 36px;
+    cursor: default;
+}
+
+.ecard-large:hover { transform: none; }
+
+.ecard-large .ecard-org { font-size: .72rem; margin-bottom: 16px; }
+.ecard-large .ecard-type { font-size: 1.1rem; }
+.ecard-large .ecard-name { font-size: 1.6rem; margin: 6px 0 8px; }
+.ecard-large .ecard-id { font-size: .85rem; }
+.ecard-large .ecard-qr { width: 76px; height: 76px; }
+
+.btn-download-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    color: var(--primary);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    padding: 13px 28px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.btn-download-card:hover { transform: translateY(-2px); }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--primary);
+    color: var(--white);
+    font-size: .88rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(45,112,118,.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease;
+    z-index: 1100;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+.hidden { display: none !important; }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1024px) {
+    .profil-main-inner { grid-template-columns: 1fr; }
+    .form-row-3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .profil-hero-inner,
+    .profil-main-inner { padding-left: 24px; padding-right: 24px; }
+    .profil-panel { padding: 24px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .security-footer { flex-direction: column; align-items: stretch; }
+    .btn-update-pass { width: 100%; }
+}
