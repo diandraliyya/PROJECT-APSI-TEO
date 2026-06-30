@@ -10,11 +10,21 @@ class KategoriRakController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori::withCount('bukus')
+        $kategoris = Kategori::with([
+                'bukus' => function ($query) {
+                    $query->orderBy('judul_buku');
+                }
+            ])
+            ->withCount('bukus')
             ->orderBy('nama_kategori')
             ->get();
 
-        $raks = Rak::withCount('bukus')
+        $raks = Rak::with([
+                'bukus' => function ($query) {
+                    $query->orderBy('judul_buku');
+                }
+            ])
+            ->withCount('bukus')
             ->orderBy('kode_rak')
             ->get();
 
@@ -30,8 +40,7 @@ class KategoriRakController extends Controller
 
         Kategori::create($validated);
 
-        return redirect()
-            ->route('kategori-rak')
+        return redirect('/kategori-rak')
             ->with('success', 'Kategori berhasil ditambahkan.');
     }
 
@@ -39,44 +48,39 @@ class KategoriRakController extends Controller
     {
         $validated = $request->validate([
             'kode_rak' => ['required', 'string', 'max:20', 'unique:raks,kode_rak'],
-            'lokasi' => ['nullable', 'string', 'max:100'],
+            'lokasi' => ['required', 'string', 'max:100'],
             'deskripsi' => ['nullable', 'string'],
         ]);
 
         Rak::create($validated);
 
-        return redirect()
-            ->route('kategori-rak')
+        return redirect('/kategori-rak')
             ->with('success', 'Rak berhasil ditambahkan.');
     }
 
     public function destroyKategori(Kategori $kategori)
     {
         if ($kategori->bukus()->exists()) {
-            return redirect()
-                ->route('kategori-rak')
+            return redirect('/kategori-rak')
                 ->with('error', 'Kategori tidak bisa dihapus karena masih digunakan oleh buku.');
         }
 
         $kategori->delete();
 
-        return redirect()
-            ->route('kategori-rak')
+        return redirect('/kategori-rak')
             ->with('success', 'Kategori berhasil dihapus.');
     }
 
     public function destroyRak(Rak $rak)
     {
         if ($rak->bukus()->exists()) {
-            return redirect()
-                ->route('kategori-rak')
+            return redirect('/kategori-rak')
                 ->with('error', 'Rak tidak bisa dihapus karena masih digunakan oleh buku.');
         }
 
         $rak->delete();
 
-        return redirect()
-            ->route('kategori-rak')
+        return redirect('/kategori-rak')
             ->with('success', 'Rak berhasil dihapus.');
     }
 }

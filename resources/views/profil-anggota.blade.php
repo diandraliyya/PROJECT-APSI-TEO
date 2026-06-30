@@ -1,3 +1,35 @@
+@php
+    $namaAnggota = optional($anggota)->nama_anggota ?? session('auth_name') ?? 'Anggota';
+    $inisialAnggota = strtoupper(substr($namaAnggota ?: 'A', 0, 1));
+
+    $fotoUrl = function ($foto) {
+        if (!$foto) {
+            return null;
+        }
+
+        if (str_starts_with($foto, 'http://') || str_starts_with($foto, 'https://')) {
+            return $foto;
+        }
+
+        if (str_starts_with($foto, 'assets/')) {
+            return asset($foto);
+        }
+
+        return asset('storage/' . $foto);
+    };
+
+    $fotoAnggota = optional($anggota)->foto;
+    $fotoAnggotaUrl = $fotoUrl($fotoAnggota);
+
+    $formatTanggal = function ($tanggal) {
+        if (!$tanggal) {
+            return '-';
+        }
+
+        return \Illuminate\Support\Carbon::parse($tanggal)->translatedFormat('d M Y');
+    };
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,28 +46,28 @@
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-anggota') }}" class="nav-brand">
+            <a href="{{ url('/home-anggota') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('dashboard-anggota') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-anggota') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-anggota') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url('/katalog-anggota') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
+                <a href="{{ url('/status-denda') }}" class="nav-link">Denda</a>
             </nav>
 
-            <a href="{{ route('profil-anggota') }}" class="nav-profile active-profile">
+            <a href="{{ url('/profil-anggota') }}" class="nav-profile active-profile">
                 <div class="nav-avatar">
-                    @if(auth()->user()?->foto)
-                        <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil" class="avatar-img">
+                    @if($fotoAnggotaUrl)
+                        <img src="{{ $fotoAnggotaUrl }}" alt="Foto Profil" class="avatar-img">
                     @else
-                        <div class="avatar-placeholder">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
+                        <div class="avatar-placeholder">{{ $inisialAnggota }}</div>
                     @endif
                 </div>
-                <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Anggota' }}</span>
+                <span class="nav-username">{{ $namaAnggota }}</span>
             </a>
         </div>
     </header>
@@ -62,32 +94,30 @@
                 <div class="profil-card">
                     <div class="profil-photo-wrap">
                         <div class="profil-photo" id="photoPreview">
-                            @if(auth()->user()?->foto)
-                                <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil" id="photoImg">
+                            @if($fotoAnggotaUrl)
+                                <img src="{{ $fotoAnggotaUrl }}" alt="Foto Profil" id="photoImg">
                             @else
-                                <div class="photo-placeholder" id="photoInitial">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
+                                <div class="photo-placeholder" id="photoInitial">{{ $inisialAnggota }}</div>
                             @endif
                         </div>
                         <button type="button" class="photo-edit-btn" id="photoEditBtn" title="Ganti foto">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         </button>
-                        <input type="file" id="photoInput" accept="image/*" hidden>
+
+                        <input type="file" id="photoInput" name="foto" accept="image/*" hidden form="profilForm">
                     </div>
 
-                    {{-- Menu kecil ganti/hapus foto --}}
                     <div class="photo-actions" id="photoActions">
                         <button type="button" class="photo-action" id="btnChangePhoto">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                             Ganti Foto
                         </button>
-                        <button type="button" class="photo-action photo-action-danger hidden" id="btnDeletePhoto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            Hapus Foto
-                        </button>
                     </div>
 
-                    <h2 class="profil-name">{{ auth()->user()?->nama_lengkap ?? 'Adelia Putri Ramadhani' }}</h2>
-                    <p class="profil-meta">{{ auth()->user()?->kelas ?? 'XII MIPA 1' }} &bull; {{ auth()->user()?->nis ?? '2026.08.0125' }}</p>
+                    <h2 class="profil-name">{{ $namaAnggota }}</h2>
+                    <p class="profil-meta">
+                        {{ optional($anggota)->kelas ?? '-' }} &bull; {{ optional($anggota)->nis ?? '-' }}
+                    </p>
 
                     <div class="profil-divider-line"></div>
 
@@ -98,7 +128,7 @@
                             </span>
                             <div>
                                 <span class="info-label">EMAIL</span>
-                                <span class="info-value">{{ auth()->user()?->email ?? 'adelia.putri@gmail.com' }}</span>
+                                <span class="info-value">{{ optional($anggota)->email ?? '-' }}</span>
                             </div>
                         </li>
                         <li>
@@ -107,7 +137,7 @@
                             </span>
                             <div>
                                 <span class="info-label">NO. TELEPON</span>
-                                <span class="info-value">{{ auth()->user()?->nomor_hp ?? '0812-3456-7890' }}</span>
+                                <span class="info-value">{{ optional($anggota)->no_hp ?? '-' }}</span>
                             </div>
                         </li>
                         <li>
@@ -116,7 +146,16 @@
                             </span>
                             <div>
                                 <span class="info-label">ALAMAT</span>
-                                <span class="info-value">{{ auth()->user()?->alamat ?? 'Jl. Ketintang Madya No. 81, Surabaya' }}</span>
+                                <span class="info-value">{{ optional($anggota)->alamat ?? '-' }}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="info-ic">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <div>
+                                <span class="info-label">STATUS</span>
+                                <span class="info-value">{{ ucfirst(optional($anggota)->status_anggota ?? '-') }}</span>
                             </div>
                         </li>
                     </ul>
@@ -135,18 +174,35 @@
                         </div>
                         <span class="ecard-org">SMAIT AL-USWAH SURABAYA</span>
                         <span class="ecard-type">E-LIBRARY CARD</span>
-                        <h4 class="ecard-name">{{ strtoupper(auth()->user()?->nama_lengkap ?? 'Adelia Putri R.') }}</h4>
-                        <span class="ecard-id">Member ID: {{ auth()->user()?->nis ?? '2026.08.0125' }}</span>
+                        <h4 class="ecard-name">{{ strtoupper($namaAnggota) }}</h4>
+                        <span class="ecard-id">Member ID: {{ optional($anggota)->no_anggota ?? optional($anggota)->nis ?? '-' }}</span>
                         <div class="ecard-qr">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
                         </div>
                     </div>
-                    <p class="ecard-hint">Klik kartu untuk memperbesar &amp; unduh</p>
+                    <p class="ecard-hint">Klik kartu untuk memperbesar</p>
                 </div>
             </aside>
 
             {{-- ===== RIGHT: form ===== --}}
             <div class="profil-content">
+
+                @if (session('success'))
+                    <div style="background:#f0fff4; border:1px solid #a7e3b5; color:#24733b; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div style="background:#fff3f3; border:1px solid #f3b5b5; color:#9f2f2f; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                        <strong>Perubahan belum bisa disimpan.</strong>
+                        <ul style="margin:8px 0 0 18px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 {{-- Informasi Personal --}}
                 <div class="profil-panel">
@@ -157,54 +213,69 @@
                         </span>
                     </div>
 
-                    <form id="profilForm" novalidate>
+                    <form id="profilForm" action="{{ url('/profil-anggota') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PATCH')
+
                         <div class="form-group">
-                            <label for="nama_lengkap">Nama Lengkap</label>
-                            <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ auth()->user()?->nama_lengkap ?? 'Adelia Putri Ramadhani' }}">
-                            <span class="form-err" id="err-nama"></span>
+                            <label for="nama_anggota">Nama Lengkap</label>
+                            <input type="text" id="nama_anggota" value="{{ $namaAnggota }}" disabled class="input-locked">
+                            <span class="form-hint">Nama lengkap hanya dapat diubah oleh admin</span>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="nis">NIS (Nomor Induk Siswa)</label>
-                                <input type="text" id="nis" name="nis" value="{{ auth()->user()?->nis ?? '2026.08.0125' }}" disabled class="input-locked">
+                                <input type="text" id="nis" value="{{ optional($anggota)->nis ?? '-' }}" disabled class="input-locked">
                                 <span class="form-hint">NIS tidak dapat diubah secara mandiri</span>
                             </div>
                             <div class="form-group">
                                 <label for="kelas">Kelas</label>
-                                <div class="select-wrap">
-                                    <select id="kelas" name="kelas">
-                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'X MIPA 1') selected @endif>X MIPA 1</option>
-                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'XI MIPA 1') selected @endif>XI MIPA 1</option>
-                                        <option @if((auth()->user()?->kelas ?? 'XII MIPA 1') === 'XII MIPA 1') selected @endif>XII MIPA 1</option>
-                                        <option @if((auth()->user()?->kelas ?? '') === 'XII IPS 1') selected @endif>XII IPS 1</option>
-                                    </select>
-                                    <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                </div>
+                                <input type="text" id="kelas" value="{{ optional($anggota)->kelas ?? '-' }}" disabled class="input-locked">
+                                <span class="form-hint">Kelas hanya dapat diubah oleh admin</span>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="email">Email Sekolah</label>
-                                <input type="email" id="email" name="email" value="{{ auth()->user()?->email ?? 'adelia.putri@gmail.com' }}">
+                                <label for="no_anggota">Nomor Anggota</label>
+                                <input type="text" id="no_anggota" value="{{ optional($anggota)->no_anggota ?? '-' }}" disabled class="input-locked">
+                            </div>
+                            <div class="form-group">
+                                <label for="tanggal_daftar">Tanggal Daftar</label>
+                                <input type="text" id="tanggal_daftar" value="{{ $formatTanggal(optional($anggota)->tanggal_daftar) }}" disabled class="input-locked">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="{{ old('username', optional($anggota)->username) }}" required>
+                            <span class="form-err" id="err-username"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="{{ old('email', optional($anggota)->email) }}" required>
                                 <span class="form-err" id="err-email"></span>
                             </div>
                             <div class="form-group">
-                                <label for="nomor_hp">Nomor Telepon/WA</label>
-                                <input type="text" id="nomor_hp" name="nomor_hp" value="{{ auth()->user()?->nomor_hp ?? '081234567890' }}">
+                                <label for="no_hp">Nomor Telepon/WA</label>
+                                <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', optional($anggota)->no_hp) }}">
                                 <span class="form-err" id="err-hp"></span>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="alamat">Alamat Lengkap</label>
-                            <textarea id="alamat" name="alamat" rows="3">{{ auth()->user()?->alamat ?? 'Jl. Ketintang Madya No. 81, Gayungan, Surabaya, Jawa Timur 60232' }}</textarea>
+                            <textarea id="alamat" name="alamat" rows="3">{{ old('alamat', optional($anggota)->alamat) }}</textarea>
                             <span class="form-err" id="err-alamat"></span>
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" class="btn-batal" id="btnBatal">Batalkan</button>
+                            <a href="{{ url('/profil-anggota') }}" class="btn-batal" id="btnBatal" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                                Batalkan
+                            </a>
                             <button type="submit" class="btn-simpan">Simpan Perubahan</button>
                         </div>
                     </form>
@@ -224,33 +295,36 @@
                     </div>
 
                     <div class="security-body hidden" id="securityBody">
-                        <form id="passwordForm" novalidate>
+                        <form id="passwordForm" action="{{ url('/profil-anggota/password') }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+
                             <div class="form-row form-row-3">
                                 <div class="form-group">
-                                    <label for="pass_lama">Kata Sandi Lama</label>
+                                    <label for="password_lama">Kata Sandi Lama</label>
                                     <div class="pass-wrap">
-                                        <input type="password" id="pass_lama" name="pass_lama" placeholder="••••••••">
-                                        <button type="button" class="pass-toggle" data-target="pass_lama" aria-label="Lihat sandi">
+                                        <input type="password" id="password_lama" name="password_lama" placeholder="••••••••" required>
+                                        <button type="button" class="pass-toggle" data-target="password_lama" aria-label="Lihat sandi">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                         </button>
                                     </div>
                                     <span class="form-err" id="err-pass-lama"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label for="pass_baru">Kata Sandi Baru</label>
+                                    <label for="password">Kata Sandi Baru</label>
                                     <div class="pass-wrap">
-                                        <input type="password" id="pass_baru" name="pass_baru" placeholder="••••••••">
-                                        <button type="button" class="pass-toggle" data-target="pass_baru" aria-label="Lihat sandi">
+                                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                                        <button type="button" class="pass-toggle" data-target="password" aria-label="Lihat sandi">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                         </button>
                                     </div>
                                     <span class="form-err" id="err-pass-baru"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label for="pass_konfirmasi">Konfirmasi Sandi Baru</label>
+                                    <label for="password_confirmation">Konfirmasi Sandi Baru</label>
                                     <div class="pass-wrap">
-                                        <input type="password" id="pass_konfirmasi" name="pass_konfirmasi" placeholder="••••••••">
-                                        <button type="button" class="pass-toggle" data-target="pass_konfirmasi" aria-label="Lihat sandi">
+                                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="••••••••" required>
+                                        <button type="button" class="pass-toggle" data-target="password_confirmation" aria-label="Lihat sandi">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                         </button>
                                     </div>
@@ -259,7 +333,7 @@
                             </div>
 
                             <div class="security-footer">
-                                <p class="security-note">Gunakan minimal 8 karakter dengan kombinasi huruf besar, kecil, dan angka untuk keamanan ekstra.</p>
+                                <p class="security-note">Gunakan minimal 8 karakter agar password lebih aman.</p>
                                 <button type="submit" class="btn-update-pass">Update Password</button>
                             </div>
                         </form>
@@ -283,17 +357,12 @@
                 </div>
                 <span class="ecard-org">SMAIT AL-USWAH SURABAYA</span>
                 <span class="ecard-type">E-LIBRARY CARD</span>
-                <h4 class="ecard-name">{{ strtoupper(auth()->user()?->nama_lengkap ?? 'Adelia Putri R.') }}</h4>
-                <span class="ecard-id">Member ID: {{ auth()->user()?->nis ?? '2026.08.0125' }}</span>
+                <h4 class="ecard-name">{{ strtoupper($namaAnggota) }}</h4>
+                <span class="ecard-id">Member ID: {{ optional($anggota)->no_anggota ?? optional($anggota)->nis ?? '-' }}</span>
                 <div class="ecard-qr">
                     <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
                 </div>
             </div>
-
-            <button class="btn-download-card" id="btnDownloadCard">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Unduh Kartu
-            </button>
         </div>
     </div>
 
@@ -321,15 +390,15 @@
             <div class="footer-col">
                 <h4 class="footer-col-title">Layanan</h4>
                 <ul>
-                    <li><a href="#">Visi &amp; Misi</a></li>
-                    <li><a href="#">Kebijakan Layanan</a></li>
+                    <li><a href="{{ url('/tentang-perpustakaan-anggota') }}">Visi &amp; Misi</a></li>
+                    <li><a href="{{ url('/katalog-anggota') }}">Katalog Buku</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4 class="footer-col-title">Dukungan</h4>
                 <ul>
                     <li><a href="#">Pusat Bantuan</a></li>
-                    <li><a href="#">Donasi Buku</a></li>
+                    <li><a href="{{ url('/status-denda') }}">Status Denda</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -345,6 +414,87 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-profil-anggota.js') }}"></script>
+    {{-- Script lama dummy dimatikan dulu --}}
+    {{-- <script src="{{ asset('js/script-profil-anggota.js') }}"></script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const photoEditBtn = document.getElementById('photoEditBtn');
+            const btnChangePhoto = document.getElementById('btnChangePhoto');
+            const photoInput = document.getElementById('photoInput');
+            const photoPreview = document.getElementById('photoPreview');
+
+            function pilihFoto() {
+                photoInput?.click();
+            }
+
+            photoEditBtn?.addEventListener('click', pilihFoto);
+            btnChangePhoto?.addEventListener('click', pilihFoto);
+
+            photoInput?.addEventListener('change', function () {
+                const file = this.files?.[0];
+
+                if (!file) return;
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    photoPreview.innerHTML = `<img src="${event.target.result}" alt="Preview Foto" id="photoImg">`;
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            document.querySelectorAll('.pass-toggle').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const input = document.getElementById(button.dataset.target);
+
+                    if (!input) return;
+
+                    input.type = input.type === 'password' ? 'text' : 'password';
+                });
+            });
+
+            const securityToggle = document.getElementById('securityToggle');
+            const btnToggleSecurity = document.getElementById('btnToggleSecurity');
+            const securityBody = document.getElementById('securityBody');
+            const securityToggleText = document.getElementById('securityToggleText');
+
+            function toggleSecurity() {
+                securityBody?.classList.toggle('hidden');
+
+                if (securityToggleText && securityBody) {
+                    securityToggleText.textContent = securityBody.classList.contains('hidden')
+                        ? 'Ubah Password'
+                        : 'Tutup';
+                }
+            }
+
+            securityToggle?.addEventListener('click', function (event) {
+                if (event.target.closest('button')) return;
+                toggleSecurity();
+            });
+
+            btnToggleSecurity?.addEventListener('click', toggleSecurity);
+
+            const ecardTrigger = document.getElementById('ecardTrigger');
+            const ecardModal = document.getElementById('ecardModal');
+            const ecardModalClose = document.getElementById('ecardModalClose');
+
+            ecardTrigger?.addEventListener('click', function () {
+                ecardModal?.classList.add('show');
+            });
+
+            ecardModalClose?.addEventListener('click', function () {
+                ecardModal?.classList.remove('show');
+            });
+
+            ecardModal?.addEventListener('click', function (event) {
+                if (event.target === ecardModal) {
+                    ecardModal.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

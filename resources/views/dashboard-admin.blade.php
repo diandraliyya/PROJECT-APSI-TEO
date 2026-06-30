@@ -1,3 +1,33 @@
+@php
+    $adminName = session('auth_name') ?? 'Admin';
+
+    $totalBuku = $totalBuku ?? 0;
+    $totalStokTersedia = $totalStokTersedia ?? 0;
+    $totalAnggotaAktif = $totalAnggotaAktif ?? 0;
+    $totalPendaftaranMenunggu = $totalPendaftaranMenunggu ?? 0;
+    $totalPinjamHariIni = $totalPinjamHariIni ?? 0;
+    $totalDipinjam = $totalDipinjam ?? 0;
+    $totalTerlambat = $totalTerlambat ?? 0;
+    $totalBukuSedangDipinjam = $totalBukuSedangDipinjam ?? 0;
+    $totalDendaBelumLunas = $totalDendaBelumLunas ?? 0;
+
+    $trenPeminjaman = collect($trenPeminjaman ?? []);
+    $kategoriDistribusi = collect($kategoriDistribusi ?? []);
+    $bukuTerpopuler = collect($bukuTerpopuler ?? []);
+    $semuaBukuTerpopuler = collect($semuaBukuTerpopuler ?? $bukuTerpopuler);
+    $anggotaTeraktif = collect($anggotaTeraktif ?? []);
+    $dendaAktif = collect($dendaAktif ?? []);
+
+    $maxTrenPeminjaman = $maxTrenPeminjaman ?? 1;
+    $maxTotalPinjamBuku = $maxTotalPinjamBuku ?? 1;
+
+    $kategoriPertama = $kategoriDistribusi->get(0);
+    $kategoriKedua = $kategoriDistribusi->get(1);
+
+    $persenKategoriPertama = $kategoriPertama->persentase ?? 0;
+    $persenKategoriKedua = $kategoriKedua->persentase ?? 0;
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -15,29 +45,29 @@
     {{-- ===== NAVBAR ADMIN ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-admin') }}" class="nav-brand">
+            <a href="{{ url('/home-admin') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('dashboard-admin') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('kelola-buku') }}" class="nav-link">Buku</a>
-                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link active">Dashboard</a>
+                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/kelola-buku') }}" class="nav-link">Buku</a>
+                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
+                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
             </nav>
 
-            <a href="{{ route('setting') }}" class="nav-profile">
+            <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
                     <div class="avatar-placeholder admin-avatar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                 </div>
                 <div class="nav-profile-info">
-                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-username">{{ $adminName }}</span>
                     <span class="nav-role">Administrator</span>
                 </div>
             </a>
@@ -55,11 +85,11 @@
                         Selamat datang kembali di panel literasi digital. Kelola koleksi buku, pantau aktivitas peminjaman, dan pastikan setiap ilmu tersampaikan dengan baik.
                     </p>
                     <div class="admin-hero-actions">
-                        <a href="{{ route('tambah-buku') }}" class="btn-hero-primary">
+                        <a href="{{ url('/tambah-buku') }}" class="btn-hero-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                             Tambah Buku Baru
                         </a>
-                        <a href="{{ route('laporan') }}" class="btn-hero-secondary">Lihat Laporan</a>
+                        <a href="{{ url('/laporan') }}" class="btn-hero-secondary">Lihat Laporan</a>
                     </div>
                 </div>
                 <div class="admin-hero-img">
@@ -78,10 +108,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
                 <span class="admin-stat-label">TOTAL PINJAM HARI INI</span>
-                <span class="admin-stat-value">42</span>
+                <span class="admin-stat-value">{{ $totalPinjamHariIni }}</span>
                 <span class="admin-stat-trend trend-up">
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                    +12% dari kemarin
+                    Data hari ini
                 </span>
             </div>
 
@@ -90,7 +120,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
                 <span class="admin-stat-label">BUKU SEDANG DIPINJAM</span>
-                <span class="admin-stat-value">156</span>
+                <span class="admin-stat-value">{{ $totalBukuSedangDipinjam }}</span>
                 <span class="admin-stat-trend">Update otomatis sistem</span>
             </div>
 
@@ -99,7 +129,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
                 </div>
                 <span class="admin-stat-label">KETERLAMBATAN AKTIF</span>
-                <span class="admin-stat-value">18</span>
+                <span class="admin-stat-value">{{ $totalTerlambat }}</span>
                 <span class="admin-stat-trend trend-alert">! Perlu segera ditindak</span>
             </div>
 
@@ -108,8 +138,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                 </div>
                 <span class="admin-stat-label">DENDA TERKUMPUL</span>
-                <span class="admin-stat-value">Rp 450k</span>
-                <span class="admin-stat-trend">Bulan ini (Desember)</span>
+                <span class="admin-stat-value">Rp {{ number_format($totalDendaBelumLunas, 0, ',', '.') }}</span>
+                <span class="admin-stat-trend">Denda belum lunas saat ini</span>
             </div>
 
         </div>
@@ -128,24 +158,32 @@
                     </div>
                     <div class="year-dropdown">
                         <button type="button" class="panel-badge" id="yearBtn">
-                            <span id="yearLabel">Tahun 2026</span>
+                            <span id="yearLabel">Tahun {{ now()->year }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
                         <div class="year-menu" id="yearMenu">
-                            <button type="button" class="year-opt active" data-year="2026">Tahun 2026</button>
-                            <button type="button" class="year-opt" data-year="2025">Tahun 2025</button>
-                            <button type="button" class="year-opt" data-year="2024">Tahun 2024</button>
+                            <button type="button" class="year-opt active" data-year="{{ now()->year }}">Tahun {{ now()->year }}</button>
+                            <button type="button" class="year-opt" data-year="{{ now()->subYear()->year }}">Tahun {{ now()->subYear()->year }}</button>
+                            <button type="button" class="year-opt" data-year="{{ now()->subYears(2)->year }}">Tahun {{ now()->subYears(2)->year }}</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="trend-chart">
-                    <div class="trend-bar-col"><div class="trend-bar" style="--h: 38%;"></div><span>Juli</span></div>
-                    <div class="trend-bar-col"><div class="trend-bar" style="--h: 58%;"></div><span>Agst</span></div>
-                    <div class="trend-bar-col"><div class="trend-bar" style="--h: 48%;"></div><span>Sept</span></div>
-                    <div class="trend-bar-col"><div class="trend-bar" style="--h: 78%;"></div><span>Okt</span></div>
-                    <div class="trend-bar-col"><div class="trend-bar" style="--h: 62%;"></div><span>Nov</span></div>
-                    <div class="trend-bar-col"><div class="trend-bar trend-bar-active" style="--h: 100%;"></div><span class="active-month">Des</span></div>
+                    @forelse ($trenPeminjaman as $tren)
+                        @php
+                            $tinggiBar = $maxTrenPeminjaman > 0
+                                ? max(8, round(($tren['total'] / $maxTrenPeminjaman) * 100))
+                                : 8;
+                        @endphp
+
+                        <div class="trend-bar-col">
+                            <div class="trend-bar {{ $loop->last ? 'trend-bar-active' : '' }}" style="--h: {{ $tinggiBar }}%;"></div>
+                            <span class="{{ $loop->last ? 'active-month' : '' }}">{{ $tren['bulan'] }}</span>
+                        </div>
+                    @empty
+                        <div class="trend-bar-col"><div class="trend-bar" style="--h: 8%;"></div><span>-</span></div>
+                    @endforelse
                 </div>
             </div>
 
@@ -153,29 +191,31 @@
             <div class="admin-panel">
                 <h2 class="panel-title">Distribusi Kategori</h2>
                 <div class="donut-wrap">
-                    <div class="donut" style="--fiksi: 65; --sains: 25;">
+                    <div class="donut" style="--fiksi: {{ $persenKategoriPertama }}; --sains: {{ $persenKategoriKedua }};">
                         <div class="donut-center">
-                            <span class="donut-total">1.240</span>
+                            <span class="donut-total">{{ number_format($totalBuku, 0, ',', '.') }}</span>
                             <span class="donut-label">Total Koleksi</span>
                         </div>
                     </div>
                 </div>
                 <ul class="donut-legend">
-                    <li>
-                        <span class="legend-dot dot-fiksi"></span>
-                        <span class="legend-name">Fiksi</span>
-                        <span class="legend-pct">65%</span>
-                    </li>
-                    <li>
-                        <span class="legend-dot dot-sains"></span>
-                        <span class="legend-name">Sains &amp; Tech</span>
-                        <span class="legend-pct">25%</span>
-                    </li>
-                    <li>
-                        <span class="legend-dot dot-lain"></span>
-                        <span class="legend-name">Lainnya</span>
-                        <span class="legend-pct">10%</span>
-                    </li>
+                    @forelse ($kategoriDistribusi as $kategori)
+                        @php
+                            $dotClass = ['dot-fiksi', 'dot-sains', 'dot-lain'][$loop->index] ?? 'dot-lain';
+                        @endphp
+
+                        <li>
+                            <span class="legend-dot {{ $dotClass }}"></span>
+                            <span class="legend-name">{{ $kategori->nama_kategori ?? '-' }}</span>
+                            <span class="legend-pct">{{ $kategori->persentase ?? 0 }}%</span>
+                        </li>
+                    @empty
+                        <li>
+                            <span class="legend-dot dot-lain"></span>
+                            <span class="legend-name">Belum ada kategori</span>
+                            <span class="legend-pct">0%</span>
+                        </li>
+                    @endforelse
                 </ul>
             </div>
 
@@ -194,34 +234,34 @@
                 </div>
 
                 <div class="popular-list">
-                    <div class="popular-item">
-                        <div class="popular-info">
-                            <span class="popular-judul">Laskar Pelangi - Andrea Hirata</span>
-                            <span class="popular-count">88 Pinjam</span>
+                    @forelse ($bukuTerpopuler as $item)
+                        @php
+                            $judulBuku = optional($item->buku)->judul_buku ?? 'Judul buku tidak tersedia';
+                            $penulisBuku = optional($item->buku)->penulis;
+                            $totalDipinjamBuku = $item->total_dipinjam ?? 0;
+                            $lebarBar = $maxTotalPinjamBuku > 0
+                                ? min(100, round(($totalDipinjamBuku / $maxTotalPinjamBuku) * 100))
+                                : 0;
+                        @endphp
+
+                        <div class="popular-item">
+                            <div class="popular-info">
+                                <span class="popular-judul">
+                                    {{ $judulBuku }}{{ $penulisBuku ? ' - ' . $penulisBuku : '' }}
+                                </span>
+                                <span class="popular-count">{{ $totalDipinjamBuku }} Pinjam</span>
+                            </div>
+                            <div class="popular-bar"><div class="popular-bar-fill" style="width: {{ $lebarBar }}%;"></div></div>
                         </div>
-                        <div class="popular-bar"><div class="popular-bar-fill" style="width: 100%;"></div></div>
-                    </div>
-                    <div class="popular-item">
-                        <div class="popular-info">
-                            <span class="popular-judul">Dunia Sophie - Jostein Gaarder</span>
-                            <span class="popular-count">72 Pinjam</span>
+                    @empty
+                        <div class="popular-item">
+                            <div class="popular-info">
+                                <span class="popular-judul">Belum ada data buku populer</span>
+                                <span class="popular-count">0 Pinjam</span>
+                            </div>
+                            <div class="popular-bar"><div class="popular-bar-fill" style="width: 0%;"></div></div>
                         </div>
-                        <div class="popular-bar"><div class="popular-bar-fill" style="width: 82%;"></div></div>
-                    </div>
-                    <div class="popular-item">
-                        <div class="popular-info">
-                            <span class="popular-judul">Sejarah Peradaban Islam - Badri Yatim</span>
-                            <span class="popular-count">54 Pinjam</span>
-                        </div>
-                        <div class="popular-bar"><div class="popular-bar-fill" style="width: 61%;"></div></div>
-                    </div>
-                    <div class="popular-item">
-                        <div class="popular-info">
-                            <span class="popular-judul">The Things You Can See... - Haemin Sunim</span>
-                            <span class="popular-count">48 Pinjam</span>
-                        </div>
-                        <div class="popular-bar"><div class="popular-bar-fill" style="width: 54%;"></div></div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -229,37 +269,39 @@
             <div class="admin-panel">
                 <h2 class="panel-title">Anggota Teraktif</h2>
                 <div class="active-members">
-                    <div class="member-item">
-                        <div class="member-avatar">FM</div>
-                        <div class="member-info">
-                            <span class="member-name">Fathir Muhammad</span>
-                            <span class="member-class">Kelas XII IPA 1</span>
+                    @forelse ($anggotaTeraktif as $anggota)
+                        @php
+                            $namaAnggota = $anggota->nama_anggota ?? $anggota->username ?? 'Anggota';
+                            $kataNama = explode(' ', trim($namaAnggota));
+                            $inisial = strtoupper(substr($kataNama[0] ?? 'A', 0, 1) . substr($kataNama[1] ?? '', 0, 1));
+                            $totalPinjamAnggota = $anggota->total_pinjam ?? 0;
+                        @endphp
+
+                        <div class="member-item">
+                            <div class="member-avatar">{{ $inisial }}</div>
+                            <div class="member-info">
+                                <span class="member-name">{{ $namaAnggota }}</span>
+                                <span class="member-class">Anggota Perpustakaan</span>
+                            </div>
+                            <div class="member-pts">
+                                <span class="pts-value">{{ $totalPinjamAnggota }} Pts</span>
+                                @if ($loop->first)
+                                    <span class="pts-badge">Top Reader</span>
+                                @endif
+                            </div>
                         </div>
-                        <div class="member-pts">
-                            <span class="pts-value">124 Pts</span>
-                            <span class="pts-badge">Top Reader</span>
+                    @empty
+                        <div class="member-item">
+                            <div class="member-avatar">A</div>
+                            <div class="member-info">
+                                <span class="member-name">Belum ada data anggota aktif</span>
+                                <span class="member-class">Data akan muncul setelah ada transaksi</span>
+                            </div>
+                            <div class="member-pts">
+                                <span class="pts-value">0 Pts</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="member-item">
-                        <div class="member-avatar">SA</div>
-                        <div class="member-info">
-                            <span class="member-name">Siti Aminah</span>
-                            <span class="member-class">Kelas XI IPS 2</span>
-                        </div>
-                        <div class="member-pts">
-                            <span class="pts-value">98 Pts</span>
-                        </div>
-                    </div>
-                    <div class="member-item">
-                        <div class="member-avatar">RP</div>
-                        <div class="member-info">
-                            <span class="member-name">Rizky Pratama</span>
-                            <span class="member-class">Kelas X-3</span>
-                        </div>
-                        <div class="member-pts">
-                            <span class="pts-value">85 Pts</span>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -293,56 +335,60 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <span class="td-name">Ahmad Subarjo</span>
-                                    <span class="td-nis">NIS: 2122001</span>
-                                </td>
-                                <td>Laskar Pelangi</td>
-                                <td>5 Hari</td>
-                                <td><span class="td-denda">Rp 5.000</span></td>
-                                <td><span class="td-status status-belum">Belum Bayar</span></td>
-                                <td>
-                                    <a href="{{ route('detail-denda', ['id' => 1]) }}" class="td-action" title="Detail Denda">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="td-name">Budi Santoso</span>
-                                    <span class="td-nis">NIS: 2122045</span>
-                                </td>
-                                <td>Dunia Sophie</td>
-                                <td>12 Hari</td>
-                                <td><span class="td-denda">Rp 12.000</span></td>
-                                <td><span class="td-status status-belum">Belum Bayar</span></td>
-                                <td>
-                                    <a href="{{ route('detail-denda', ['id' => 2]) }}" class="td-action" title="Detail Denda">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span class="td-name">Citra Lestari</span>
-                                    <span class="td-nis">NIS: 2223012</span>
-                                </td>
-                                <td>Sejarah Peradaban Islam</td>
-                                <td>2 Hari</td>
-                                <td><span class="td-denda">Rp 2.000</span></td>
-                                <td><span class="td-status status-belum">Belum Bayar</span></td>
-                                <td>
-                                    <a href="{{ route('detail-denda', ['id' => 3]) }}" class="td-action" title="Detail Denda">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                                    </a>
-                                </td>
-                            </tr>
+                            @forelse ($dendaAktif as $denda)
+                                @php
+                                    $namaAnggota = optional($denda->anggota)->nama_anggota
+                                        ?? optional($denda->anggota)->username
+                                        ?? '-';
+
+                                    $nisAnggota = optional($denda->anggota)->nis ?? '-';
+
+                                    $judulBuku = optional(optional($denda->detailTransaksi)->buku)->judul_buku ?? '-';
+
+                                    $hariTerlambat = $denda->jumlah_hari_terlambat ?? 0;
+
+                                    $totalDenda = $denda->total_denda ?? 0;
+                                @endphp
+
+                                <tr>
+                                    <td>
+                                        <span class="td-name">{{ $namaAnggota }}</span>
+                                        <span class="td-nis">NIS: {{ $nisAnggota }}</span>
+                                    </td>
+                                    <td>{{ $judulBuku }}</td>
+                                    <td>{{ $hariTerlambat }} Hari</td>
+                                    <td>
+                                        <span class="td-denda">
+                                            Rp {{ number_format($totalDenda, 0, ',', '.') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="td-status status-belum">Belum Bayar</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url('/detail-denda/' . $denda->id) }}" class="td-action" title="Detail Denda">
+                                            Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td>
+                                        <span class="td-name">Belum ada denda aktif</span>
+                                        <span class="td-nis">NIS: -</span>
+                                    </td>
+                                    <td>-</td>
+                                    <td>0 Hari</td>
+                                    <td><span class="td-denda">Rp 0</span></td>
+                                    <td><span class="td-status status-belum">Belum Ada</span></td>
+                                    <td>-</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
-                <a href="{{ route('kelola-denda') }}" class="denda-lihat-semua">Lihat Semua Data Denda &rarr;</a>
+                <a href="{{ url('/kelola-denda') }}" class="denda-lihat-semua">Lihat Semua Data Denda &rarr;</a>
             </div>
         </div>
     </section>
@@ -357,13 +403,34 @@
                 </button>
             </div>
             <div class="popular-modal-body">
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Laskar Pelangi - Andrea Hirata</span><span class="popular-count">88 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:100%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Dunia Sophie - Jostein Gaarder</span><span class="popular-count">72 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:82%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Sejarah Peradaban Islam - Badri Yatim</span><span class="popular-count">54 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:61%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">The Things You Can See... - Haemin Sunim</span><span class="popular-count">48 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:54%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Bumi Manusia - Pramoedya A. Toer</span><span class="popular-count">41 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:46%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Filosofi Teras - Henry Manampiring</span><span class="popular-count">37 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:42%;"></div></div></div>
-                <div class="popular-item"><div class="popular-info"><span class="popular-judul">Atomic Habits - James Clear</span><span class="popular-count">33 Pinjam</span></div><div class="popular-bar"><div class="popular-bar-fill" style="width:37%;"></div></div></div>
+                @forelse ($semuaBukuTerpopuler as $item)
+                    @php
+                        $judulBuku = optional($item->buku)->judul_buku ?? 'Judul buku tidak tersedia';
+                        $penulisBuku = optional($item->buku)->penulis;
+                        $totalDipinjamBuku = $item->total_dipinjam ?? 0;
+                        $lebarBar = $maxTotalPinjamBuku > 0
+                            ? min(100, round(($totalDipinjamBuku / $maxTotalPinjamBuku) * 100))
+                            : 0;
+                    @endphp
+
+                    <div class="popular-item">
+                        <div class="popular-info">
+                            <span class="popular-judul">
+                                {{ $judulBuku }}{{ $penulisBuku ? ' - ' . $penulisBuku : '' }}
+                            </span>
+                            <span class="popular-count">{{ $totalDipinjamBuku }} Pinjam</span>
+                        </div>
+                        <div class="popular-bar"><div class="popular-bar-fill" style="width:{{ $lebarBar }}%;"></div></div>
+                    </div>
+                @empty
+                    <div class="popular-item">
+                        <div class="popular-info">
+                            <span class="popular-judul">Belum ada data buku populer</span>
+                            <span class="popular-count">0 Pinjam</span>
+                        </div>
+                        <div class="popular-bar"><div class="popular-bar-fill" style="width:0%;"></div></div>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
@@ -389,9 +456,9 @@
             <div class="footer-col">
                 <h4 class="footer-col-title">Menu Navigasi</h4>
                 <ul>
-                    <li><a href="{{ route('dashboard-admin') }}">Dashboard</a></li>
-                    <li><a href="{{ route('katalog-admin') }}">Katalog Buku</a></li>
-                    <li><a href="{{ route('kelola-anggota') }}">Database Anggota</a></li>
+                    <li><a href="{{ url('/dashboard-admin') }}">Dashboard</a></li>
+                    <li><a href="{{ url('/katalog-admin') }}">Katalog Buku</a></li>
+                    <li><a href="{{ url('/kelola-anggota') }}">Database Anggota</a></li>
                 </ul>
             </div>
             <div class="footer-col">

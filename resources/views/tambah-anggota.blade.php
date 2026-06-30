@@ -1,3 +1,7 @@
+@php
+    $adminName = session('auth_name') ?? 'Admin';
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -15,27 +19,29 @@
     {{-- ===== NAVBAR ADMIN ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-admin') }}" class="nav-brand">
+            <a href="{{ url('/home-admin') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
+
             <nav class="nav-links">
-                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('kelola-buku') }}" class="nav-link">Buku</a>
-                <a href="{{ route('kelola-anggota') }}" class="nav-link active">Anggota</a>
-                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/kelola-buku') }}" class="nav-link">Buku</a>
+                <a href="{{ url('/kelola-anggota') }}" class="nav-link active">Anggota</a>
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
+                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
             </nav>
-            <a href="{{ route('setting') }}" class="nav-profile">
+
+            <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
                     <div class="avatar-placeholder admin-avatar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                 </div>
                 <div class="nav-profile-info">
-                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-username">{{ $adminName }}</span>
                     <span class="nav-role">Administrator</span>
                 </div>
             </a>
@@ -51,8 +57,9 @@
                     Buat akun baru
                 </span>
                 <h1 class="ta-title">Tambah Anggota Baru</h1>
-                <p class="ta-desc">Masukkan data siswa untuk membuat akun anggota perpustakaan. Pastikan data yang dimasukkan sudah sesuai dengan Kartu Pelajar.</p>
+                <p class="ta-desc">Masukkan data siswa untuk membuat akun anggota perpustakaan. Pastikan data yang dimasukkan sudah sesuai.</p>
             </div>
+
             <div class="ta-hero-deco">
                 <div class="ta-deco-card">
                     <div class="ta-deco-avatar"></div>
@@ -71,10 +78,26 @@
     {{-- ===== FORM ===== --}}
     <section class="ta-main">
         <div class="ta-main-inner">
-            <form id="tambahAnggotaForm" novalidate>
+
+            @if ($errors->any())
+                <div style="background:#fff3f3; border:1px solid #f3b5b5; color:#9f2f2f; padding:14px 18px; border-radius:14px; margin-bottom:18px;">
+                    <strong>Data belum bisa disimpan.</strong>
+                    <ul style="margin:8px 0 0 18px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form id="tambahAnggotaForm" action="{{ url('/tambah-anggota') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                {{-- karena controller mewajibkan status_anggota --}}
+                <input type="hidden" name="status_anggota" value="{{ old('status_anggota', 'aktif') }}">
+
                 <div class="ta-grid">
 
-                    {{-- ===== CARD KIRI: Data Diri + Akun ===== --}}
                     <div class="ta-card">
                         <div class="ta-card-head">
                             <div class="ta-card-ic">
@@ -91,20 +114,26 @@
                                 </div>
                                 <img id="taFotoImg" src="" alt="Foto Profil" class="ta-foto-img hidden">
                             </div>
+
                             <div class="ta-foto-info">
                                 <span class="ta-foto-label">Foto Profil</span>
-                                <span class="ta-foto-hint">Rasio 1:1, Max 2MB. JPG atau PNG.</span>
+                                <span class="ta-foto-hint">Rasio 1:1, maksimal 2MB. JPG, PNG, WEBP.</span>
                                 <div class="ta-foto-btns">
                                     <button type="button" class="btn-ganti-foto" id="btnGantiFoto">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                                        Ganti Foto
+                                        Pilih Foto
                                     </button>
+
                                     <button type="button" class="btn-hapus-foto hidden" id="btnHapusFoto">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                         Hapus
                                     </button>
                                 </div>
-                                <input type="file" id="taFotoInput" accept="image/jpeg,image/png,image/webp" hidden>
+
+                                <input type="file" id="taFotoInput" name="foto" accept="image/jpeg,image/png,image/webp" hidden>
+                                @error('foto')
+                                    <span class="ta-err">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
@@ -112,61 +141,54 @@
                         <div class="ta-form-row">
                             <div class="ta-form-group">
                                 <label for="nis">Nomor Induk Siswa (NIS) <span class="ta-req">*</span></label>
-                                <input type="text" id="nis" name="nis" placeholder="Contoh: 20241001">
-                                <span class="ta-err" id="err-nis"></span>
+                                <input type="text" id="nis" name="nis" value="{{ old('nis') }}" placeholder="Contoh: 20241001" required>
+                                <span class="ta-err">@error('nis') {{ $message }} @enderror</span>
                             </div>
+
                             <div class="ta-form-group">
-                                <label for="nama_lengkap">Nama Lengkap <span class="ta-req">*</span></label>
-                                <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama sesuai ijazah">
-                                <span class="ta-err" id="err-nama_lengkap"></span>
+                                <label for="nama_anggota">Nama Lengkap <span class="ta-req">*</span></label>
+                                <input type="text" id="nama_anggota" name="nama_anggota" value="{{ old('nama_anggota') }}" placeholder="Masukkan nama lengkap" required>
+                                <span class="ta-err">@error('nama_anggota') {{ $message }} @enderror</span>
                             </div>
                         </div>
 
                         {{-- Kelas + No HP --}}
                         <div class="ta-form-row">
                             <div class="ta-form-group">
-                                <label for="kelas">Kelas <span class="ta-req">*</span></label>
+                                <label for="kelas">Kelas</label>
                                 <div class="ta-select-wrap">
                                     <select id="kelas" name="kelas">
                                         <option value="">Pilih Kelas</option>
-                                        <option value="X-MIPA-1">X-MIPA 1</option>
-                                        <option value="X-MIPA-2">X-MIPA 2</option>
-                                        <option value="X-IPS-1">X-IPS 1</option>
-                                        <option value="X-IPS-2">X-IPS 2</option>
-                                        <option value="X-IPS-3">X-IPS 3</option>
-                                        <option value="XI-MIPA-1">XI-MIPA 1</option>
-                                        <option value="XI-MIPA-2">XI-MIPA 2</option>
-                                        <option value="XI-IPS-1">XI-IPS 1</option>
-                                        <option value="XI-IPS-2">XI-IPS 2</option>
-                                        <option value="XII-MIPA-1">XII-MIPA 1</option>
-                                        <option value="XII-MIPA-2">XII-MIPA 2</option>
-                                        <option value="XII-IPS-1">XII-IPS 1</option>
-                                        <option value="XII-IPS-2">XII-IPS 2</option>
-                                        <option value="Guru">Guru</option>
-                                        <option value="Staf">Staf</option>
+                                        @foreach (['X-MIPA-1','X-MIPA-2','X-IPS-1','X-IPS-2','X-IPS-3','XI-MIPA-1','XI-MIPA-2','XI-IPS-1','XI-IPS-2','XII-MIPA-1','XII-MIPA-2','XII-IPS-1','XII-IPS-2','Guru','Staf'] as $itemKelas)
+                                            <option value="{{ $itemKelas }}" {{ old('kelas') === $itemKelas ? 'selected' : '' }}>
+                                                {{ str_replace('-', ' ', $itemKelas) }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     <svg class="ta-select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                                 </div>
-                                <span class="ta-err" id="err-kelas"></span>
+                                <span class="ta-err">@error('kelas') {{ $message }} @enderror</span>
                             </div>
+
                             <div class="ta-form-group">
-                                <label for="no_hp">Nomor HP / WhatsApp <span class="ta-req">*</span></label>
-                                <input type="tel" id="no_hp" name="no_hp" placeholder="081234567XXX">
-                                <span class="ta-err" id="err-no_hp"></span>
+                                <label for="no_hp">Nomor HP / WhatsApp</label>
+                                <input type="tel" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="081234567XXX">
+                                <span class="ta-err">@error('no_hp') {{ $message }} @enderror</span>
                             </div>
                         </div>
 
                         {{-- Email --}}
                         <div class="ta-form-group">
                             <label for="email">Alamat Email <span class="ta-req">*</span></label>
-                            <input type="email" id="email" name="email" placeholder="siswa@al-uswah.sch.id">
-                            <span class="ta-err" id="err-email"></span>
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="siswa@al-uswah.sch.id" required>
+                            <span class="ta-err">@error('email') {{ $message }} @enderror</span>
                         </div>
 
                         {{-- Alamat --}}
                         <div class="ta-form-group">
                             <label for="alamat">Alamat Tinggal</label>
-                            <textarea id="alamat" name="alamat" rows="3" placeholder="Jl. Al-Uswah No. 123..."></textarea>
+                            <textarea id="alamat" name="alamat" rows="3" placeholder="Jl. Al-Uswah No. 123...">{{ old('alamat') }}</textarea>
+                            <span class="ta-err">@error('alamat') {{ $message }} @enderror</span>
                         </div>
 
                         {{-- Divider --}}
@@ -182,61 +204,49 @@
                         <div class="ta-form-row">
                             <div class="ta-form-group">
                                 <label for="username">Username <span class="ta-req">*</span></label>
-                                <input type="text" id="username" name="username" placeholder="contoh: ahmad.fathoni">
-                                <span class="ta-err" id="err-username"></span>
+                                <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="contoh: ahmad.fathoni" required>
+                                <span class="ta-err">@error('username') {{ $message }} @enderror</span>
                             </div>
+
                             <div class="ta-form-group">
                                 <label for="password">Password <span class="ta-req">*</span></label>
                                 <div class="ta-pass-wrap">
-                                    <input type="password" id="password" name="password" placeholder="Min. 8 karakter">
+                                    <input type="password" id="password" name="password" placeholder="Min. 8 karakter" required>
                                     <button type="button" class="ta-pass-toggle" data-target="password">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                     </button>
                                 </div>
-                                <span class="ta-err" id="err-password"></span>
+                                <span class="ta-err">@error('password') {{ $message }} @enderror</span>
                             </div>
                         </div>
 
                         {{-- Konfirmasi Password --}}
                         <div class="ta-form-group ta-form-group-half">
-                            <label for="konfirmasi_password">Konfirmasi Password <span class="ta-req">*</span></label>
+                            <label for="password_confirmation">Konfirmasi Password <span class="ta-req">*</span></label>
                             <div class="ta-pass-wrap">
-                                <input type="password" id="konfirmasi_password" name="konfirmasi_password" placeholder="Ulangi password">
-                                <button type="button" class="ta-pass-toggle" data-target="konfirmasi_password">
+                                <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password" required>
+                                <button type="button" class="ta-pass-toggle" data-target="password_confirmation">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
-                            <span class="ta-err" id="err-konfirmasi_password"></span>
+                            <span class="ta-err">@error('password_confirmation') {{ $message }} @enderror</span>
                         </div>
 
-                    </div>{{-- end .ta-card --}}
-
-                </div>{{-- end .ta-grid --}}
+                    </div>
+                </div>
 
                 {{-- ===== TOMBOL AKSI ===== --}}
                 <div class="ta-actions">
-                    <a href="{{ route('kelola-anggota') }}" class="btn-ta-batal">Batal</a>
+                    <a href="{{ url('/kelola-anggota') }}" class="btn-ta-batal">Batal</a>
+
                     <button type="submit" class="btn-ta-simpan">
                         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                         Simpan Anggota
                     </button>
                 </div>
-
             </form>
         </div>
     </section>
-
-    {{-- ===== MODAL SUKSES ===== --}}
-    <div class="ta-modal" id="taModal">
-        <div class="ta-modal-inner">
-            <div class="ta-modal-ic">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a085" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <h3 class="ta-modal-title">Anggota Berhasil Ditambahkan!</h3>
-            <p class="ta-modal-desc">Akun anggota atas nama <strong id="taModalNama"></strong> telah berhasil dibuat dan siap digunakan.</p>
-            <button class="btn-ta-modal-ok" id="btnTaModalOk">OK, Kembali ke Kelola Anggota</button>
-        </div>
-    </div>
 
     {{-- ===== TOAST ===== --}}
     <div class="toast" id="toast"></div>
@@ -259,13 +269,15 @@
                     </a>
                 </div>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Navigasi</h4>
                 <ul>
-                    <li><a href="{{ route('kelola-anggota') }}">Kelola Anggota</a></li>
-                    <li><a href="{{ route('dashboard-admin') }}">Dashboard</a></li>
+                    <li><a href="{{ url('/kelola-anggota') }}">Kelola Anggota</a></li>
+                    <li><a href="{{ url('/dashboard-admin') }}">Dashboard</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Kebijakan</h4>
                 <ul>
@@ -273,16 +285,103 @@
                     <li><a href="#">Terms of Service</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Hubungi Kami</h4>
                 <address>library@smait-aluswah.sch.id<br>Surabaya, Jawa Timur</address>
             </div>
         </div>
+
         <div class="footer-bottom">
             <p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p>
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-tambah-anggota.js') }}"></script>
+    {{-- Script lama dummy tidak dipakai dulu --}}
+    {{-- <script src="{{ asset('js/script-tambah-anggota.js') }}"></script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fotoInput = document.getElementById('taFotoInput');
+            const btnGantiFoto = document.getElementById('btnGantiFoto');
+            const btnHapusFoto = document.getElementById('btnHapusFoto');
+            const fotoImg = document.getElementById('taFotoImg');
+            const fotoPlaceholder = document.getElementById('taFotoPlaceholder');
+            const toast = document.getElementById('toast');
+
+            function showToast(message) {
+                if (!toast) return;
+
+                toast.textContent = message;
+                toast.classList.add('show');
+
+                setTimeout(function () {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            btnGantiFoto?.addEventListener('click', function () {
+                fotoInput?.click();
+            });
+
+            fotoInput?.addEventListener('change', function () {
+                const file = this.files[0];
+
+                if (!file) return;
+
+                if (file.size > 2 * 1024 * 1024) {
+                    showToast('Ukuran foto maksimal 2MB.');
+                    this.value = '';
+                    return;
+                }
+
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+                if (!allowedTypes.includes(file.type)) {
+                    showToast('Format foto harus JPG, PNG, atau WEBP.');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    fotoImg.src = event.target.result;
+                    fotoImg.classList.remove('hidden');
+                    fotoPlaceholder.classList.add('hidden');
+                    btnHapusFoto.classList.remove('hidden');
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            btnHapusFoto?.addEventListener('click', function () {
+                if (fotoInput) fotoInput.value = '';
+                if (fotoImg) {
+                    fotoImg.src = '';
+                    fotoImg.classList.add('hidden');
+                }
+                fotoPlaceholder?.classList.remove('hidden');
+                btnHapusFoto.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.ta-pass-toggle').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetId = button.dataset.target;
+                    const input = document.getElementById(targetId);
+
+                    if (!input) return;
+
+                    input.type = input.type === 'password' ? 'text' : 'password';
+                });
+            });
+
+            const errorMessage = @json($errors->any() ? 'Data belum lengkap atau ada yang sudah terdaftar.' : null);
+
+            if (errorMessage) {
+                showToast(errorMessage);
+            }
+        });
+    </script>
 </body>
 </html>

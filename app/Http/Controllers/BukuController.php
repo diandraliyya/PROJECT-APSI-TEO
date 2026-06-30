@@ -67,27 +67,42 @@ class BukuController extends Controller
 
     public function katalogAdmin(Request $request)
     {
-        $search = $request->query('search');
-        $kategori = $request->query('kategori');
+    $search = $request->query('search');
+    $kategori = $request->query('kategori');
+    $sort = $request->query('sort', 'terbaru');
 
-        $bukus = Buku::with(['kategori', 'rak'])
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('judul_buku', 'like', "%{$search}%")
-                        ->orWhere('penulis', 'like', "%{$search}%")
-                        ->orWhere('isbn', 'like', "%{$search}%");
-                });
-            })
-            ->when($kategori, function ($query) use ($kategori) {
-                $query->where('kategori_id', $kategori);
-            })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+    $bukus = Buku::with(['kategori', 'rak'])
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('judul_buku', 'like', "%{$search}%")
+                    ->orWhere('penulis', 'like', "%{$search}%")
+                    ->orWhere('isbn', 'like', "%{$search}%");
+            });
+        })
+        ->when($kategori, function ($query) use ($kategori) {
+            $query->where('kategori_id', $kategori);
+        })
+        ->when($sort === 'tersedia', function ($query) {
+            $query->where('status_buku', 'tersedia');
+        })
+        ->when($sort === 'terbaru', function ($query) {
+            $query->orderByDesc('id');
+        })
+        ->when($sort === 'terlama', function ($query) {
+            $query->orderBy('id');
+        })
+        ->when($sort === 'az', function ($query) {
+            $query->orderBy('judul_buku');
+        })
+        ->when($sort === 'za', function ($query) {
+            $query->orderByDesc('judul_buku');
+        })
+        ->paginate(8)
+        ->withQueryString();
 
-        $kategoris = Kategori::orderBy('nama_kategori')->get();
+    $kategoris = Kategori::orderBy('nama_kategori')->get();
 
-        return view('katalog-admin', compact('bukus', 'kategoris', 'search', 'kategori'));
+    return view('katalog-admin', compact('bukus', 'kategoris', 'search', 'kategori', 'sort'));
     }
 
     public function indexAdmin(Request $request)
@@ -115,8 +130,9 @@ class BukuController extends Controller
             ->withQueryString();
 
         $kategoris = Kategori::orderBy('nama_kategori')->get();
+        $raks = Rak::orderBy('kode_rak')->get();
 
-        return view('kelola-buku', compact('bukus', 'kategoris', 'search', 'kategori', 'status'));
+        return view('kelola-buku', compact('bukus', 'kategoris', 'raks', 'search', 'kategori', 'status'));
     }
 
     public function create()
@@ -163,6 +179,13 @@ class BukuController extends Controller
         $buku->load(['kategori', 'rak']);
 
         return view('informasi-buku', compact('buku'));
+    }
+
+    public function showAdmin(Buku $buku)
+    {
+        $buku->load(['kategori', 'rak']);
+
+        return view('informasi-buku-admin', compact('buku'));
     }
 
     public function edit(Buku $buku)

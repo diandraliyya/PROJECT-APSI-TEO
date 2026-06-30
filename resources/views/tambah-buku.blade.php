@@ -1,3 +1,10 @@
+@php
+    $adminName = session('auth_name') ?? 'Admin';
+
+    $kategoris = collect($kategoris ?? []);
+    $raks = collect($raks ?? []);
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -15,27 +22,29 @@
     {{-- ===== NAVBAR ADMIN ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-admin') }}" class="nav-brand">
+            <a href="{{ url('/home-admin') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
+
             <nav class="nav-links">
-                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('kelola-buku') }}" class="nav-link active">Buku</a>
-                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/kelola-buku') }}" class="nav-link active">Buku</a>
+                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
+                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
             </nav>
-            <a href="{{ route('setting') }}" class="nav-profile">
+
+            <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
                     <div class="avatar-placeholder admin-avatar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                 </div>
                 <div class="nav-profile-info">
-                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-username">{{ $adminName }}</span>
                     <span class="nav-role">Administrator</span>
                 </div>
             </a>
@@ -64,7 +73,8 @@
     {{-- ===== MAIN FORM ===== --}}
     <section class="tb-main">
         <div class="tb-main-inner">
-            <form id="tambahBukuForm" novalidate>
+            <form id="tambahBukuForm" action="{{ url('/tambah-buku') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
                 <div class="tb-grid">
 
@@ -73,7 +83,7 @@
                         <div class="tb-cover-panel">
                             <div class="tb-cover-head">
                                 <h3 class="tb-cover-title">Upload Cover Buku</h3>
-                                <p class="tb-cover-sub">Pastikan format JPG/PNG, maks 2MB.</p>
+                                <p class="tb-cover-sub">Pastikan format JPG/PNG/WEBP, maks 2MB.</p>
                             </div>
 
                             <div class="tb-cover-drop" id="coverDrop">
@@ -92,13 +102,17 @@
                                     <span class="tb-cover-hint">Seret dan letakkan file di sini</span>
                                 </div>
 
-                                <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp" hidden>
+                                <input type="file" id="coverInput" name="cover" accept="image/jpeg,image/png,image/webp" hidden>
                             </div>
 
                             <p class="tb-cover-rasio">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                                 Rasio 3:4 sangat disarankan
                             </p>
+
+                            @error('cover')
+                                <span class="tb-err">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
 
@@ -114,34 +128,56 @@
                             <div class="tb-panel-divider"></div>
 
                             <div class="tb-form-group">
-                                <label for="judul">Judul Buku <span class="tb-required">*</span></label>
-                                <input type="text" id="judul" name="judul" placeholder="Contoh: Laskar Pelangi">
-                                <span class="tb-err" id="err-judul"></span>
+                                <label for="judul_buku">Judul Buku <span class="tb-required">*</span></label>
+                                <input type="text" id="judul_buku" name="judul_buku" placeholder="Contoh: Laskar Pelangi" value="{{ old('judul_buku') }}">
+                                <span class="tb-err">
+                                    @error('judul_buku')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
                             </div>
 
                             <div class="tb-form-row">
                                 <div class="tb-form-group">
-                                    <label for="isbn">ISBN <span class="tb-required">*</span></label>
-                                    <input type="text" id="isbn" name="isbn" placeholder="978-602-...">
-                                    <span class="tb-err" id="err-isbn"></span>
+                                    <label for="isbn">ISBN</label>
+                                    <input type="text" id="isbn" name="isbn" placeholder="978-602-..." value="{{ old('isbn') }}">
+                                    <span class="tb-err">
+                                        @error('isbn')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
+
                                 <div class="tb-form-group">
-                                    <label for="tahun">Tahun Terbit <span class="tb-required">*</span></label>
-                                    <input type="number" id="tahun" name="tahun" placeholder="2026" min="1900" max="2099">
-                                    <span class="tb-err" id="err-tahun"></span>
+                                    <label for="tahun_terbit">Tahun Terbit</label>
+                                    <input type="number" id="tahun_terbit" name="tahun_terbit" placeholder="2026" min="1900" max="{{ date('Y') }}" value="{{ old('tahun_terbit') }}">
+                                    <span class="tb-err">
+                                        @error('tahun_terbit')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="tb-form-row">
                                 <div class="tb-form-group">
-                                    <label for="pengarang">Pengarang <span class="tb-required">*</span></label>
-                                    <input type="text" id="pengarang" name="pengarang" placeholder="Nama Penulis">
-                                    <span class="tb-err" id="err-pengarang"></span>
+                                    <label for="penulis">Pengarang <span class="tb-required">*</span></label>
+                                    <input type="text" id="penulis" name="penulis" placeholder="Nama Penulis" value="{{ old('penulis') }}">
+                                    <span class="tb-err">
+                                        @error('penulis')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
+
                                 <div class="tb-form-group">
-                                    <label for="penerbit">Penerbit <span class="tb-required">*</span></label>
-                                    <input type="text" id="penerbit" name="penerbit" placeholder="Nama Penerbit">
-                                    <span class="tb-err" id="err-penerbit"></span>
+                                    <label for="penerbit">Penerbit</label>
+                                    <input type="text" id="penerbit" name="penerbit" placeholder="Nama Penerbit" value="{{ old('penerbit') }}">
+                                    <span class="tb-err">
+                                        @error('penerbit')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -156,49 +192,70 @@
 
                             <div class="tb-form-row">
                                 <div class="tb-form-group">
-                                    <label for="kategori">Kategori <span class="tb-required">*</span></label>
+                                    <label for="kategori_id">Kategori <span class="tb-required">*</span></label>
                                     <div class="tb-select-wrap">
-                                        <select id="kategori" name="kategori">
+                                        <select id="kategori_id" name="kategori_id">
                                             <option value="">Pilih Kategori</option>
-                                            <option value="fiksi">Fiksi</option>
-                                            <option value="sejarah">Sejarah</option>
-                                            <option value="sains">Sains</option>
-                                            <option value="agama">Agama</option>
-                                            <option value="filsafat">Filsafat</option>
-                                            <option value="motivasi">Motivasi</option>
+                                            @foreach ($kategoris as $kategori)
+                                                <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                                                    {{ $kategori->nama_kategori }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                         <svg class="tb-select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
-                                    <span class="tb-err" id="err-kategori"></span>
+                                    <span class="tb-err">
+                                        @error('kategori_id')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
+
                                 <div class="tb-form-group">
-                                    <label for="stok">Jumlah Stok <span class="tb-required">*</span></label>
-                                    <input type="number" id="stok" name="stok" placeholder="1" min="0" value="1">
-                                    <span class="tb-err" id="err-stok"></span>
+                                    <label for="stok_total">Jumlah Stok <span class="tb-required">*</span></label>
+                                    <input type="number" id="stok_total" name="stok_total" placeholder="1" min="0" value="{{ old('stok_total', 1) }}">
+                                    <span class="tb-err">
+                                        @error('stok_total')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="tb-form-row">
                                 <div class="tb-form-group">
-                                    <label for="rak">Rak Penyimpanan <span class="tb-required">*</span></label>
+                                    <label for="rak_id">Rak Penyimpanan</label>
                                     <div class="tb-select-wrap">
-                                        <select id="rak" name="rak">
+                                        <select id="rak_id" name="rak_id">
                                             <option value="">Pilih Rak</option>
-                                            <option value="F">Rak F – Fiksi</option>
-                                            <option value="S">Rak S – Sejarah</option>
-                                            <option value="SC">Rak SC – Sains</option>
-                                            <option value="AG">Rak AG – Agama</option>
-                                            <option value="FL">Rak FL – Filsafat</option>
-                                            <option value="M">Rak M – Motivasi</option>
+                                            @foreach ($raks as $rak)
+                                                <option value="{{ $rak->id }}" {{ old('rak_id') == $rak->id ? 'selected' : '' }}>
+                                                    Rak {{ $rak->kode_rak }}{{ $rak->lokasi ? ' – ' . $rak->lokasi : '' }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                         <svg class="tb-select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
-                                    <span class="tb-err" id="err-rak"></span>
+                                    <span class="tb-err">
+                                        @error('rak_id')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+
+                                <div class="tb-form-group">
+                                    <label for="nomor_panggil">Nomor Panggil</label>
+                                    <input type="text" id="nomor_panggil" name="nomor_panggil" placeholder="Contoh: 813 AND l" value="{{ old('nomor_panggil') }}">
+                                    <span class="tb-err">
+                                        @error('nomor_panggil')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                                                {{-- Panel: Deskripsi --}}
+                        {{-- Panel: Deskripsi --}}
                         <div class="tb-panel">
                             <div class="tb-panel-head">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -208,7 +265,12 @@
 
                             <div class="tb-form-group">
                                 <label for="sinopsis">Sinopsis / Ringkasan</label>
-                                <textarea id="sinopsis" name="sinopsis" rows="6" placeholder="Masukkan ringkasan isi buku atau keterangan tambahan..."></textarea>
+                                <textarea id="sinopsis" name="sinopsis" rows="6" placeholder="Masukkan ringkasan isi buku atau keterangan tambahan...">{{ old('sinopsis') }}</textarea>
+                                <span class="tb-err">
+                                    @error('sinopsis')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
                             </div>
                         </div>
 
@@ -221,7 +283,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                         Simpan Buku
                     </button>
-                    <a href="{{ route('kelola-buku') }}" class="btn-batal-buku">
+
+                    <a href="{{ url('/kelola-buku') }}" class="btn-batal-buku">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         Batal
                     </a>
@@ -239,7 +302,7 @@
             </div>
             <h3 class="success-modal-title">Buku Berhasil Disimpan!</h3>
             <p class="success-modal-desc">Data buku baru telah berhasil ditambahkan ke koleksi perpustakaan.</p>
-            <button class="btn-ok-sukses" id="btnOkSukses">OK, Kembali ke Kelola Buku</button>
+            <button type="button" class="btn-ok-sukses" id="btnOkSukses">OK, Kembali ke Kelola Buku</button>
         </div>
     </div>
 
@@ -264,13 +327,15 @@
                     </a>
                 </div>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Navigasi</h4>
                 <ul>
-                    <li><a href="{{ route('kelola-buku') }}">Kelola Buku</a></li>
-                    <li><a href="{{ route('kategori-rak') }}">Kategori &amp; Rak</a></li>
+                    <li><a href="{{ url('/kelola-buku') }}">Kelola Buku</a></li>
+                    <li><a href="{{ url('/kategori-rak') }}">Kategori &amp; Rak</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Dukungan</h4>
                 <ul>
@@ -278,16 +343,99 @@
                     <li><a href="#">Aturan Peminjaman</a></li>
                 </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Hubungi Kami</h4>
                 <address>Jl. Al-Uswah No. 123, Surabaya<br>library@smait-aluswah.sch.id</address>
             </div>
         </div>
+
         <div class="footer-bottom">
             <p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p>
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-tambah-buku.js') }}"></script>
+    {{-- Script lama dummy sengaja tidak dipakai dulu, karena biasanya mencegah form submit ke backend --}}
+    {{-- <script src="{{ asset('js/script-tambah-buku.js') }}"></script> --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const coverDrop = document.getElementById('coverDrop');
+            const coverInput = document.getElementById('coverInput');
+            const coverPreview = document.getElementById('coverPreview');
+            const coverPlaceholder = document.getElementById('coverPlaceholder');
+            const coverImg = document.getElementById('coverImg');
+            const coverRemove = document.getElementById('coverRemove');
+            const toast = document.getElementById('toast');
+
+            const toastMessage = @json(session('success') ?? session('error') ?? ($errors->any() ? 'Periksa kembali data buku yang diisi.' : null));
+
+            if (toast && toastMessage) {
+                toast.textContent = toastMessage;
+                toast.classList.add('show');
+
+                setTimeout(function () {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            if (coverDrop && coverInput) {
+                coverDrop.addEventListener('click', function () {
+                    coverInput.click();
+                });
+
+                coverInput.addEventListener('change', function () {
+                    const file = coverInput.files[0];
+
+                    if (!file) {
+                        return;
+                    }
+
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Format cover harus JPG, PNG, atau WEBP.');
+                        coverInput.value = '';
+                        return;
+                    }
+
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('Ukuran cover maksimal 2MB.');
+                        coverInput.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        coverImg.src = event.target.result;
+                        coverPreview.classList.remove('hidden');
+                        coverPlaceholder.classList.add('hidden');
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            if (coverRemove) {
+                coverRemove.addEventListener('click', function (event) {
+                    event.stopPropagation();
+
+                    coverInput.value = '';
+                    coverImg.src = '';
+                    coverPreview.classList.add('hidden');
+                    coverPlaceholder.classList.remove('hidden');
+                });
+            }
+
+            const btnOkSukses = document.getElementById('btnOkSukses');
+
+            if (btnOkSukses) {
+                btnOkSukses.addEventListener('click', function () {
+                    window.location.href = "{{ url('/kelola-buku') }}";
+                });
+            }
+        });
+    </script>
 </body>
 </html>

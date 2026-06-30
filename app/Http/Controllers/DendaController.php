@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Denda;
 use App\Models\PembayaranDenda;
 use Illuminate\Http\Request;
+use App\Models\Setting;
 
 class DendaController extends Controller
 {
@@ -15,20 +16,44 @@ class DendaController extends Controller
 
         $dendas = Denda::with(['anggota', 'detailTransaksi.buku', 'pembayaranDendas'])
             ->when($search, function ($query) use ($search) {
-                $query->whereHas('anggota', function ($q) use ($search) {
-                    $q->where('nama_anggota', 'like', "%{$search}%")
-                        ->orWhere('nis', 'like', "%{$search}%")
-                        ->orWhere('no_anggota', 'like', "%{$search}%");
+                $query->where(function ($mainQuery) use ($search) {
+                    $mainQuery->whereHas('anggota', function ($q) use ($search) {
+                        $q->where('nama_anggota', 'like', "%{$search}%")
+                            ->orWhere('nis', 'like', "%{$search}%")
+                            ->orWhere('no_anggota', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('detailTransaksi.buku', function ($q) use ($search) {
+                        $q->where('judul_buku', 'like', "%{$search}%")
+                            ->orWhere('isbn', 'like', "%{$search}%");
+                    });
                 });
             })
             ->when($status, function ($query) use ($status) {
                 $query->where('status_denda', $status);
             })
-            ->latest()
+            ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('kelola-denda', compact('dendas', 'search', 'status'));
+        $totalBelumLunas = Denda::where('status_denda', 'belum_lunas')->count();
+        $totalLunas = Denda::where('status_denda', 'lunas')->count();
+
+        $totalDendaBelumLunas = Denda::where('status_denda', 'belum_lunas')->sum('total_denda');
+
+        $totalDendaTerkumpul = PembayaranDenda::where('status_validasi', 'valid')->sum('nominal_bayar');
+
+        $tarifDenda = Setting::first()->tarif_denda_per_hari ?? 1000;
+
+        return view('kelola-denda', compact(
+            'dendas',
+            'search',
+            'status',
+            'totalBelumLunas',
+            'totalLunas',
+            'totalDendaBelumLunas',
+            'totalDendaTerkumpul',
+            'tarifDenda'
+        ));
     }
 
     public function statusAnggota(Request $request)

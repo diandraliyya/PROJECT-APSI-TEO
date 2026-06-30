@@ -1,3 +1,72 @@
+@php
+    $namaAnggota = optional($anggota)->nama_anggota ?? session('auth_name') ?? 'Anggota';
+    $namaDepan = explode(' ', trim($namaAnggota))[0] ?? 'Anggota';
+    $inisialUser = strtoupper(substr($namaAnggota, 0, 1));
+    $noAnggota = optional($anggota)->no_anggota ?? '-';
+
+    $formatRupiah = fn ($angka) => 'Rp ' . number_format((float) $angka, 0, ',', '.');
+
+    $formatTanggal = function ($tanggal) {
+        if (!$tanggal) {
+            return '-';
+        }
+
+        return \Illuminate\Support\Carbon::parse($tanggal)->translatedFormat('d M Y');
+    };
+
+    $coverUrl = function ($buku) {
+        if (!$buku || empty($buku->cover)) {
+            return asset('assets/icon buku.png');
+        }
+
+        if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
+            return $buku->cover;
+        }
+
+        if (str_starts_with($buku->cover, 'assets/')) {
+            return asset($buku->cover);
+        }
+
+        return asset('storage/' . $buku->cover);
+    };
+
+    $fotoUrl = function ($foto) {
+        if (!$foto) {
+            return null;
+        }
+
+        if (str_starts_with($foto, 'http://') || str_starts_with($foto, 'https://')) {
+            return $foto;
+        }
+
+        if (str_starts_with($foto, 'assets/')) {
+            return asset($foto);
+        }
+
+        return asset('storage/' . $foto);
+    };
+
+    if ($sisaHariTerdekat === null) {
+        $sisaHariText = 'Tidak Ada';
+        $sisaHariTrend = 'belum ada pinjaman aktif';
+        $sisaHariTrendClass = '';
+    } elseif ($sisaHariTerdekat < 0) {
+        $sisaHariText = 'Terlambat ' . abs($sisaHariTerdekat) . ' Hari';
+        $sisaHariTrend = 'segera kembalikan';
+        $sisaHariTrendClass = 'trend-warn';
+    } elseif ($sisaHariTerdekat === 0) {
+        $sisaHariText = 'Hari Ini';
+        $sisaHariTrend = 'jatuh tempo hari ini';
+        $sisaHariTrendClass = 'trend-warn';
+    } else {
+        $sisaHariText = $sisaHariTerdekat . ' Hari Lagi';
+        $sisaHariTrend = $sisaHariTerdekat <= 2 ? 'segera kembalikan' : 'masih aman';
+        $sisaHariTrendClass = $sisaHariTerdekat <= 2 ? 'trend-warn' : '';
+    }
+
+    $fotoAnggota = optional($anggota)->foto;
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,32 +83,30 @@
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-anggota') }}" class="nav-brand">
+            <a href="{{ url('/home-anggota') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('dashboard-anggota') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ route('katalog-anggota') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-anggota') }}" class="nav-link active">Dashboard</a>
+                <a href="{{ url('/katalog-anggota') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
+                <a href="{{ url('/status-denda') }}" class="nav-link">Denda</a>
             </nav>
 
-            {{-- Profil anggota sementara --}}
-@php
-    $namaUser = 'Anggota';
-    $inisialUser = 'A';
-@endphp
+            <a href="{{ url('/profil-anggota') }}" class="nav-profile">
+                <div class="nav-avatar">
+                    @if ($fotoUrl($fotoAnggota))
+                        <img src="{{ $fotoUrl($fotoAnggota) }}" alt="Foto Profil" class="avatar-img">
+                    @else
+                        <span class="avatar-placeholder">{{ $inisialUser }}</span>
+                    @endif
+                </div>
 
-<a href="{{ route('profil-anggota') }}" class="nav-profile">
-    <div class="nav-avatar">
-        <span class="avatar-placeholder">{{ $inisialUser }}</span>
-    </div>
-
-    <span class="nav-username">{{ $namaUser }}</span>
-</a>
+                <span class="nav-username">{{ $namaAnggota }}</span>
+            </a>
         </div>
     </header>
 
@@ -50,7 +117,7 @@
                 <span class="greeting-spark">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#90C3C6" stroke="none"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
                 </span>
-                Halo, {{ explode(' ', auth()->user()->nama_lengkap ?? 'Adel')[0] }} <em>selamat membaca</em>
+                Halo, {{ $namaDepan }} <em>selamat membaca</em>
             </h1>
             <p class="greeting-sub">Semangat belajarmu hari ini adalah kunci masa depan.</p>
         </div>
@@ -68,8 +135,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
                 </div>
-                <span class="dash-stat-value">3 Buku</span>
-                <span class="dash-stat-trend"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> dari 5 maksimal</span>
+                <span class="dash-stat-value">{{ $totalSedangDipinjam }} Buku</span>
+                <span class="dash-stat-trend">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    {{ $totalRiwayatPeminjaman }} total riwayat
+                </span>
             </div>
 
             <div class="dash-stat-card card-mint">
@@ -80,8 +150,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
                 </div>
-                <span class="dash-stat-value">2 Hari Lagi</span>
-                <span class="dash-stat-trend trend-warn"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> segera kembalikan</span>
+                <span class="dash-stat-value">{{ $sisaHariText }}</span>
+                <span class="dash-stat-trend {{ $sisaHariTrendClass }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    {{ $sisaHariTrend }}
+                </span>
             </div>
 
             <div class="dash-stat-card card-alert">
@@ -92,8 +165,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                     </div>
                 </div>
-                <span class="dash-stat-value alert-value">Rp 5.000</span>
-                <a href="{{ route('status-denda') }}" class="dash-stat-trend trend-link">Bayar sekarang &rarr;</a>
+                <span class="dash-stat-value alert-value">{{ $formatRupiah($totalDendaBelumLunas) }}</span>
+                <a href="{{ url('/status-denda') }}" class="dash-stat-trend trend-link">Lihat denda &rarr;</a>
             </div>
 
             <div class="dash-stat-card card-orchid">
@@ -104,8 +177,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </div>
                 </div>
-                <span class="dash-stat-value">2 Pesan Baru</span>
-                <span class="dash-stat-trend"><span class="ping-dot"></span> belum dibaca</span>
+                <span class="dash-stat-value">{{ $notifikasi->count() }} Pesan Baru</span>
+                <span class="dash-stat-trend">
+                    <span class="ping-dot"></span>
+                    {{ $notifikasi->count() > 0 ? 'perlu diperhatikan' : 'tidak ada notifikasi' }}
+                </span>
             </div>
 
         </div>
@@ -125,35 +201,59 @@
                         Pinjaman Aktif
                     </h2>
 
-                    <div class="pinjaman-item">
-                        <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Dunia Sophie" class="pinjaman-cover">
-                        <div class="pinjaman-info">
-                            <h3 class="pinjaman-judul">Dunia Sophie</h3>
-                            <p class="pinjaman-kembali">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                Kembali: 14 Des 2026
-                                <span class="badge-aman">AMAN</span>
-                            </p>
-                        </div>
-                        <button class="pinjaman-menu" aria-label="Menu">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#484441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                        </button>
-                    </div>
+                    @forelse ($pinjamanAktif->take(4) as $detail)
+                        @php
+                            $buku = $detail->buku;
+                            $transaksi = $detail->transaksi;
+                            $judulBuku = optional($buku)->judul_buku ?? 'Buku Tidak Ditemukan';
+                            $tanggalTempo = optional($transaksi)->tanggal_jatuh_tempo;
 
-                    <div class="pinjaman-item">
-                        <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="pinjaman-cover">
-                        <div class="pinjaman-info">
-                            <h3 class="pinjaman-judul">Sejarah Peradaban Islam</h3>
-                            <p class="pinjaman-kembali">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                Kembali: Besok
-                                <span class="badge-segera">SEGERA</span>
-                            </p>
+                            $hari = $tanggalTempo
+                                ? now()->startOfDay()->diffInDays(\Illuminate\Support\Carbon::parse($tanggalTempo)->startOfDay(), false)
+                                : null;
+
+                            if ($hari === null) {
+                                $badgeClass = 'badge-aman';
+                                $badgeText = 'AKTIF';
+                                $kembaliText = '-';
+                            } elseif ($hari < 0) {
+                                $badgeClass = 'badge-segera';
+                                $badgeText = 'TERLAMBAT';
+                                $kembaliText = 'Terlambat ' . abs($hari) . ' hari';
+                            } elseif ($hari === 0) {
+                                $badgeClass = 'badge-segera';
+                                $badgeText = 'HARI INI';
+                                $kembaliText = 'Jatuh tempo hari ini';
+                            } elseif ($hari <= 2) {
+                                $badgeClass = 'badge-segera';
+                                $badgeText = 'SEGERA';
+                                $kembaliText = $hari . ' hari lagi';
+                            } else {
+                                $badgeClass = 'badge-aman';
+                                $badgeText = 'AMAN';
+                                $kembaliText = $formatTanggal($tanggalTempo);
+                            }
+                        @endphp
+
+                        <div class="pinjaman-item">
+                            <img src="{{ $coverUrl($buku) }}" alt="{{ $judulBuku }}" class="pinjaman-cover">
+                            <div class="pinjaman-info">
+                                <h3 class="pinjaman-judul">{{ $judulBuku }}</h3>
+                                <p class="pinjaman-kembali">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{ $hari !== null && $hari <= 2 ? '#c0392b' : 'currentColor' }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    Kembali: {{ $kembaliText }}
+                                    <span class="{{ $badgeClass }}">{{ $badgeText }}</span>
+                                </p>
+                            </div>
+                            <a href="{{ $buku ? url('/informasi-buku/' . $buku->id) : url('/katalog-anggota') }}" class="pinjaman-menu" aria-label="Detail buku">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#484441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                            </a>
                         </div>
-                        <button class="pinjaman-menu" aria-label="Menu">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#484441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-                        </button>
-                    </div>
+                    @empty
+                        <div style="padding:18px; border:1px dashed #d8e8e8; border-radius:16px; color:#6b6b6b; background:#fff;">
+                            Belum ada buku yang sedang dipinjam.
+                        </div>
+                    @endforelse
                 </div>
 
                 {{-- Rekomendasi --}}
@@ -163,27 +263,21 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>
                             Rekomendasi Untukmu
                         </h2>
-                        <a href="{{ route('katalog-anggota') }}" class="dash-lihat-semua">Lihat Semua &rarr;</a>
+                        <a href="{{ url('/katalog-anggota') }}" class="dash-lihat-semua">Lihat Semua &rarr;</a>
                     </div>
 
                     <div class="rekomendasi-grid">
-                        <a href="{{ route('informasi-buku', ['id' => 1]) }}" class="rekom-card">
-                            <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Laskar Pelangi" class="rekom-cover">
-                            <h4 class="rekom-judul">Laskar Pelangi</h4>
-                            <p class="rekom-penulis">Andrea Hirata</p>
-                        </a>
-
-                        <a href="{{ route('informasi-buku', ['id' => 4]) }}" class="rekom-card">
-                            <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Slow Down" class="rekom-cover">
-                            <h4 class="rekom-judul">The Things You Can See Only When You Slow Down</h4>
-                            <p class="rekom-penulis">Haemin Sunim</p>
-                        </a>
-
-                        <a href="{{ route('informasi-buku', ['id' => 3]) }}" class="rekom-card">
-                            <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="rekom-cover">
-                            <h4 class="rekom-judul">Sejarah Peradaban Islam</h4>
-                            <p class="rekom-penulis">Dr. Fauzan Adhim, M.Pd.I.</p>
-                        </a>
+                        @forelse ($rekomendasiBuku as $buku)
+                            <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="rekom-card">
+                                <img src="{{ $coverUrl($buku) }}" alt="{{ $buku->judul_buku }}" class="rekom-cover">
+                                <h4 class="rekom-judul">{{ $buku->judul_buku }}</h4>
+                                <p class="rekom-penulis">{{ $buku->penulis ?? '-' }}</p>
+                            </a>
+                        @empty
+                            <div style="grid-column:1/-1; padding:18px; border:1px dashed #d8e8e8; border-radius:16px; color:#6b6b6b; background:#fff;">
+                                Belum ada rekomendasi buku tersedia.
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -204,9 +298,9 @@
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6 6 0 0 1 12 0"/><path d="M3 11.5a9 9 0 0 1 18 0"/><circle cx="12" cy="14" r="2"/></svg>
                     </div>
-                    <p class="kartu-nama-anggota">{{ auth()->user()->nama_lengkap ?? 'Adelia Putri Ramadhani' }}</p>
+                    <p class="kartu-nama-anggota">{{ $namaAnggota }}</p>
                     <div class="kartu-bottom">
-                        <span class="kartu-id">2026.08.0125</span>
+                        <span class="kartu-id">{{ $noAnggota }}</span>
                         <div class="kartu-qr">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="21" y1="14" x2="21" y2="14.01"/><line x1="14" y1="21" x2="14" y2="21.01"/><line x1="21" y1="21" x2="21" y2="21.01"/><line x1="17.5" y1="17.5" x2="17.5" y2="17.51"/></svg>
                         </div>
@@ -217,7 +311,7 @@
                     Tunjukkan QR saat meminjam buku
                 </p>
 
-                {{-- Statistik Membaca (pengganti Akses Cepat) --}}
+                {{-- Statistik Membaca --}}
                 <div class="statistik-card">
                     <div class="statistik-head">
                         <h3 class="statistik-title">Statistik Membaca</h3>
@@ -225,52 +319,71 @@
                     </div>
 
                     <div class="chart-bars" id="chartBars">
-                        <div class="chart-bar-col">
-                            <div class="chart-bar" style="--val: 40%;" data-count="2"></div>
-                            <span class="chart-label">Jul</span>
-                        </div>
-                        <div class="chart-bar-col">
-                            <div class="chart-bar" style="--val: 65%;" data-count="3"></div>
-                            <span class="chart-label">Agu</span>
-                        </div>
-                        <div class="chart-bar-col">
-                            <div class="chart-bar" style="--val: 50%;" data-count="2"></div>
-                            <span class="chart-label">Sep</span>
-                        </div>
-                        <div class="chart-bar-col">
-                            <div class="chart-bar" style="--val: 85%;" data-count="4"></div>
-                            <span class="chart-label">Okt</span>
-                        </div>
-                        <div class="chart-bar-col">
-                            <div class="chart-bar" style="--val: 70%;" data-count="3"></div>
-                            <span class="chart-label">Nov</span>
-                        </div>
-                        <div class="chart-bar-col">
-                            <div class="chart-bar chart-bar-active" style="--val: 100%;" data-count="5"></div>
-                            <span class="chart-label">Des</span>
-                        </div>
+                        @forelse ($statistikBulanan as $index => $bulan)
+                            @php
+                                $tinggi = $maxStatistikBulanan > 0
+                                    ? max(8, round(($bulan['total'] / $maxStatistikBulanan) * 100))
+                                    : 8;
+                            @endphp
+
+                            <div class="chart-bar-col">
+                                <div class="chart-bar {{ $loop->last ? 'chart-bar-active' : '' }}" style="--val: {{ $tinggi }}%;" data-count="{{ $bulan['total'] }}"></div>
+                                <span class="chart-label">{{ $bulan['bulan'] }}</span>
+                            </div>
+                        @empty
+                            @foreach (['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'] as $bulanKosong)
+                                <div class="chart-bar-col">
+                                    <div class="chart-bar" style="--val: 8%;" data-count="0"></div>
+                                    <span class="chart-label">{{ $bulanKosong }}</span>
+                                </div>
+                            @endforeach
+                        @endforelse
                     </div>
 
                     <div class="statistik-footer">
                         <div class="statistik-total">
-                            <span class="total-num">19</span>
+                            <span class="total-num">{{ $totalBukuTahunIni }}</span>
                             <span class="total-label">Buku tahun ini</span>
                         </div>
                         <div class="statistik-streak">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#b8742f" stroke="none"><path d="M12 2C8 6 6 9 6 13a6 6 0 0 0 12 0c0-2-1-4-2-5 0 2-1 3-2 3 1-3-1-6-2-9z"/></svg>
-                            <span>Naik 25% dari bulan lalu</span>
+                            <span>{{ $totalBukuTahunIni > 0 ? 'Pertahankan kebiasaan membacamu' : 'Mulai pinjam buku pertamamu' }}</span>
                         </div>
                     </div>
                 </div>
 
+                {{-- Notifikasi --}}
+                @if ($notifikasi->count() > 0)
+                    <div class="statistik-card">
+                        <div class="statistik-head">
+                            <h3 class="statistik-title">Notifikasi</h3>
+                            <span class="statistik-period">{{ $notifikasi->count() }} pesan</span>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            @foreach ($notifikasi->take(4) as $pesan)
+                                <div style="padding:12px 14px; border-radius:14px; background:#fff7ed; color:#7c4a03; font-size:13px; line-height:1.5;">
+                                    {{ $pesan }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Peringkat Membaca --}}
                 <div class="peringkat-card">
                     <span class="peringkat-label">PERINGKAT MEMBACA</span>
-                    <h3 class="peringkat-rank">Pembaca Tekun</h3>
+                    <h3 class="peringkat-rank">{{ $peringkatMembaca }}</h3>
                     <div class="peringkat-progress">
-                        <div class="peringkat-progress-fill" style="width: 70%;"></div>
+                        <div class="peringkat-progress-fill" style="width: {{ $progressPeringkat }}%;"></div>
                     </div>
-                    <p class="peringkat-note">8 buku lagi untuk menjadi Duta Literasi</p>
+                    <p class="peringkat-note">
+                        @if ($sisaTargetPeringkat > 0)
+                            {{ $sisaTargetPeringkat }} buku lagi untuk naik level
+                        @else
+                            Kamu sudah mencapai target level ini
+                        @endif
+                    </p>
                     <div class="peringkat-star">
                         <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="rgba(255,255,255,.1)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     </div>
@@ -303,8 +416,8 @@
             <div class="footer-col">
                 <h4 class="footer-col-title">Layanan</h4>
                 <ul>
-                    <li><a href="#">Visi &amp; Misi</a></li>
-                    <li><a href="#">Kebijakan Layanan</a></li>
+                    <li><a href="{{ url('/tentang-perpustakaan-anggota') }}">Visi &amp; Misi</a></li>
+                    <li><a href="{{ url('/katalog-anggota') }}">Katalog Buku</a></li>
                 </ul>
             </div>
 
@@ -312,7 +425,7 @@
                 <h4 class="footer-col-title">Dukungan</h4>
                 <ul>
                     <li><a href="#">Pusat Bantuan</a></li>
-                    <li><a href="#">Donasi Buku</a></li>
+                    <li><a href="{{ url('/status-denda') }}">Status Denda</a></li>
                 </ul>
             </div>
 
@@ -329,6 +442,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-dashboard-anggota.js') }}"></script>
+    {{-- Script lama dummy dimatikan dulu --}}
+    {{-- <script src="{{ asset('js/script-dashboard-anggota.js') }}"></script> --}}
 </body>
 </html>

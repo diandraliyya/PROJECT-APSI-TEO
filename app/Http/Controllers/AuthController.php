@@ -82,7 +82,7 @@ class AuthController extends Controller
                 'auth_name' => $admin->nama_admin,
             ]);
 
-            return redirect()->route('dashboard-admin');
+            return redirect('/dashboard-admin');
         }
 
         $anggota = Anggota::where('username', $login)

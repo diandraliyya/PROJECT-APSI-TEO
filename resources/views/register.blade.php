@@ -82,17 +82,34 @@
                     </svg>
                 </div>
 
-                <form id="registerForm" novalidate>
+                @if ($errors->any())
+                    <div style="background:#fff3f3; border:1px solid #f3b5b5; color:#9f2f2f; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                        <strong>Pendaftaran belum bisa diproses.</strong>
+                        <ul style="margin:8px 0 0 18px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div style="background:#f0fff4; border:1px solid #a7e3b5; color:#24733b; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form id="registerForm" action="{{ url('/register') }}" method="POST">
                     @csrf
 
                     <div class="form-row">
                         {{-- Nama Lengkap --}}
                         <div class="form-group">
-                            <label for="nama_lengkap">
+                            <label for="nama_anggota">
                                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                Nama Lengkap <span class="required">*</span>
+                                Nama Anggota <span class="required">*</span>
                             </label>
-                            <input type="text" id="nama_lengkap" name="nama_lengkap" placeholder="Masukkan nama lengkap" autocomplete="name">
+                            <input type="text" id="nama_anggota" name="nama_anggota" value="{{ old('nama_anggota') }}" placeholder="Masukkan nama lengkap" autocomplete="name" required>
                             <span class="error-msg" id="err-nama"></span>
                         </div>
 
@@ -102,7 +119,7 @@
                                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                                 NIS <span class="required">*</span>
                             </label>
-                            <input type="text" id="nis" name="nis" placeholder="Nomor Induk Siswa" inputmode="numeric">
+                            <input type="text" id="nis" name="nis" value="{{ old('nis') }}" placeholder="Nomor Induk Siswa" inputmode="numeric" required>
                             <span class="error-msg" id="err-nis"></span>
                         </div>
                     </div>
@@ -139,18 +156,18 @@
                                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
                                 Email <span class="required">*</span>
                             </label>
-                            <input type="email" id="email" name="email" placeholder="example@gmail.com" autocomplete="email">
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="example@gmail.com" autocomplete="email" required>
                             <span class="error-msg" id="err-email"></span>
                         </div>
                     </div>
 
                     {{-- Nomor HP --}}
                     <div class="form-group full-width">
-                        <label for="nomor_hp">
+                        <label for="no_hp">
                             <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.64a16 16 0 0 0 6.29 6.29l.98-.98a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                             Nomor HP <span class="required">*</span>
                         </label>
-                        <input type="tel" id="nomor_hp" name="nomor_hp" placeholder="08XXXXXXXXXX" inputmode="numeric" autocomplete="tel">
+                        <input type="tel" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08XXXXXXXXXX" inputmode="numeric" autocomplete="tel">
                         <span class="error-msg" id="err-hp"></span>
                     </div>
 
@@ -160,8 +177,17 @@
                             <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                             Alamat <span class="required">*</span>
                         </label>
-                        <textarea id="alamat" name="alamat" placeholder="Alamat lengkap sesuai KTP/KK" rows="3"></textarea>
+                        <textarea id="alamat" name="alamat" placeholder="Alamat lengkap sesuai KTP/KK" rows="3">{{ old('alamat') }}</textarea>
                         <span class="error-msg" id="err-alamat"></span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="username">
+                            <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Username <span class="required">*</span>
+                        </label>
+                        <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="Masukkan username untuk login" autocomplete="username" required>
+                        <span class="error-msg" id="err-username"></span>
                     </div>
 
                     <div class="form-row">
@@ -183,13 +209,13 @@
 
                         {{-- Konfirmasi Password --}}
                         <div class="form-group">
-                            <label for="konfirmasi_password">
+                            <label for="password_confirmation">
                                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                                 Konfirmasi Password <span class="required">*</span>
                             </label>
                             <div class="input-eye-wrap">
-                                <input type="password" id="konfirmasi_password" name="konfirmasi_password" placeholder="Ulangi password" autocomplete="new-password">
-                                <button type="button" class="eye-btn" data-target="konfirmasi_password" aria-label="Tampilkan konfirmasi password">
+                                <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Ulangi password" autocomplete="new-password" required>
+                                <button type="button" class="eye-btn" data-target="password_confirmation" aria-label="Tampilkan konfirmasi password">
                                     <svg class="eye-icon eye-off" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                                     <svg class="eye-icon eye-on hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
@@ -267,6 +293,26 @@
     </div>
 
     {{-- JS --}}
-    <script src="{{ asset('js/script-register.js') }}"></script>
+    <!-- <script src="{{ asset('js/script-register.js') }}"></script> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.eye-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetId = button.dataset.target;
+                    const input = document.getElementById(targetId);
+
+                    if (!input) return;
+
+                    input.type = input.type === 'password' ? 'text' : 'password';
+
+                    const eyeOff = button.querySelector('.eye-off');
+                    const eyeOn = button.querySelector('.eye-on');
+
+                    eyeOff?.classList.toggle('hidden');
+                    eyeOn?.classList.toggle('hidden');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

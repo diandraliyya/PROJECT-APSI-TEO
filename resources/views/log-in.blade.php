@@ -67,11 +67,25 @@
             </div>
         </div>
 
+        @if (session('success'))
+            <div style="background:#f0fff4; border:1px solid #a7e3b5; color:#24733b; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div style="background:#fff3f3; border:1px solid #f3b5b5; color:#9f2f2f; padding:12px 14px; border-radius:12px; margin-bottom:16px; font-size:14px;">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+
         {{-- Right Panel – Login Form --}}
         <div class="right-panel login-right">
             <div class="form-card">
                 <div class="form-header">
-                    <h2 class="form-title">Login Anggota</h2>
+                    <h2 class="form-title">Login</h2>
                     <svg class="form-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
                         <polyline points="10 17 15 12 10 7"/>
@@ -79,19 +93,19 @@
                     </svg>
                 </div>
 
-                <form id="loginForm" novalidate>
+                <form id="loginForm" action="{{ url('/log-in') }}" method="POST">
                     @csrf
 
                     {{-- Username / Email --}}
                     <div class="form-group full-width">
-                        <label for="identifier">
+                        <label for="login">
                             <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
-                            Username atau Email <span class="required">*</span>
+                            Username / Email / NIS <span class="required">*</span>
                         </label>
-                        <input type="text" id="identifier" name="identifier" placeholder="Username atau example@gmail.com" autocomplete="username">
+                        <input type="text" id="login" name="login" value="{{ old('login') }}" placeholder="Username, email, atau NIS" autocomplete="username" required>
                         <span class="error-msg" id="err-identifier"></span>
                     </div>
 
@@ -106,7 +120,7 @@
                         </label>
 
                         <div class="input-eye-wrap">
-                            <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password">
+                            <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password" required>
 
                             <button type="button" class="eye-btn" data-target="password" aria-label="Tampilkan password">
                                 <svg class="eye-icon eye-off" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -201,13 +215,35 @@
     </footer>
 
     {{-- JS --}}
-    <script>
+    <!-- <script>
         window.LOGIN_ROUTES = {
             anggota: "{{ url('/home-anggota') }}",
             admin: "{{ url('/home-admin') }}"
         };
     </script>
 
-    <script src="{{ asset('js/script-log-in.js') }}"></script>
+    <script src="{{ asset('js/script-log-in.js') }}"></script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.eye-btn').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const targetId = button.dataset.target;
+                    const input = document.getElementById(targetId);
+
+                    if (!input) return;
+
+                    input.type = input.type === 'password' ? 'text' : 'password';
+
+                    const eyeOff = button.querySelector('.eye-off');
+                    const eyeOn = button.querySelector('.eye-on');
+
+                    eyeOff?.classList.toggle('hidden');
+                    eyeOn?.classList.toggle('hidden');
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

@@ -57,11 +57,22 @@ class TransaksiController extends Controller
         $validated = $request->validate([
             'anggota_id' => ['required', 'exists:anggotas,id'],
             'buku_id' => ['required', 'array', 'min:1'],
-            'buku_id.*' => ['required', 'exists:bukus,id'],
+            'buku_id.*' => ['required', 'distinct', 'exists:bukus,id'],
             'tanggal_pinjam' => ['required', 'date'],
             'tanggal_jatuh_tempo' => ['nullable', 'date', 'after_or_equal:tanggal_pinjam'],
             'catatan' => ['nullable', 'string'],
         ]);
+
+        $anggota = Anggota::where('id', $validated['anggota_id'])
+            ->where('status_pendaftaran', 'disetujui')
+            ->where('status_anggota', 'aktif')
+            ->first();
+
+        if (!$anggota) {
+            return back()
+                ->withInput()
+                ->with('error', 'Anggota tidak aktif atau belum disetujui.');
+        }
 
         $setting = Setting::first();
         $tanggalPinjam = Carbon::parse($validated['tanggal_pinjam']);
@@ -70,39 +81,45 @@ class TransaksiController extends Controller
             ? Carbon::parse($validated['tanggal_jatuh_tempo'])
             : $tanggalPinjam->copy()->addDays($setting->maksimal_hari_pinjam ?? 7);
 
-        DB::transaction(function () use ($validated, $tanggalPinjam, $tanggalJatuhTempo) {
-            $transaksi = Transaksi::create([
-                'anggota_id' => $validated['anggota_id'],
-                'admin_id' => session('auth_role') === 'admin' ? session('auth_id') : null,
-                'kode_transaksi' => $this->generateKodeTransaksi(),
-                'tanggal_pinjam' => $tanggalPinjam->toDateString(),
-                'tanggal_jatuh_tempo' => $tanggalJatuhTempo->toDateString(),
-                'tanggal_kembali' => null,
-                'status_transaksi' => 'dipinjam',
-                'total_item' => count($validated['buku_id']),
-                'catatan' => $validated['catatan'] ?? null,
-            ]);
-
-            foreach ($validated['buku_id'] as $bukuId) {
-                $buku = Buku::lockForUpdate()->findOrFail($bukuId);
-
-                if ($buku->stok_tersedia <= 0) {
-                    throw new \Exception("Stok buku {$buku->judul_buku} tidak tersedia.");
-                }
-
-                DetailTransaksi::create([
-                    'transaksi_id' => $transaksi->id,
-                    'buku_id' => $buku->id,
-                    'jumlah' => 1,
-                    'status_item' => 'dipinjam',
-                    'tanggal_kembali_item' => null,
+        try {
+            DB::transaction(function () use ($validated, $tanggalPinjam, $tanggalJatuhTempo) {
+                $transaksi = Transaksi::create([
+                    'anggota_id' => $validated['anggota_id'],
+                    'admin_id' => session('auth_role') === 'admin' ? session('auth_id') : null,
+                    'kode_transaksi' => $this->generateKodeTransaksi(),
+                    'tanggal_pinjam' => $tanggalPinjam->toDateString(),
+                    'tanggal_jatuh_tempo' => $tanggalJatuhTempo->toDateString(),
+                    'tanggal_kembali' => null,
+                    'status_transaksi' => 'dipinjam',
+                    'total_item' => count($validated['buku_id']),
+                    'catatan' => $validated['catatan'] ?? null,
                 ]);
 
-                $buku->stok_tersedia -= 1;
-                $buku->status_buku = $this->hitungStatusBuku($buku->stok_tersedia);
-                $buku->save();
-            }
-        });
+                foreach ($validated['buku_id'] as $bukuId) {
+                    $buku = Buku::lockForUpdate()->findOrFail($bukuId);
+
+                    if ($buku->stok_tersedia <= 0) {
+                        throw new \Exception("Stok buku {$buku->judul_buku} tidak tersedia.");
+                    }
+
+                    DetailTransaksi::create([
+                        'transaksi_id' => $transaksi->id,
+                        'buku_id' => $buku->id,
+                        'jumlah' => 1,
+                        'status_item' => 'dipinjam',
+                        'tanggal_kembali_item' => null,
+                    ]);
+
+                    $buku->stok_tersedia -= 1;
+                    $buku->status_buku = $this->hitungStatusBuku($buku->stok_tersedia);
+                    $buku->save();
+                }
+            });
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
 
         return redirect()
             ->route('riwayat-transaksi')
@@ -193,7 +210,7 @@ class TransaksiController extends Controller
         });
 
         return redirect()
-            ->route('riwayat-transaksi')
+            ->to(url('/detail-transaksi/' . $detailTransaksi->transaksi_id) . '#daftar-buku')
             ->with('success', 'Pengembalian buku berhasil diproses.');
     }
 
@@ -203,19 +220,34 @@ class TransaksiController extends Controller
             ? session('auth_id')
             : $request->query('anggota_id');
 
-        $transaksis = Transaksi::with(['detailTransaksis.buku'])
-            ->where('anggota_id', $anggotaId)
-            ->latest()
-            ->paginate(10);
+        $anggota = $anggotaId ? Anggota::find($anggotaId) : null;
 
-        return view('riwayat-peminjaman', compact('transaksis'));
+        $transaksis = Transaksi::with([
+                'anggota',
+                'detailTransaksis.buku',
+                'detailTransaksis.denda',
+            ])
+            ->when($anggotaId, function ($query) use ($anggotaId) {
+                $query->where('anggota_id', $anggotaId);
+            })
+            ->when(!$anggotaId, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('riwayat-peminjaman', compact('transaksis', 'anggota'));
     }
 
     private function generateKodeTransaksi(): string
     {
-        return 'TRX-' . now()->format('YmdHis') . '-' . rand(100, 999);
-    }
+        do {
+            $kode = 'TRX-' . now()->format('YmdHis') . '-' . rand(100, 999);
+        } while (Transaksi::where('kode_transaksi', $kode)->exists());
 
+        return $kode;
+    }
     private function hitungStatusBuku(int $stokTersedia): string
     {
         if ($stokTersedia <= 0) {

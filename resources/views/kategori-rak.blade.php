@@ -1,3 +1,19 @@
+@php
+    $adminName = session('auth_name') ?? 'Admin';
+
+    $kategoris = collect($kategoris ?? []);
+    $raks = collect($raks ?? []);
+
+    $kategoriIconClasses = [
+        'ic-fiksi',
+        'ic-sejarah',
+        'ic-sains',
+        'ic-agama',
+        'ic-filsafat',
+        'ic-motivasi',
+    ];
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -15,25 +31,29 @@
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-admin') }}" class="nav-brand">
+            <a href="{{ url('/home-admin') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
+
             <nav class="nav-links">
-                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('kelola-buku') }}" class="nav-link active">Buku</a>
-                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/kelola-buku') }}" class="nav-link active">Buku</a>
+                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
+                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
             </nav>
-            <a href="{{ route('setting') }}" class="nav-profile">
-                <div class="nav-avatar"><div class="avatar-placeholder admin-avatar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div></div>
+
+            <a href="{{ url('/setting') }}" class="nav-profile">
+                <div class="nav-avatar">
+                    <div class="avatar-placeholder admin-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                </div>
                 <div class="nav-profile-info">
-                    <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-username">{{ $adminName }}</span>
                     <span class="nav-role">Administrator</span>
                 </div>
             </a>
@@ -84,17 +104,30 @@
                         <h2 class="kr-card-title">Tambah Kategori</h2>
                     </div>
 
-                    <form id="formTambahKategori" novalidate>
+                    <form id="formTambahKategori" action="{{ url('/kategori-rak/kategori') }}" method="POST" novalidate>
+                        @csrf
+
                         <div class="kr-form-group">
                             <label for="namaKategori">Nama Kategori <span class="kr-req">*</span></label>
-                            <input type="text" id="namaKategori" placeholder="Contoh: Fiksi Populer">
-                            <span class="kr-err" id="err-namaKategori"></span>
+                            <input type="text" id="namaKategori" name="nama_kategori" placeholder="Contoh: Fiksi Populer" value="{{ old('nama_kategori') }}">
+                            <span class="kr-err" id="err-namaKategori">
+                                @error('nama_kategori')
+                                    {{ $message }}
+                                @enderror
+                            </span>
                         </div>
+
                         <div class="kr-form-group">
                             <label for="deskripsiKategori">Deskripsi</label>
-                            <textarea id="deskripsiKategori" rows="3" placeholder="Penjelasan singkat mengenai kategori..."></textarea>
+                            <textarea id="deskripsiKategori" name="deskripsi" rows="3" placeholder="Penjelasan singkat mengenai kategori...">{{ old('deskripsi') }}</textarea>
+                            <span class="kr-err">
+                                @error('deskripsi')
+                                    {{ $message }}
+                                @enderror
+                            </span>
                         </div>
-                        <button type="submit" class="btn-kr-submit">
+
+                        <button type="submit" class="btn-kr-submit" onclick="event.stopImmediatePropagation(); this.closest('form').submit(); return false;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             Tambah Kategori
                         </button>
@@ -105,221 +138,105 @@
                 <div class="kr-list-card">
                     <div class="kr-list-head">
                         <h2 class="kr-list-title">Daftar Kategori</h2>
-                        <span class="kr-list-count" id="kategoriCount">6 Kategori</span>
+                        <span class="kr-list-count" id="kategoriCount">{{ $kategoris->count() }} Kategori</span>
                     </div>
 
-                    {{-- Search buku dalam kategori --}}
                     <div class="kr-search-wrap">
                         <svg class="kr-search-ic" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         <input type="text" id="searchBukuKategori" class="kr-search" placeholder="Cari buku dalam kategori...">
                     </div>
 
                     <ul class="kr-list" id="listKategori">
+                        @forelse ($kategoris as $kategori)
+                            @php
+                                $targetId = 'kat-' . $kategori->id;
+                                $iconClass = $kategoriIconClasses[$loop->index % count($kategoriIconClasses)];
+                                $deskripsiKategori = $kategori->deskripsi ?: ($kategori->bukus_count . ' buku dalam kategori ini');
+                            @endphp
 
-                        <li class="kr-item" data-id="kat-1">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-fiksi">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                                </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Fiksi</span>
-                                    <span class="kr-item-sub">Novel, Cerpen, Komik</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-1" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-1" data-nama="Fiksi" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-1">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Fiksi..." data-target="kat-1">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="laskar pelangi" data-penulis="andrea hirata">
-                                        <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Cover" class="kr-book-cover">
-                                        <div class="kr-book-info">
-                                            <span class="kr-book-judul">Laskar Pelangi</span>
-                                            <span class="kr-book-penulis">Andrea Hirata</span>
-                                        </div>
-                                        <span class="kr-book-stok stok-ok">Stok: 8</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 1]) }}" class="kr-book-link" title="Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            <li class="kr-item" data-id="{{ $targetId }}">
+                                <div class="kr-item-main">
+                                    <div class="kr-item-ic {{ $iconClass }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                    </div>
 
-                        <li class="kr-item" data-id="kat-2">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-sejarah">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Sejarah</span>
-                                    <span class="kr-item-sub">Peradaban, Biografi, Dokumenter</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-2" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-2" data-nama="Sejarah" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-2">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Sejarah..." data-target="kat-2">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="sejarah peradaban islam" data-penulis="badri yatim">
-                                        <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Cover" class="kr-book-cover">
-                                        <div class="kr-book-info">
-                                            <span class="kr-book-judul">Sejarah Peradaban Islam</span>
-                                            <span class="kr-book-penulis">Prof. Dr. Badri Yatim, M.A.</span>
-                                        </div>
-                                        <span class="kr-book-stok stok-warn">Stok: 2</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 3]) }}" class="kr-book-link" title="Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                    <div class="kr-item-info">
+                                        <span class="kr-item-nama">{{ $kategori->nama_kategori }}</span>
+                                        <span class="kr-item-sub">{{ $deskripsiKategori }}</span>
+                                    </div>
 
-                        <li class="kr-item" data-id="kat-3">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-sains">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
-                                </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Sains</span>
-                                    <span class="kr-item-sub">Fisika, Kimia, Biologi, Matematika</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-3" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-3" data-nama="Sains" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-3">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Sains..." data-target="kat-3">
-                                </div>
-                                <ul class="kr-book-list"><li class="kr-no-book">Belum ada buku di kategori ini.</li></ul>
-                            </div>
-                        </li>
+                                    <div class="kr-item-actions">
+                                        <button type="button" class="kr-btn-expand" data-target="{{ $targetId }}" title="Lihat buku">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                        </button>
 
-                        <li class="kr-item" data-id="kat-4">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-agama">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                                </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Agama</span>
-                                    <span class="kr-item-sub">Fiqih, Akidah, Al-Quran, Hadis</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-4" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-4" data-nama="Agama" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-4">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Agama..." data-target="kat-4">
-                                </div>
-                                <ul class="kr-book-list"><li class="kr-no-book">Belum ada buku di kategori ini.</li></ul>
-                            </div>
-                        </li>
+                                        <form action="{{ url('/kategori-rak/kategori/' . $kategori->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
 
-                        <li class="kr-item" data-id="kat-5">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-filsafat">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                            <button type="submit" class="kr-btn-hapus" data-id="{{ $targetId }}" data-nama="{{ $kategori->nama_kategori }}" title="Hapus" onclick="event.stopImmediatePropagation(); return confirm('Hapus kategori {{ $kategori->nama_kategori }}?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Filsafat</span>
-                                    <span class="kr-item-sub">Logika, Etika, Metafisika</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-5" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-5" data-nama="Filsafat" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-5">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Filsafat..." data-target="kat-5">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="dunia sophie" data-penulis="jostein gaarder">
-                                        <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Cover" class="kr-book-cover">
-                                        <div class="kr-book-info">
-                                            <span class="kr-book-judul">Dunia Sophie</span>
-                                            <span class="kr-book-penulis">Jostein Gaarder</span>
-                                        </div>
-                                        <span class="kr-book-stok stok-ok">Stok: 5</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 2]) }}" class="kr-book-link" title="Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
 
-                        <li class="kr-item" data-id="kat-6">
-                            <div class="kr-item-main">
-                                <div class="kr-item-ic ic-motivasi">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                </div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Motivasi</span>
-                                    <span class="kr-item-sub">Self-help, Pengembangan Diri</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="kat-6" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="kat-6" data-nama="Motivasi" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-kat-6">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Motivasi..." data-target="kat-6">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="the things you can see only when you slow down" data-penulis="haemin sunim">
-                                        <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Cover" class="kr-book-cover">
-                                        <div class="kr-book-info">
-                                            <span class="kr-book-judul">The Things You Can See Only When You Slow Down</span>
-                                            <span class="kr-book-penulis">Haemin Sunim</span>
-                                        </div>
-                                        <span class="kr-book-stok stok-empty">Stok: 0</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 4]) }}" class="kr-book-link" title="Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                <div class="kr-item-books" id="books-{{ $targetId }}">
+                                    <div class="kr-books-search-wrap">
+                                        <input type="text" class="kr-books-search" placeholder="Cari di {{ $kategori->nama_kategori }}..." data-target="{{ $targetId }}">
+                                    </div>
 
+                                    <ul class="kr-book-list">
+                                        @forelse ($kategori->bukus as $buku)
+                                            @php
+                                                $stokClass = $buku->stok_tersedia <= 0 ? 'stok-empty' : ($buku->stok_tersedia <= 2 ? 'stok-warn' : 'stok-ok');
+
+                                                $coverUrl = asset('assets/icon buku.png');
+
+                                                if (!empty($buku->cover)) {
+                                                    if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
+                                                        $coverUrl = $buku->cover;
+                                                    } elseif (str_starts_with($buku->cover, 'assets/')) {
+                                                        $coverUrl = asset($buku->cover);
+                                                    } else {
+                                                        $coverUrl = asset('storage/' . $buku->cover);
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <li class="kr-book-item" data-judul="{{ strtolower($buku->judul_buku) }}" data-penulis="{{ strtolower($buku->penulis) }}">
+                                                <img src="{{ $coverUrl }}" alt="Cover" class="kr-book-cover">
+
+                                                <div class="kr-book-info">
+                                                    <span class="kr-book-judul">{{ $buku->judul_buku }}</span>
+                                                    <span class="kr-book-penulis">{{ $buku->penulis }}</span>
+                                                </div>
+
+                                                <span class="kr-book-stok {{ $stokClass }}">Stok: {{ $buku->stok_tersedia }}</span>
+
+                                                <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="kr-book-link" title="Detail">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                </a>
+                                            </li>
+                                        @empty
+                                            <li class="kr-no-book">Belum ada buku di kategori ini.</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="kr-item">
+                                <div class="kr-item-main">
+                                    <div class="kr-item-ic ic-fiksi">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                    </div>
+                                    <div class="kr-item-info">
+                                        <span class="kr-item-nama">Belum ada kategori</span>
+                                        <span class="kr-item-sub">Tambahkan kategori baru melalui form di sebelah kiri.</span>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
 
@@ -341,26 +258,39 @@
                         <h2 class="kr-card-title">Tambah Rak Buku</h2>
                     </div>
 
-                    <form id="formTambahRak" novalidate>
+                    <form id="formTambahRak" action="{{ url('/kategori-rak/rak') }}" method="POST" novalidate>
+                        @csrf
+
                         <div class="kr-form-row">
                             <div class="kr-form-group">
                                 <label for="kodeRak">Kode Rak <span class="kr-req">*</span></label>
-                                <input type="text" id="kodeRak" placeholder="Contoh: F-001">
-                                <span class="kr-err" id="err-kodeRak"></span>
+                                <input type="text" id="kodeRak" name="kode_rak" placeholder="Contoh: F-001" value="{{ old('kode_rak') }}">
+                                <span class="kr-err" id="err-kodeRak">
+                                    @error('kode_rak')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
                             </div>
+
                             <div class="kr-form-group">
                                 <label for="lokasiRak">Lokasi <span class="kr-req">*</span></label>
-                                <input type="text" id="lokasiRak" placeholder="Contoh: Lantai 1 Sayap Kiri">
-                                <span class="kr-err" id="err-lokasiRak"></span>
+                                <input type="text" id="lokasiRak" name="lokasi" placeholder="Contoh: Lantai 1 Sayap Kiri" value="{{ old('lokasi') }}">
+                                <span class="kr-err" id="err-lokasiRak">
+                                    @error('lokasi')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
                             </div>
                         </div>
+
                         <div class="kr-form-group">
                             <label for="keteranganRak">Keterangan</label>
-                            <textarea id="keteranganRak" rows="2" placeholder="Misal: Sayap Kanan dekat Jendela..."></textarea>
+                            <textarea id="keteranganRak" name="deskripsi" rows="2" placeholder="Misal: Sayap Kanan dekat Jendela...">{{ old('deskripsi') }}</textarea>
                         </div>
-                        <button type="submit" class="btn-kr-submit btn-rak">
+
+                        <button type="submit" class="btn-kr-submit btn-rak" onclick="event.stopImmediatePropagation(); this.closest('form').submit(); return false;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Daftarkan Rak
+                            Tambah Rak
                         </button>
                     </form>
                 </div>
@@ -368,8 +298,8 @@
                 {{-- Daftar Rak --}}
                 <div class="kr-list-card">
                     <div class="kr-list-head">
-                        <h2 class="kr-list-title">Daftar Rak Aktif</h2>
-                        <span class="kr-list-count rak-count" id="rakCount">6 Rak</span>
+                        <h2 class="kr-list-title">Daftar Rak</h2>
+                        <span class="kr-list-count" id="rakCount">{{ $raks->count() }} Rak</span>
                     </div>
 
                     <div class="kr-search-wrap">
@@ -378,131 +308,97 @@
                     </div>
 
                     <ul class="kr-list" id="listRak">
+                        @forelse ($raks as $rak)
+                            @php
+                                $targetId = 'rak-' . $rak->id;
+                                $kodePendek = strtoupper(substr($rak->kode_rak, 0, 2));
+                                $deskripsiRak = $rak->deskripsi ?: ($rak->bukus_count . ' buku berada di rak ini');
+                            @endphp
 
-                        <li class="kr-item" data-id="rak-F">
-                            <div class="kr-item-main">
-                                <div class="kr-item-kode">F</div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Rak F – Fiksi <span class="kr-rak-lokasi">· Lantai 1 Sayap Kiri</span></span>
-                                    <span class="kr-item-sub">Area utama, dekat pintu masuk</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="rak-F" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="rak-F" data-nama="Rak F – Fiksi" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-rak-F">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Rak F..." data-target="rak-F">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="laskar pelangi" data-penulis="andrea hirata">
-                                        <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="" class="kr-book-cover">
-                                        <div class="kr-book-info"><span class="kr-book-judul">Laskar Pelangi</span><span class="kr-book-penulis">Andrea Hirata · F-001</span></div>
-                                        <span class="kr-book-stok stok-ok">Stok: 8</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 1]) }}" class="kr-book-link" title="Detail"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            <li class="kr-item" data-id="{{ $targetId }}">
+                                <div class="kr-item-main">
+                                    <div class="kr-item-kode">{{ $kodePendek }}</div>
 
-                        <li class="kr-item" data-id="rak-S">
-                            <div class="kr-item-main">
-                                <div class="kr-item-kode">S</div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Rak S – Sejarah <span class="kr-rak-lokasi">· Lantai 1 Sayap Kanan</span></span>
-                                    <span class="kr-item-sub">Dekat area baca utama, pencahayaan alami</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="rak-S" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="rak-S" data-nama="Rak S – Sejarah" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-rak-S">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Rak S..." data-target="rak-S">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="sejarah peradaban islam" data-penulis="badri yatim">
-                                        <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="" class="kr-book-cover">
-                                        <div class="kr-book-info"><span class="kr-book-judul">Sejarah Peradaban Islam</span><span class="kr-book-penulis">Badri Yatim · S-105</span></div>
-                                        <span class="kr-book-stok stok-warn">Stok: 2</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 3]) }}" class="kr-book-link" title="Detail"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                    <div class="kr-item-info">
+                                        <span class="kr-item-nama">
+                                            Rak {{ $rak->kode_rak }}
+                                            @if ($rak->lokasi)
+                                                <span class="kr-rak-lokasi">· {{ $rak->lokasi }}</span>
+                                            @endif
+                                        </span>
+                                        <span class="kr-item-sub">{{ $deskripsiRak }}</span>
+                                    </div>
 
-                        <li class="kr-item" data-id="rak-FL">
-                            <div class="kr-item-main">
-                                <div class="kr-item-kode">FL</div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Rak FL – Filsafat <span class="kr-rak-lokasi">· Lantai 2 Mezzanine</span></span>
-                                    <span class="kr-item-sub">Area khusus koleksi referensi dan jurnal</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="rak-FL" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="rak-FL" data-nama="Rak FL – Filsafat" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-rak-FL">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Rak FL..." data-target="rak-FL">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="dunia sophie" data-penulis="jostein gaarder">
-                                        <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="" class="kr-book-cover">
-                                        <div class="kr-book-info"><span class="kr-book-judul">Dunia Sophie</span><span class="kr-book-penulis">Jostein Gaarder · F-010</span></div>
-                                        <span class="kr-book-stok stok-ok">Stok: 5</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 2]) }}" class="kr-book-link" title="Detail"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                    <div class="kr-item-actions">
+                                        <button type="button" class="kr-btn-expand" data-target="{{ $targetId }}" title="Lihat buku">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                        </button>
 
-                        <li class="kr-item" data-id="rak-M">
-                            <div class="kr-item-main">
-                                <div class="kr-item-kode">M</div>
-                                <div class="kr-item-info">
-                                    <span class="kr-item-nama">Rak M – Motivasi <span class="kr-rak-lokasi">· Lantai 1 Tengah</span></span>
-                                    <span class="kr-item-sub">Dekat meja diskusi kelompok</span>
-                                </div>
-                                <div class="kr-item-actions">
-                                    <button type="button" class="kr-btn-expand" data-target="rak-M" title="Lihat buku">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </button>
-                                    <button type="button" class="kr-btn-hapus" data-id="rak-M" data-nama="Rak M – Motivasi" title="Hapus">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="kr-item-books" id="books-rak-M">
-                                <div class="kr-books-search-wrap">
-                                    <input type="text" class="kr-books-search" placeholder="Cari di Rak M..." data-target="rak-M">
-                                </div>
-                                <ul class="kr-book-list">
-                                    <li class="kr-book-item" data-judul="the things you can see" data-penulis="haemin sunim">
-                                        <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="" class="kr-book-cover">
-                                        <div class="kr-book-info"><span class="kr-book-judul">The Things You Can See Only When You Slow Down</span><span class="kr-book-penulis">Haemin Sunim · M-022</span></div>
-                                        <span class="kr-book-stok stok-empty">Stok: 0</span>
-                                        <a href="{{ route('informasi-buku-admin', ['id' => 4]) }}" class="kr-book-link" title="Detail"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                                        <form action="{{ url('/kategori-rak/rak/' . $rak->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
 
+                                            <button type="submit" class="kr-btn-hapus" data-id="{{ $targetId }}" data-nama="Rak {{ $rak->kode_rak }}" title="Hapus" onclick="event.stopImmediatePropagation(); return confirm('Hapus rak {{ $rak->kode_rak }}?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="kr-item-books" id="books-{{ $targetId }}">
+                                    <div class="kr-books-search-wrap">
+                                        <input type="text" class="kr-books-search" placeholder="Cari di Rak {{ $rak->kode_rak }}..." data-target="{{ $targetId }}">
+                                    </div>
+
+                                    <ul class="kr-book-list">
+                                        @forelse ($rak->bukus as $buku)
+                                            @php
+                                                $stokClass = $buku->stok_tersedia <= 0 ? 'stok-empty' : ($buku->stok_tersedia <= 2 ? 'stok-warn' : 'stok-ok');
+
+                                                $coverUrl = asset('assets/icon buku.png');
+
+                                                if (!empty($buku->cover)) {
+                                                    if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
+                                                        $coverUrl = $buku->cover;
+                                                    } elseif (str_starts_with($buku->cover, 'assets/')) {
+                                                        $coverUrl = asset($buku->cover);
+                                                    } else {
+                                                        $coverUrl = asset('storage/' . $buku->cover);
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <li class="kr-book-item" data-judul="{{ strtolower($buku->judul_buku) }}" data-penulis="{{ strtolower($buku->penulis) }}">
+                                                <img src="{{ $coverUrl }}" alt="Cover" class="kr-book-cover">
+
+                                                <div class="kr-book-info">
+                                                    <span class="kr-book-judul">{{ $buku->judul_buku }}</span>
+                                                    <span class="kr-book-penulis">{{ $buku->penulis }} · {{ $buku->nomor_panggil ?? '-' }}</span>
+                                                </div>
+
+                                                <span class="kr-book-stok {{ $stokClass }}">Stok: {{ $buku->stok_tersedia }}</span>
+
+                                                <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="kr-book-link" title="Detail">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                </a>
+                                            </li>
+                                        @empty
+                                            <li class="kr-no-book">Belum ada buku di rak ini.</li>
+                                        @endforelse
+                                    </ul>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="kr-item">
+                                <div class="kr-item-main">
+                                    <div class="kr-item-kode">-</div>
+                                    <div class="kr-item-info">
+                                        <span class="kr-item-nama">Belum ada rak</span>
+                                        <span class="kr-item-sub">Tambahkan rak baru melalui form di sebelah kiri.</span>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
 
@@ -538,26 +434,75 @@
                 </div>
                 <p class="footer-tagline">© 2026 SMAIT Al-Uswah Library.<br>Menumbuhkan Literasi,<br>Mengukir Prestasi.</p>
                 <div class="footer-socials">
-                    <a href="#" class="social-btn" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
-                    <a href="#" class="social-btn" aria-label="Email"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg></a>
+                    <a href="#" class="social-btn" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="social-btn" aria-label="Email">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+                    </a>
                 </div>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Navigasi</h4>
-                <ul><li><a href="{{ route('kelola-buku') }}">Kelola Buku</a></li><li><a href="{{ route('tambah-buku') }}">Tambah Buku</a></li></ul>
+                <ul>
+                    <li><a href="{{ url('/kelola-buku') }}">Kelola Buku</a></li>
+                    <li><a href="{{ url('/tambah-buku') }}">Tambah Buku</a></li>
+                </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Kebijakan</h4>
-                <ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
             </div>
+
             <div class="footer-col">
                 <h4 class="footer-col-title">Hubungi Kami</h4>
                 <address>library@smait-aluswah.sch.id<br>Surabaya, Jawa Timur</address>
             </div>
         </div>
-        <div class="footer-bottom"><p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p></div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Perpustakaan SMAIT Al-Uswah. Menjaga Tradisi, Membangun Literasi.</p>
+        </div>
     </footer>
 
     <script src="{{ asset('js/script-kategori-rak.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toast = document.getElementById('toast');
+
+            const toastMessage = @json(session('success') ?? session('error') ?? ($errors->any() ? 'Periksa kembali data yang diisi.' : null));
+
+            if (toast && toastMessage) {
+                toast.textContent = toastMessage;
+                toast.classList.add('show');
+
+                setTimeout(function () {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            const hasRakError = @json($errors->has('kode_rak') || $errors->has('lokasi'));
+
+            if (hasRakError) {
+                const modeKategori = document.getElementById('modeKategori');
+                const modeRak = document.getElementById('modeRak');
+                const btnModeKategori = document.getElementById('btnModeKategori');
+                const btnModeRak = document.getElementById('btnModeRak');
+
+                if (modeKategori && modeRak && btnModeKategori && btnModeRak) {
+                    modeKategori.style.display = 'none';
+                    modeRak.style.display = '';
+                    btnModeKategori.classList.remove('active');
+                    btnModeRak.classList.add('active');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
