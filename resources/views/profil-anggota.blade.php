@@ -52,11 +52,12 @@
             </a>
 
             <nav class="nav-links">
-                <a href="{{ url('/dashboard-anggota') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url('/katalog-anggota') }}" class="nav-link">Katalog</a>
-                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ url('/status-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/home-anggota') }}" class="nav-link {{ request()->is('home-anggota') ? 'active' : '' }}">Home</a>
+                <a href="{{ url('/dashboard-anggota') }}" class="nav-link {{ request()->is('dashboard-anggota') ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ url('/katalog-anggota') }}" class="nav-link {{ request()->is('katalog-anggota') ? 'active' : '' }}">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link {{ request()->is('tentang-perpustakaan-anggota') ? 'active' : '' }}">Tentang</a>
+                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link {{ request()->is('riwayat-peminjaman') ? 'active' : '' }}">Riwayat</a>
+                <a href="{{ url('/status-denda') }}" class="nav-link {{ request()->is('status-denda') ? 'active' : '' }}">Denda</a>
             </nav>
 
             <a href="{{ url('/profil-anggota') }}" class="nav-profile active-profile">
@@ -271,14 +272,33 @@
                             <textarea id="alamat" name="alamat" rows="3">{{ old('alamat', optional($anggota)->alamat) }}</textarea>
                             <span class="form-err" id="err-alamat"></span>
                         </div>
+                    </form>
 
-                        <div class="form-actions">
-                            <a href="{{ url('/profil-anggota') }}" class="btn-batal" id="btnBatal" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                    {{-- ===== FORM ACTIONS (termasuk tombol Logout) =====
+                         Batalkan & Simpan Perubahan tetap terikat ke #profilForm lewat atribut form="profilForm",
+                         sehingga submit tetap berjalan normal meski elemen ini berada di luar tag <form>.
+                         Logout dipisah ke ujung kanan baris yang sama sebagai aksi yang berbeda konteksnya. --}}
+                    <div class="form-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+
+                        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                            <a href="{{ url('/profil-anggota') }}" class="btn-batal" id="btnBatal" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; padding: 10px 24px; background: #e5e7eb; color: #333; border-radius: 8px; font-weight: 600; border: none; cursor: pointer;">
                                 Batalkan
                             </a>
-                            <button type="submit" class="btn-simpan">Simpan Perubahan</button>
+                            <button type="submit" form="profilForm" class="btn-simpan" style="padding: 10px 24px; background: #2D7076; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                Simpan Perubahan
+                            </button>
                         </div>
-                    </form>
+
+                        <form action="{{ url('/logout') }}" method="POST" style="margin: 0;">
+                            @csrf
+                            <button type="submit" style="padding: 10px 24px; background: #c0392b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
                 {{-- Keamanan Akun --}}

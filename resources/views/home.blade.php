@@ -13,29 +13,21 @@
     <header class="navbar">
         <div class="navbar-inner">
             {{-- Brand --}}
-            <a href="{{ route('home') }}" class="nav-brand">
+            <a href="{{ url('/home') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             {{-- Nav Links --}}
             <nav class="nav-links">
-                <a href="{{ route('home') }}" class="nav-link active">Beranda</a>
-                <a href="{{ route('katalog') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('register') }}" class="nav-link">Daftar Anggota</a>
+                <a href="{{ url('/home') }}" class="nav-link active">Beranda</a>
+                <a href="{{ url('/katalog') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan') }}" class="nav-link">Tentang</a>
+                <a href="{{ url('/register') }}" class="nav-link">Daftar Anggota</a>
             </nav>
 
             {{-- CTA Button --}}
-            {{-- Ganti kondisi sesuai auth Laravel --}}
-            @auth
-                <a href="{{ route('profil-anggota') }}" class="btn-nav-cta">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Profil
-                </a>
-            @else
-                <a href="{{ route('log-in') }}" class="btn-nav-cta">Masuk</a>
-            @endauth
+            <a href="{{ url('/log-in') }}" class="btn-nav-cta">Masuk</a>
         </div>
     </header>
 
@@ -57,7 +49,7 @@
                 <div class="hero-search">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#484441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <input type="text" id="searchInput" placeholder="Cari judul buku, penulis, atau kategori..." class="search-input">
-                    <a href="{{ route('katalog') }}" class="btn-search" id="btnSearch">Cari</a>
+                    <a href="{{ url('/katalog') }}" class="btn-search" id="btnSearch">Cari</a>
                 </div>
             </div>
 
@@ -77,7 +69,7 @@
                 </div>
                 <h3 class="card-title">Katalog Buku</h3>
                 <p class="card-desc">Jelajahi beragam genre mulai dari Sejarah hingga Sains Modern dalam satu koleksi terpadu.</p>
-                <a href="{{ route('katalog') }}" class="card-link">Mulai Jelajahi &rarr;</a>
+                <a href="{{ url('/katalog') }}" class="card-link">Mulai Jelajahi &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -86,7 +78,7 @@
                 </div>
                 <h3 class="card-title">Daftar Anggota</h3>
                 <p class="card-desc">Bergabunglah dengan komunitas pembaca kami dan nikmati akses peminjaman eksklusif setiap hari.</p>
-                <a href="{{ route('register') }}" class="card-link">Daftar Sekarang &rarr;</a>
+                <a href="{{ url('/register') }}" class="card-link">Daftar Sekarang &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -95,7 +87,7 @@
                 </div>
                 <h3 class="card-title">Tentang Kami</h3>
                 <p class="card-desc">Pelajari visi kami dalam membangun ekosistem literasi yang modern bagi generasi masa depan.</p>
-                <a href="{{ route('tentang-perpustakaan') }}" class="card-link">Pelajari Visi &rarr;</a>
+                <a href="{{ url('/tentang-perpustakaan') }}" class="card-link">Pelajari Visi &rarr;</a>
             </div>
 
         </div>
@@ -109,66 +101,44 @@
                     <h2 class="popular-title">Koleksi Terpopuler</h2>
                     <p class="popular-subtitle">Buku-buku yang paling banyak diminati minggu ini.</p>
                 </div>
-                <a href="{{ route('katalog') }}" class="btn-lihat-semua">
+                <a href="{{ url('/katalog') }}" class="btn-lihat-semua">
                     Lihat Semua
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                 </a>
             </div>
 
             <div class="book-grid">
-
-                <div class="book-card book-card-locked" onclick="showLoginPrompt()">
-                    <div class="book-cover-wrap">
-                        <span class="book-badge badge-sejarah">Sejarah</span>
-                        <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="book-cover-img">
-                        <div class="book-lock-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                @forelse($bukuPopuler as $buku)
+                    <div class="book-card {{ session('auth_role') ? '' : 'book-card-locked' }}" 
+                         onclick="{{ session('auth_role') ? 'window.location.href=\'/informasi-buku/' . $buku->id . '\'' : 'showLoginPrompt()' }}"
+                         style="cursor: pointer;">
+                        <div class="book-cover-wrap">
+                            <span class="book-badge badge-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
+                                {{ $buku->kategori->nama_kategori ?? 'Umum' }}
+                            </span>
+                            @if($buku->cover)
+                                <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                            @else
+                                <img src="{{ asset('assets/icon buku.png') }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                            @endif
+                            @if(!session('auth_role'))
+                                <div class="book-lock-overlay">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </div>
+                            @endif
                         </div>
+                        <h4 class="book-title">{{ $buku->judul_buku }}</h4>
+                        <p class="book-author">{{ $buku->penulis }}</p>
+                        <span class="book-status status-{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'dipinjam' }}">
+                            <span class="status-dot"></span> 
+                            {{ $buku->stok_tersedia > 0 ? 'Tersedia' : 'Dipinjam' }}
+                        </span>
                     </div>
-                    <h4 class="book-title">Sejarah Peradaban Islam</h4>
-                    <p class="book-author">Dr. Fauzan Adhim, M.Pd.I.</p>
-                    <span class="book-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                </div>
-
-                <div class="book-card book-card-locked" onclick="showLoginPrompt()">
-                    <div class="book-cover-wrap">
-                        <span class="book-badge badge-fiksi">Fiksi</span>
-                        <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Laskar Pelangi" class="book-cover-img">
-                        <div class="book-lock-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        </div>
+                @empty
+                    <div class="col-12 text-center" style="padding: 40px 0;">
+                        <p>Belum ada buku terpopuler.</p>
                     </div>
-                    <h4 class="book-title">Laskar Pelangi</h4>
-                    <p class="book-author">Andrea Hirata</p>
-                    <span class="book-status status-dipinjam"><span class="status-dot"></span> Dipinjam</span>
-                </div>
-
-                <div class="book-card book-card-locked" onclick="showLoginPrompt()">
-                    <div class="book-cover-wrap">
-                        <span class="book-badge badge-filsafat">Filsafat</span>
-                        <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Dunia Sophie" class="book-cover-img">
-                        <div class="book-lock-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        </div>
-                    </div>
-                    <h4 class="book-title">Dunia Sophie</h4>
-                    <p class="book-author">Jostein Gaarder</p>
-                    <span class="book-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                </div>
-
-                <div class="book-card book-card-locked" onclick="showLoginPrompt()">
-                    <div class="book-cover-wrap">
-                        <span class="book-badge badge-motivasi">Motivasi</span>
-                        <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Slow Down" class="book-cover-img">
-                        <div class="book-lock-overlay">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        </div>
-                    </div>
-                    <h4 class="book-title">The Things You Can See Only When You Slow Down</h4>
-                    <p class="book-author">Haemin Sunim</p>
-                    <span class="book-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                </div>
-
+                @endforelse
             </div>
 
             {{-- Modal: harus login dulu --}}
@@ -180,7 +150,7 @@
                     <h3 class="modal-title">Masuk untuk Melanjutkan</h3>
                     <p class="modal-body">Kamu perlu masuk atau mendaftar sebagai anggota untuk melihat informasi detail buku dan melakukan peminjaman.</p>
                     <div class="modal-btns">
-                        <a href="{{ route('log-in') }}" class="btn-modal">Masuk Sekarang</a>
+                        <a href="{{ url('/log-in') }}" class="btn-modal">Masuk Sekarang</a>
                         <button class="btn-modal-outline" onclick="closeLoginPrompt()">Nanti Saja</button>
                     </div>
                 </div>
@@ -197,8 +167,8 @@
             <h2 class="cta-title">Siap Menjelajahi Dunia?</h2>
             <p class="cta-desc">Daftar menjadi anggota sekarang dan mulailah petualangan<br>literasi Anda bersama ribuan pembaca lainnya.</p>
             <div class="cta-btns">
-                <a href="{{ route('register') }}" class="btn-cta-outline">Daftar Sekarang</a>
-                <a href="{{ route('katalog') }}" class="btn-cta-solid">Cari Buku</a>
+                <a href="{{ url('/register') }}" class="btn-cta-outline">Daftar Sekarang</a>
+                <a href="{{ url('/katalog') }}" class="btn-cta-solid">Cari Buku</a>
             </div>
             <div class="cta-deco-book">
                 <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
@@ -255,6 +225,57 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-home.js') }}"></script>
+    <script>
+        // Fungsi untuk modal login
+        function showLoginPrompt() {
+            document.getElementById('loginPromptModal').classList.add('active');
+        }
+
+        function closeLoginPrompt() {
+            document.getElementById('loginPromptModal').classList.remove('active');
+        }
+
+        // Tutup modal dengan klik di luar
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('loginPromptModal');
+            if (e.target === modal) {
+                closeLoginPrompt();
+            }
+        });
+
+        // Search input redirect ke katalog
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const btnSearch = document.getElementById('btnSearch');
+
+            function doSearch() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = '{{ url("/katalog") }}?search=' + encodeURIComponent(query);
+                } else {
+                    window.location.href = '{{ url("/katalog") }}';
+                }
+            }
+
+            if (btnSearch) {
+                btnSearch.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    doSearch();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        doSearch();
+                    }
+                });
+            }
+        });
+    </script>
+
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-home.js') }}"></script> --}}
 </body>
 </html>

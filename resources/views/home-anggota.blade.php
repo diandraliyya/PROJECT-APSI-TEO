@@ -12,31 +12,37 @@
 <body>
 
     @php
-        $user = auth()->user();
-
-        $namaUser = $user?->nama_lengkap ?? $user?->name ?? 'Anggota';
-        $fotoUser = $user?->foto ?? null;
+        $namaUser = session('auth_name') ?? 'Anggota';
+        $fotoUser = null;
         $inisialUser = strtoupper(substr($namaUser, 0, 1));
+        
+        if(session('auth_role') === 'anggota' && session('auth_id')) {
+            $anggota = App\Models\Anggota::find(session('auth_id'));
+            if($anggota && $anggota->foto) {
+                $fotoUser = $anggota->foto;
+            }
+        }
     @endphp
 
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-anggota') }}" class="nav-brand">
+            <a href="{{ url('/home-anggota') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ route('dashboard-anggota') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-anggota') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-anggota') }}" class="nav-link active">Home</a>  {{-- Tambah ini --}}
+            <a href="{{ url('/dashboard-anggota') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url('/katalog-anggota') }}" class="nav-link">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
+            <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
+            <a href="{{ url('/status-denda') }}" class="nav-link">Denda</a>
+        </nav>
 
             {{-- Profil anggota --}}
-            <a href="{{ route('profil-anggota') }}" class="nav-profile">
+            <a href="{{ url('/profil-anggota') }}" class="nav-profile">
                 <div class="nav-avatar">
                     @if($fotoUser)
                         <img src="{{ asset('storage/' . $fotoUser) }}" alt="Foto Profil" class="avatar-img">
@@ -44,7 +50,6 @@
                         <span class="avatar-placeholder">{{ $inisialUser }}</span>
                     @endif
                 </div>
-
                 <span class="nav-username">{{ $namaUser }}</span>
             </a>
         </div>
@@ -73,7 +78,7 @@
                     </svg>
 
                     <input type="text" id="searchInput" placeholder="Cari judul buku, penulis, atau kategori..." class="search-input">
-                    <a href="{{ route('katalog-anggota') }}" class="btn-search" id="btnSearch">Cari</a>
+                    <a href="{{ url('/katalog-anggota') }}" class="btn-search" id="btnSearch">Cari</a>
                 </div>
             </div>
 
@@ -96,7 +101,7 @@
                 </div>
                 <h3 class="card-title">Katalog Buku</h3>
                 <p class="card-desc">Jelajahi beragam genre mulai dari Sejarah hingga Sains Modern dalam satu koleksi terpadu.</p>
-                <a href="{{ route('katalog-anggota') }}" class="card-link">Mulai Jelajahi &rarr;</a>
+                <a href="{{ url('/katalog-anggota') }}" class="card-link">Mulai Jelajahi &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -110,7 +115,7 @@
                 </div>
                 <h3 class="card-title">Riwayat Peminjaman</h3>
                 <p class="card-desc">Lihat seluruh riwayat buku yang pernah kamu pinjam dan pantau status pengembaliannya.</p>
-                <a href="{{ route('riwayat-peminjaman') }}" class="card-link">Lihat Riwayat &rarr;</a>
+                <a href="{{ url('/riwayat-peminjaman') }}" class="card-link">Lihat Riwayat &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -123,7 +128,7 @@
                 </div>
                 <h3 class="card-title">Tentang Kami</h3>
                 <p class="card-desc">Pelajari visi kami dalam membangun ekosistem literasi yang modern bagi generasi masa depan.</p>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="card-link">Pelajari Visi &rarr;</a>
+                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="card-link">Pelajari Visi &rarr;</a>
             </div>
 
         </div>
@@ -138,7 +143,7 @@
                     <p class="popular-subtitle">Buku-buku yang paling banyak diminati minggu ini.</p>
                 </div>
 
-                <a href="{{ route('katalog-anggota') }}" class="btn-lihat-semua">
+                <a href="{{ url('/katalog-anggota') }}" class="btn-lihat-semua">
                     Lihat Semua
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="7" height="7"/>
@@ -150,61 +155,32 @@
             </div>
 
             <div class="book-grid">
-                <a href="{{ route('informasi-buku', ['id' => 1]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-sejarah">Sejarah</span>
-                            <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="book-cover-img">
+                @forelse($bukuPopuler as $buku)
+                    <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="book-card-link">
+                        <div class="book-card">
+                            <div class="book-cover-wrap">
+                                <span class="book-badge badge-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
+                                    {{ $buku->kategori->nama_kategori ?? 'Umum' }}
+                                </span>
+                                @if($buku->cover)
+                                    <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                                @else
+                                    <img src="{{ asset('assets/icon buku.png') }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                                @endif
+                            </div>
+                            <h4 class="book-title">{{ $buku->judul_buku }}</h4>
+                            <p class="book-author">{{ $buku->penulis }}</p>
+                            <span class="book-status status-{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'dipinjam' }}">
+                                <span class="status-dot"></span> 
+                                {{ $buku->stok_tersedia > 0 ? 'Tersedia' : 'Dipinjam' }}
+                            </span>
                         </div>
-                        <h4 class="book-title">Sejarah Peradaban Islam</h4>
-                        <p class="book-author">Dr. Fauzan Adhim, M.Pd.I.</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
+                    </a>
+                @empty
+                    <div style="text-align:center; padding:40px 0; width:100%;">
+                        <p>Belum ada data buku.</p>
                     </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 2]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-fiksi">Fiksi</span>
-                            <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Laskar Pelangi" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">Laskar Pelangi</h4>
-                        <p class="book-author">Andrea Hirata</p>
-                        <span class="book-status status-dipinjam">
-                            <span class="status-dot"></span> Dipinjam
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 3]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-filsafat">Filsafat</span>
-                            <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Dunia Sophie" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">Dunia Sophie</h4>
-                        <p class="book-author">Jostein Gaarder</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 4]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-motivasi">Motivasi</span>
-                            <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="The Things You Can See Only When You Slow Down" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">The Things You Can See Only When You Slow Down</h4>
-                        <p class="book-author">Haemin Sunim</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
-                    </div>
-                </a>
+                @endforelse
             </div>
         </div>
     </section>
@@ -218,67 +194,38 @@
                     <p class="popular-subtitle">Pilihan buku berdasarkan minat bacamu.</p>
                 </div>
 
-                <a href="{{ route('katalog-anggota') }}" class="btn-lihat-semua">
+                <a href="{{ url('/katalog-anggota') }}" class="btn-lihat-semua">
                     Lihat Semua &rarr;
                 </a>
             </div>
 
             <div class="book-grid">
-                <a href="{{ route('informasi-buku', ['id' => 3]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-filsafat">Filsafat</span>
-                            <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Dunia Sophie" class="book-cover-img">
+                @forelse($rekomendasiBuku as $buku)
+                    <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="book-card-link">
+                        <div class="book-card">
+                            <div class="book-cover-wrap">
+                                <span class="book-badge badge-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
+                                    {{ $buku->kategori->nama_kategori ?? 'Umum' }}
+                                </span>
+                                @if($buku->cover)
+                                    <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                                @else
+                                    <img src="{{ asset('assets/icon buku.png') }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
+                                @endif
+                            </div>
+                            <h4 class="book-title">{{ $buku->judul_buku }}</h4>
+                            <p class="book-author">{{ $buku->penulis }}</p>
+                            <span class="book-status status-{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'dipinjam' }}">
+                                <span class="status-dot"></span> 
+                                {{ $buku->stok_tersedia > 0 ? 'Tersedia' : 'Dipinjam' }}
+                            </span>
                         </div>
-                        <h4 class="book-title">Dunia Sophie</h4>
-                        <p class="book-author">Jostein Gaarder</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
+                    </a>
+                @empty
+                    <div style="text-align:center; padding:40px 0; width:100%;">
+                        <p>Belum ada rekomendasi buku.</p>
                     </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 4]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-motivasi">Motivasi</span>
-                            <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Slow Down" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">The Things You Can See Only When You Slow Down</h4>
-                        <p class="book-author">Haemin Sunim</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 1]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-sejarah">Sejarah</span>
-                            <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">Sejarah Peradaban Islam</h4>
-                        <p class="book-author">Dr. Fauzan Adhim, M.Pd.I.</p>
-                        <span class="book-status status-tersedia">
-                            <span class="status-dot"></span> Tersedia
-                        </span>
-                    </div>
-                </a>
-
-                <a href="{{ route('informasi-buku', ['id' => 2]) }}" class="book-card-link">
-                    <div class="book-card">
-                        <div class="book-cover-wrap">
-                            <span class="book-badge badge-fiksi">Fiksi</span>
-                            <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Laskar Pelangi" class="book-cover-img">
-                        </div>
-                        <h4 class="book-title">Laskar Pelangi</h4>
-                        <p class="book-author">Andrea Hirata</p>
-                        <span class="book-status status-dipinjam">
-                            <span class="status-dot"></span> Dipinjam
-                        </span>
-                    </div>
-                </a>
+                @endforelse
             </div>
         </div>
     </section>
@@ -346,6 +293,39 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-home-anggota.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const btnSearch = document.getElementById('btnSearch');
+
+            function doSearch() {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = '{{ url("/katalog-anggota") }}?search=' + encodeURIComponent(query);
+                } else {
+                    window.location.href = '{{ url("/katalog-anggota") }}';
+                }
+            }
+
+            if (btnSearch) {
+                btnSearch.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    doSearch();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        doSearch();
+                    }
+                });
+            }
+        });
+    </script>
+
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-home-anggota.js') }}"></script> --}}
 </body>
 </html>

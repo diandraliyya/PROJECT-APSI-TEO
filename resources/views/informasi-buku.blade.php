@@ -1,80 +1,9 @@
-@php
-    // ====== DATA BUKU (contoh dummy berbasis assets) ======
-    // Di produksi, $buku didapat dari controller: compact('buku')
-    // Struktur ini cocok dengan tabel books kamu.
-    $dataBuku = [
-        1 => [
-            'judul' => 'Laskar Pelangi',
-            'penulis' => 'Andrea Hirata',
-            'kategori' => 'Sastra & Fiksi',
-            'kategori_class' => 'fiksi',
-            'cover' => 'Laskar_pelangi_sampul.jpg',
-            'sinopsis' => 'Laskar Pelangi mengisahkan perjalanan sepuluh anak dari keluarga kurang mampu yang menempuh pendidikan di sebuah sekolah Muhammadiyah di Pulau Belitung dengan segala keterbatasan. Dari Ikal, Lintang, hingga Mahar, setiap karakter menghidupkan semangat juang, persahabatan, dan kecintaan terhadap ilmu di tengah kesederhanaan. Novel pertama dari Tetralogi Laskar Pelangi ini menjadi karya sastra Indonesia terlaris sepanjang sejarah dan telah diterjemahkan ke berbagai bahasa di dunia.',
-            'penerbit' => 'Bentang Pustaka',
-            'tahun' => '2005',
-            'isbn' => '979-3062-79-7',
-            'kategori_label' => 'Buku Sastra',
-            'rak' => 'Sastra - 02A',
-            'nomor_panggil' => '899.221 AND l',
-            'total' => 12, 'tersedia' => 8, 'dipinjam' => 4,
-        ],
-        2 => [
-            'judul' => 'Dunia Sophie',
-            'penulis' => 'Jostein Gaarder',
-            'kategori' => 'Filsafat',
-            'kategori_class' => 'filsafat',
-            'cover' => 'dunia-sophie-sampul.jpg',
-            'sinopsis' => 'Sophie, seorang pelajar berusia empat belas tahun, suatu hari menerima surat misterius berisi satu pertanyaan: "Siapa kamu?". Dari sanalah ia memulai perjalanan menakjubkan menyusuri sejarah filsafat, dari Yunani kuno hingga abad ke-20, dibimbing seorang filsuf misterius bernama Alberto Knox. Dikemas sebagai novel misteri yang cerdas, Dunia Sophie berhasil menyederhanakan 3.000 tahun pemikiran filsafat menjadi kisah yang ringan, menggugah, dan memikat untuk semua kalangan.',
-            'penerbit' => 'Mizan',
-            'tahun' => '1996',
-            'isbn' => '978-602-441-020-9',
-            'kategori_label' => 'Novel Filsafat',
-            'rak' => 'Filsafat - 01C',
-            'nomor_panggil' => '100 GAA d',
-            'total' => 6, 'tersedia' => 5, 'dipinjam' => 1,
-        ],
-        3 => [
-            'judul' => 'Sejarah Peradaban Islam',
-            'penulis' => 'Prof. Dr. Badri Yatim, M.A.',
-            'kategori' => 'Agama & Sejarah',
-            'kategori_class' => 'sejarah',
-            'cover' => 'sejarah-peradaban-silam-sampul.png',
-            'sinopsis' => 'Buku ini menyajikan uraian menyeluruh tentang perjalanan peradaban Islam dari masa klasik, pertengahan, hingga modern. Membahas bagaimana Islam membawa kemajuan kebudayaan dan ilmu pengetahuan, mulai dari dunia Arab, Persia, Turki, India, hingga penyebarannya di Nusantara. Disusun sebagai bahan rujukan penting bagi pelajar dan mahasiswa studi keislaman, buku ini memadukan ketajaman analisis sejarah dengan penyajian yang sistematis dan mudah dipahami.',
-            'penerbit' => 'Rajawali Pers',
-            'tahun' => '2008',
-            'isbn' => '979-421-337-3',
-            'kategori_label' => 'Buku Teks Akademik',
-            'rak' => 'Agama - 05B',
-            'nomor_panggil' => '297.09 BAD s',
-            'total' => 10, 'tersedia' => 7, 'dipinjam' => 3,
-        ],
-        4 => [
-            'judul' => 'The Things You Can See Only When You Slow Down',
-            'penulis' => 'Haemin Sunim',
-            'kategori' => 'Pengembangan Diri',
-            'kategori_class' => 'motivasi',
-            'cover' => 'slow-down-sampul.jpg',
-            'sinopsis' => 'Dunia bergerak dengan cepat, tetapi tidak berarti kita juga harus begitu. Melalui buku ini, guru meditasi Zen Haemin Sunim mengajak pembaca menyadari bahwa ketika kita melambat, dunia pun ikut melambat bersama kita. Berisi esai-esai pendek dan kata mutiara reflektif tentang istirahat, hubungan antarmanusia, cinta, dan pekerjaan, buku best seller ini membimbing kita menemukan keseimbangan dan kedamaian batin di tengah hiruk-pikuk kehidupan modern.',
-            'penerbit' => 'Penerbit POP (KPG)',
-            'tahun' => '2020',
-            'isbn' => '978-602-481-365-9',
-            'kategori_label' => 'Self Improvement',
-            'rak' => 'Pengembangan Diri - 03A',
-            'nomor_panggil' => '155.2 SUN t',
-            'total' => 8, 'tersedia' => 8, 'dipinjam' => 0,
-        ],
-    ];
-
-    // Ambil id dari route (?id=) — default 1
-    $id = request()->route('id') ?? request('id') ?? 1;
-    $buku = $dataBuku[$id] ?? $dataBuku[1];
-@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $buku['judul'] }} – Perpustakaan SMAIT Al-Uswah</title>
+    <title>{{ $buku->judul_buku }} – Perpustakaan SMAIT Al-Uswah</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style-home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style-home-anggota.css') }}">
@@ -82,31 +11,45 @@
 </head>
 <body>
 
-    {{-- ===== NAVBAR (3 role) ===== --}}
+    {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-anggota') }}" class="nav-brand">
+            <a href="{{ url('/home-anggota') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('dashboard-anggota') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-anggota') }}" class="nav-link active">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/home-anggota') }}" class="nav-link {{ request()->is('home-anggota') ? 'active' : '' }}">Home</a>
+                <a href="{{ url('/dashboard-anggota') }}" class="nav-link {{ request()->is('dashboard-anggota') ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ url('/katalog-anggota') }}" class="nav-link {{ request()->is('katalog-anggota') ? 'active' : '' }}">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link {{ request()->is('tentang-perpustakaan-anggota') ? 'active' : '' }}">Tentang</a>
+                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link {{ request()->is('riwayat-peminjaman') ? 'active' : '' }}">Riwayat</a>
+                <a href="{{ url('/status-denda') }}" class="nav-link {{ request()->is('status-denda') ? 'active' : '' }}">Denda</a>
             </nav>
 
-            <a href="{{ route('profil-anggota') }}" class="nav-profile">
+            @php
+                $namaUser = session('auth_name') ?? 'Anggota';
+                $fotoUser = null;
+                $inisialUser = strtoupper(substr($namaUser, 0, 1));
+                
+                if(session('auth_role') === 'anggota' && session('auth_id')) {
+                    $anggota = App\Models\Anggota::find(session('auth_id'));
+                    if($anggota && $anggota->foto) {
+                        $fotoUser = $anggota->foto;
+                    }
+                }
+            @endphp
+
+            <a href="{{ url('/profil-anggota') }}" class="nav-profile">
                 <div class="nav-avatar">
-                    @if(auth()->user()?->foto)
-                        <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Foto Profil" class="avatar-img">
+                    @if($fotoUser)
+                        <img src="{{ asset('storage/' . $fotoUser) }}" alt="Foto Profil" class="avatar-img">
                     @else
-                        <div class="avatar-placeholder">{{ strtoupper(substr(auth()->user()?->nama_lengkap ?? 'A', 0, 1)) }}</div>
+                        <div class="avatar-placeholder">{{ $inisialUser }}</div>
                     @endif
                 </div>
-                <span class="nav-username">{{ auth()->user()?->nama_lengkap ?? 'Anggota' }}</span>
+                <span class="nav-username">{{ $namaUser }}</span>
             </a>
         </div>
     </header>
@@ -115,7 +58,7 @@
     <section class="info-hero">
         <div class="info-hero-inner">
             <nav class="breadcrumb">
-                <a href="{{ route('katalog-anggota') }}">Katalog</a>
+                <a href="{{ url('/katalog-anggota') }}">Katalog</a>
                 <span class="breadcrumb-sep">&rsaquo;</span>
                 <span class="breadcrumb-current">Detail Buku</span>
             </nav>
@@ -142,42 +85,43 @@
                     <span class="info-bookmark">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#8a5a2b" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                     </span>
-                    <img src="{{ asset('assets/' . $buku['cover']) }}" alt="{{ $buku['judul'] }}" class="info-cover">
+                    @if($buku->cover)
+                        <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="info-cover">
+                    @else
+                        <img src="{{ asset('assets/default-book.jpg') }}" alt="Default Cover" class="info-cover">
+                    @endif
                 </div>
-
-                <a href="#" class="btn-pinjam">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                        Pinjam Buku Ini
-                    </a>
             </div>
 
             {{-- RIGHT: info --}}
             <div class="info-right">
-                <span class="info-kategori kategori-{{ $buku['kategori_class'] }}">{{ $buku['kategori'] }}</span>
-                <h2 class="info-judul">{{ $buku['judul'] }}</h2>
+                <span class="info-kategori kategori-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
+                    {{ $buku->kategori->nama_kategori ?? 'Umum' }}
+                </span>
+                <h2 class="info-judul">{{ $buku->judul_buku }}</h2>
                 <p class="info-penulis">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    {{ $buku['penulis'] }}
+                    {{ $buku->penulis }}
                 </p>
 
                 <div class="info-ringkasan">
                     <h3 class="ringkasan-title">Ringkasan Buku</h3>
-                    <p class="ringkasan-text">{{ $buku['sinopsis'] }}</p>
+                    <p class="ringkasan-text">{{ $buku->sinopsis ?? 'Belum ada sinopsis untuk buku ini.' }}</p>
                 </div>
 
                 {{-- Stok --}}
                 <div class="info-stok">
                     <div class="stok-card stok-total">
                         <span class="stok-label">TOTAL EKSEMPLAR</span>
-                        <span class="stok-value">{{ $buku['total'] }}</span>
+                        <span class="stok-value">{{ $buku->stok_total }}</span>
                     </div>
                     <div class="stok-card stok-tersedia">
                         <span class="stok-label">TERSEDIA</span>
-                        <span class="stok-value">{{ $buku['tersedia'] }}</span>
+                        <span class="stok-value">{{ $buku->stok_tersedia }}</span>
                     </div>
                     <div class="stok-card stok-dipinjam">
                         <span class="stok-label">DIPINJAM</span>
-                        <span class="stok-value">{{ $buku['dipinjam'] }}</span>
+                        <span class="stok-value">{{ $buku->stok_total - $buku->stok_tersedia }}</span>
                     </div>
                 </div>
             </div>
@@ -199,19 +143,19 @@
                     <div class="info-grid">
                         <div class="info-grid-row">
                             <span class="grid-label">Penerbit</span>
-                            <span class="grid-value">{{ $buku['penerbit'] }}</span>
+                            <span class="grid-value">{{ $buku->penerbit ?? '-' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">Tahun Terbit</span>
-                            <span class="grid-value">{{ $buku['tahun'] }}</span>
+                            <span class="grid-value">{{ $buku->tahun_terbit ?? '-' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">ISBN</span>
-                            <span class="grid-value">{{ $buku['isbn'] }}</span>
+                            <span class="grid-value">{{ $buku->isbn ?? '-' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">Kategori</span>
-                            <span class="grid-value">{{ $buku['kategori_label'] }}</span>
+                            <span class="grid-value">{{ $buku->kategori->nama_kategori ?? '-' }}</span>
                         </div>
                     </div>
 
@@ -226,15 +170,15 @@
                     <div class="info-grid">
                         <div class="info-grid-row">
                             <span class="grid-label">Rak</span>
-                            <span class="grid-value">{{ $buku['rak'] }}</span>
+                            <span class="grid-value">{{ $buku->rak->kode_rak ?? '-' }} {{ $buku->rak->lokasi ?? '' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">Nomor Panggil</span>
-                            <span class="grid-value">{{ $buku['nomor_panggil'] }}</span>
+                            <span class="grid-value">{{ $buku->nomor_panggil ?? '-' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">Status Koleksi</span>
-                            <span class="grid-value">{{ $buku['tersedia'] > 0 ? 'Tersedia di Rak' : 'Sedang Dipinjam' }}</span>
+                            <span class="grid-value">{{ $buku->stok_tersedia > 0 ? 'Tersedia di Rak' : 'Sedang Dipinjam' }}</span>
                         </div>
                         <div class="info-grid-row">
                             <span class="grid-label">Lantai</span>
@@ -252,7 +196,7 @@
         </div>
     </section>
 
-    {{-- ===== FOOTER ===== --}}
+    {{-- ===== FOOTER (pertahankan asli) ===== --}}
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
@@ -297,6 +241,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-informasi-buku.js') }}"></script>
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-informasi-buku.js') }}"></script> --}}
 </body>
 </html>

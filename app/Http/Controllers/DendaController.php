@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
 use App\Models\Denda;
 use App\Models\PembayaranDenda;
 use Illuminate\Http\Request;
@@ -62,15 +63,53 @@ class DendaController extends Controller
             ? session('auth_id')
             : $request->query('anggota_id');
 
-        $dendas = Denda::with(['detailTransaksi.buku', 'pembayaranDendas'])
-            ->when($anggotaId, function ($query) use ($anggotaId) {
-                $query->where('anggota_id', $anggotaId);
-            })
-            ->latest()
+        if (!$anggotaId) {
+            return redirect('/log-in')
+                ->withErrors(['login' => 'Silakan login sebagai anggota terlebih dahulu.']);
+        }
+
+        $anggota = Anggota::find($anggotaId);
+
+        if (!$anggota) {
+            session()->forget(['auth_role', 'auth_id', 'auth_name']);
+
+            return redirect('/log-in')
+                ->withErrors(['login' => 'Data anggota tidak ditemukan. Silakan login kembali.']);
+        }
+
+        $baseQuery = Denda::with(['detailTransaksi.buku', 'pembayaranDendas'])
+            ->where('anggota_id', $anggota->id);
+
+        $dendaAktif = (clone $baseQuery)
+            ->where('status_denda', 'belum_lunas')
+            ->orderByDesc('id')
+            ->get();
+
+        $riwayatDenda = (clone $baseQuery)
+            ->orderByDesc('id')
+            ->get();
+
+        $dendas = (clone $baseQuery)
+            ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('status-denda', compact('dendas'));
+        $totalDendaAktif = (clone $baseQuery)
+            ->where('status_denda', 'belum_lunas')
+            ->sum('total_denda');
+
+        $totalBukuTerlambat = (clone $baseQuery)
+            ->where('status_denda', 'belum_lunas')
+            ->count();
+
+        return view('status-denda', compact(
+            'anggota',
+            'dendas',
+            'dendaAktif',
+            'riwayatDenda',
+            'totalDendaAktif',
+            'totalBukuTerlambat'
+        ));
     }
 
     public function show(Denda $denda)

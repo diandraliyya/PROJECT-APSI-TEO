@@ -75,15 +75,16 @@
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ url('/dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ url('/kelola-buku') }}" class="nav-link active">Buku</a>
-                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-admin') }}" class="nav-link {{ request()->is('home-admin') ? 'active' : '' }}">Home</a>
+            <a href="{{ url('/dashboard-admin') }}" class="nav-link {{ request()->is('dashboard-admin') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ url('/katalog-admin') }}" class="nav-link {{ request()->is('katalog-admin') ? 'active' : '' }}">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link {{ request()->is('tentang-perpustakaan-admin') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ url('/kelola-buku') }}" class="nav-link {{ request()->is('kelola-buku') ? 'active' : '' }}">Buku</a>
+            <a href="{{ url('/kelola-anggota') }}" class="nav-link {{ request()->is('kelola-anggota') ? 'active' : '' }}">Anggota</a>
+            <a href="{{ url('/riwayat-transaksi') }}" class="nav-link {{ request()->is('riwayat-transaksi') ? 'active' : '' }}">Transaksi</a>
+            <a href="{{ url('/kelola-denda') }}" class="nav-link {{ request()->is('kelola-denda') ? 'active' : '' }}">Denda</a>
+        </nav>
 
             <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
@@ -233,7 +234,7 @@
 
                                 <td>
                                     <div class="kb-aksi">
-                                        <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
+                                        <a href="{{ url('/informasi-buku-admin/' . $buku->id) }}" class="kb-btn-aksi btn-lihat" title="Lihat Detail">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                         </a>
 

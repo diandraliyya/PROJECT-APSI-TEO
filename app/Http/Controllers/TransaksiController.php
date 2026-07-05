@@ -153,10 +153,9 @@ class TransaksiController extends Controller
             $transaksi = $detailTransaksi->transaksi;
             $buku = Buku::lockForUpdate()->findOrFail($detailTransaksi->buku_id);
 
+            // ✅ PERBAIKI: status_item selalu 'dikembalikan'
             $detailTransaksi->update([
-                'status_item' => $tanggalKembali->gt(Carbon::parse($transaksi->tanggal_jatuh_tempo))
-                    ? 'terlambat'
-                    : 'dikembalikan',
+                'status_item' => 'dikembalikan',
                 'tanggal_kembali_item' => $tanggalKembali->toDateString(),
             ]);
 
@@ -169,6 +168,7 @@ class TransaksiController extends Controller
 
             $jatuhTempo = Carbon::parse($transaksi->tanggal_jatuh_tempo);
 
+            // ✅ Denda tetap dihitung jika terlambat
             if ($tanggalKembali->gt($jatuhTempo)) {
                 $hariTerlambat = $jatuhTempo->diffInDays($tanggalKembali);
                 $tarif = Setting::first()->tarif_denda_per_hari ?? 1000;
@@ -186,21 +186,20 @@ class TransaksiController extends Controller
                 );
             }
 
+            // ✅ Cek sisa buku yang belum dikembalikan
             $sisaDipinjam = $transaksi->detailTransaksis()
                 ->whereIn('status_item', ['dipinjam', 'terlambat'])
                 ->whereNull('tanggal_kembali_item')
                 ->count();
 
             if ($sisaDipinjam === 0) {
-                $adaTerlambat = $transaksi->detailTransaksis()
-                    ->where('status_item', 'terlambat')
-                    ->exists();
-
+                // ✅ Semua buku sudah dikembalikan
                 $transaksi->update([
                     'tanggal_kembali' => $tanggalKembali->toDateString(),
-                    'status_transaksi' => $adaTerlambat ? 'terlambat' : 'dikembalikan',
+                    'status_transaksi' => 'dikembalikan',  // ← Selalu dikembalikan
                 ]);
             } else {
+                // ✅ Masih ada buku yang belum dikembalikan
                 if (now()->gt(Carbon::parse($transaksi->tanggal_jatuh_tempo))) {
                     $transaksi->update([
                         'status_transaksi' => 'terlambat',

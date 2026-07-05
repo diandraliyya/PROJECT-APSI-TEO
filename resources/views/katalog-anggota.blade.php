@@ -15,39 +15,44 @@
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-anggota') }}" class="nav-brand">
+            <a href="{{ url('/home-anggota') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ route('dashboard-anggota') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-anggota') }}" class="nav-link active">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ route('riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ route('status-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-anggota') }}" class="nav-link {{ request()->is('home-anggota') ? 'active' : '' }}">Home</a>
+            <a href="{{ url('/dashboard-anggota') }}" class="nav-link {{ request()->is('dashboard-anggota') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ url('/katalog-anggota') }}" class="nav-link {{ request()->is('katalog-anggota') ? 'active' : '' }}">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link {{ request()->is('tentang-perpustakaan-anggota') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link {{ request()->is('riwayat-peminjaman') ? 'active' : '' }}">Riwayat</a>
+            <a href="{{ url('/status-denda') }}" class="nav-link {{ request()->is('status-denda') ? 'active' : '' }}">Denda</a>
+        </nav>
 
-            {{-- Profil anggota sementara --}}
-@php
-    $user = auth()->user();
+            {{-- Profil anggota --}}
+            @php
+                $namaUser = session('auth_name') ?? 'Anggota';
+                $fotoUser = null;
+                $inisialUser = strtoupper(substr($namaUser, 0, 1));
+                
+                if(session('auth_role') === 'anggota' && session('auth_id')) {
+                    $anggota = App\Models\Anggota::find(session('auth_id'));
+                    if($anggota && $anggota->foto) {
+                        $fotoUser = $anggota->foto;
+                    }
+                }
+            @endphp
 
-    $namaUser = $user?->nama_lengkap ?? $user?->name ?? 'Anggota';
-    $fotoUser = $user?->foto ?? null;
-    $inisialUser = strtoupper(substr($namaUser, 0, 1));
-@endphp
-
-<a href="{{ route('profil-anggota') }}" class="nav-profile">
-    <div class="nav-avatar">
-        @if($fotoUser)
-            <img src="{{ asset('storage/' . $fotoUser) }}" alt="Foto Profil" class="avatar-img">
-        @else
-            <span class="avatar-placeholder">{{ $inisialUser }}</span>
-        @endif
-    </div>
-
-    <span class="nav-username">{{ $namaUser }}</span>
-</a>
+            <a href="{{ url('/profil-anggota') }}" class="nav-profile">
+                <div class="nav-avatar">
+                    @if($fotoUser)
+                        <img src="{{ asset('storage/' . $fotoUser) }}" alt="Foto Profil" class="avatar-img">
+                    @else
+                        <span class="avatar-placeholder">{{ $inisialUser }}</span>
+                    @endif
+                </div>
+                <span class="nav-username">{{ $namaUser }}</span>
+            </a>
         </div>
     </header>
 
@@ -70,11 +75,11 @@
                 </p>
 
                 <div class="katalog-search-wrap">
-                    <div class="hero-search katalog-search">
+                    <form action="{{ url('/katalog-anggota') }}" method="GET" class="hero-search katalog-search" style="display: flex; width: 100%;">
                         <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#484441" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <input type="text" id="heroSearch" placeholder="Cari judul buku, penulis, atau ISBN..." class="search-input">
-                        <button class="btn-search" id="btnHeroSearch">Cari &rarr;</button>
-                    </div>
+                        <input type="text" name="search" id="heroSearch" placeholder="Cari judul buku, penulis, atau ISBN..." class="search-input" value="{{ request('search') }}">
+                        <button type="submit" class="btn-search">Cari &rarr;</button>
+                    </form>
                 </div>
             </div>
 
@@ -88,27 +93,28 @@
     <section class="filter-section">
         <div class="filter-inner">
             <div class="filter-categories">
-                <button class="filter-btn active" data-kategori="semua">
+                <a href="{{ url('/katalog-anggota') }}" class="filter-btn {{ !request('kategori') ? 'active' : '' }}" data-kategori="semua">
                     Semua Kategori
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <button class="filter-btn" data-kategori="fiksi">Fiksi</button>
-                <button class="filter-btn" data-kategori="sejarah">Sejarah</button>
-                <button class="filter-btn" data-kategori="sains">Sains</button>
-                <button class="filter-btn" data-kategori="agama">Agama</button>
-                <button class="filter-btn" data-kategori="filsafat">Filsafat</button>
-                <button class="filter-btn" data-kategori="motivasi">Motivasi</button>
+                </a>
+                @foreach($kategoris as $kat)
+                    <a href="{{ url('/katalog-anggota?kategori=' . urlencode($kat->nama_kategori) . (request('search') ? '&search=' . urlencode(request('search')) : '')) }}" 
+                       class="filter-btn {{ request('kategori') == $kat->nama_kategori ? 'active' : '' }}" 
+                       data-kategori="{{ $kat->nama_kategori }}">
+                        {{ $kat->nama_kategori }}
+                    </a>
+                @endforeach
             </div>
 
             <div class="filter-sort">
                 <label class="sort-label">Urutkan:</label>
                 <div class="select-wrap sort-wrap">
-                    <select id="sortSelect" class="sort-select">
-                        <option value="terbaru">Terbaru</option>
-                        <option value="terlama">Terlama</option>
-                        <option value="az">A – Z</option>
-                        <option value="za">Z – A</option>
-                        <option value="tersedia">Tersedia</option>
+                    <select id="sortSelect" class="sort-select" onchange="window.location.href=this.value">
+                        <option value="{{ url('/katalog-anggota?sort=terbaru' . (request('search') ? '&search=' . urlencode(request('search')) : '') . (request('kategori') ? '&kategori=' . urlencode(request('kategori')) : '')) }}" {{ request('sort') == 'terbaru' || !request('sort') ? 'selected' : '' }}>Terbaru</option>
+                        <option value="{{ url('/katalog-anggota?sort=terlama' . (request('search') ? '&search=' . urlencode(request('search')) : '') . (request('kategori') ? '&kategori=' . urlencode(request('kategori')) : '')) }}" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                        <option value="{{ url('/katalog-anggota?sort=az' . (request('search') ? '&search=' . urlencode(request('search')) : '') . (request('kategori') ? '&kategori=' . urlencode(request('kategori')) : '')) }}" {{ request('sort') == 'az' ? 'selected' : '' }}>A – Z</option>
+                        <option value="{{ url('/katalog-anggota?sort=za' . (request('search') ? '&search=' . urlencode(request('search')) : '') . (request('kategori') ? '&kategori=' . urlencode(request('kategori')) : '')) }}" {{ request('sort') == 'za' ? 'selected' : '' }}>Z – A</option>
+                        <option value="{{ url('/katalog-anggota?sort=tersedia' . (request('search') ? '&search=' . urlencode(request('search')) : '') . (request('kategori') ? '&kategori=' . urlencode(request('kategori')) : '')) }}" {{ request('sort') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
                     </select>
                     <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
@@ -122,116 +128,56 @@
 
             {{-- Info hasil --}}
             <div class="hasil-info" id="hasilInfo">
-                <span id="hasilText">Menampilkan <strong>4</strong> buku</span>
+                <span id="hasilText">Menampilkan <strong>{{ $bukus->total() }}</strong> buku</span>
             </div>
 
             <div class="buku-grid" id="bukuGrid">
-
-                {{-- Card 1 --}}
-                <div class="buku-card" data-kategori="fiksi" data-judul="Laskar Pelangi" data-penulis="Andrea Hirata" data-status="tersedia" data-tahun="2005">
-                    <div class="buku-cover-wrap">
-                        <img src="{{ asset('assets/Laskar_pelangi_sampul.jpg') }}" alt="Laskar Pelangi" class="buku-cover">
-                    </div>
-                    <div class="buku-info">
-                        <div class="buku-meta-top">
-                            <span class="buku-kategori kategori-fiksi">Fiksi</span>
-                            <span class="buku-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
+                @forelse($bukus as $buku)
+                    <div class="buku-card" data-kategori="{{ $buku->kategori->nama_kategori ?? '' }}" data-judul="{{ $buku->judul_buku }}" data-penulis="{{ $buku->penulis }}" data-status="{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'tidak_tersedia' }}" data-tahun="{{ $buku->tahun_terbit ?? '' }}">
+                        <div class="buku-cover-wrap">
+                            @if($buku->cover)
+                                <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="buku-cover">
+                            @else
+                                <img src="{{ asset('assets/default-book.jpg') }}" alt="Default Cover" class="buku-cover">
+                            @endif
                         </div>
-                        <h3 class="buku-judul">Laskar Pelangi</h3>
-                        <p class="buku-penulis">Andrea Hirata</p>
-                        <div class="buku-footer">
-                            <span class="buku-isbn">ISBN: 978602291</span>
-                            <a href="{{ route('informasi-buku', ['id' => 1]) }}" class="btn-detail">Lihat Detail</a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Card 2 --}}
-                <div class="buku-card" data-kategori="filsafat" data-judul="Dunia Sophie" data-penulis="Jostein Gaarder" data-status="tersedia" data-tahun="2006">
-                    <div class="buku-cover-wrap">
-                        <img src="{{ asset('assets/dunia-sophie-sampul.jpg') }}" alt="Dunia Sophie" class="buku-cover">
-                    </div>
-                    <div class="buku-info">
-                        <div class="buku-meta-top">
-                            <span class="buku-kategori kategori-filsafat">Filsafat</span>
-                            <span class="buku-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                        </div>
-                        <h3 class="buku-judul">Dunia Sophie</h3>
-                        <p class="buku-penulis">Jostein Gaarder</p>
-                        <div class="buku-footer">
-                            <span class="buku-isbn">ISBN: 978979433</span>
-                            <a href="{{ route('informasi-buku', ['id' => 2]) }}" class="btn-detail">Lihat Detail</a>
+                        <div class="buku-info">
+                            <div class="buku-meta-top">
+                                <span class="buku-kategori kategori-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
+                                    {{ $buku->kategori->nama_kategori ?? 'Umum' }}
+                                </span>
+                                <span class="buku-status status-{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'tidak_tersedia' }}">
+                                    <span class="status-dot"></span> 
+                                    {{ $buku->stok_tersedia > 0 ? 'Tersedia' : 'Tidak Tersedia' }}
+                                </span>
+                            </div>
+                            <h3 class="buku-judul">{{ $buku->judul_buku }}</h3>
+                            <p class="buku-penulis">{{ $buku->penulis }}</p>
+                            <div class="buku-footer">
+                                <span class="buku-isbn">ISBN: {{ $buku->isbn ?? '-' }}</span>
+                                <a href="{{ url('/informasi-buku/' . $buku->id) }}" class="btn-detail">Lihat Detail</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                {{-- Card 3 --}}
-                <div class="buku-card" data-kategori="sejarah" data-judul="Sejarah Peradaban Islam" data-penulis="Dr. Fauzan Adhim" data-status="tersedia" data-tahun="2010">
-                    <div class="buku-cover-wrap">
-                        <img src="{{ asset('assets/sejarah-peradaban-silam-sampul.png') }}" alt="Sejarah Peradaban Islam" class="buku-cover">
+                @empty
+                    <div class="empty-state" id="emptyState">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <h3>Buku tidak ditemukan</h3>
+                        <p>Coba kata kunci lain atau ubah filter kategori.</p>
+                        <a href="{{ url('/katalog-anggota') }}" class="btn-reset" id="btnReset">Reset Pencarian</a>
                     </div>
-                    <div class="buku-info">
-                        <div class="buku-meta-top">
-                            <span class="buku-kategori kategori-sejarah">Sejarah</span>
-                            <span class="buku-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                        </div>
-                        <h3 class="buku-judul">Sejarah Peradaban Islam</h3>
-                        <p class="buku-penulis">Dr. Fauzan Adhim, M.Pd.I.</p>
-                        <div class="buku-footer">
-                            <span class="buku-isbn">ISBN: 978979421</span>
-                            <a href="{{ route('informasi-buku', ['id' => 3]) }}" class="btn-detail">Lihat Detail</a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Card 4 --}}
-                <div class="buku-card" data-kategori="motivasi" data-judul="The Things You Can See Only When You Slow Down" data-penulis="Haemin Sunim" data-status="tersedia" data-tahun="2017">
-                    <div class="buku-cover-wrap">
-                        <img src="{{ asset('assets/slow-down-sampul.jpg') }}" alt="Slow Down" class="buku-cover">
-                    </div>
-                    <div class="buku-info">
-                        <div class="buku-meta-top">
-                            <span class="buku-kategori kategori-motivasi">Motivasi</span>
-                            <span class="buku-status status-tersedia"><span class="status-dot"></span> Tersedia</span>
-                        </div>
-                        <h3 class="buku-judul">The Things You Can See Only When You Slow Down</h3>
-                        <p class="buku-penulis">Haemin Sunim</p>
-                        <div class="buku-footer">
-                            <span class="buku-isbn">ISBN: 978602291</span>
-                            <a href="{{ route('informasi-buku', ['id' => 4]) }}" class="btn-detail">Lihat Detail</a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Empty state --}}
-            <div class="empty-state hidden" id="emptyState">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <h3>Buku tidak ditemukan</h3>
-                <p>Coba kata kunci lain atau ubah filter kategori.</p>
-                <button class="btn-reset" id="btnReset">Reset Pencarian</button>
+                @endforelse
             </div>
 
             {{-- Pagination --}}
             <div class="pagination" id="pagination">
-                <button class="page-btn page-prev" id="pagePrev" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <button class="page-btn active" data-page="1">1</button>
-                <button class="page-btn" data-page="2">2</button>
-                <button class="page-btn" data-page="3">3</button>
-                <span class="page-dots">...</span>
-                <button class="page-btn" data-page="12">12</button>
-                <button class="page-btn page-next" id="pageNext">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
+                {{ $bukus->appends(request()->query())->links() }}
             </div>
 
         </div>
     </section>
 
-    {{-- ===== FOOTER ===== --}}
+    {{-- ===== FOOTER (pertahankan asli) ===== --}}
     <footer class="site-footer">
         <div class="footer-inner">
             <div class="footer-brand">
@@ -279,6 +225,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-katalog-anggota.js') }}"></script>
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-katalog-anggota.js') }}"></script> --}}
 </body>
 </html>

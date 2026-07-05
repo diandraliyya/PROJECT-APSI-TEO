@@ -15,6 +15,7 @@ class BukuController extends Controller
     {
         $search = $request->query('search');
         $kategori = $request->query('kategori');
+        $sort = $request->query('sort', 'terbaru');
 
         $bukus = Buku::with(['kategori', 'rak'])
             ->when($search, function ($query) use ($search) {
@@ -29,19 +30,37 @@ class BukuController extends Controller
                     $q->where('nama_kategori', $kategori);
                 });
             })
-            ->latest()
+            ->when($sort === 'tersedia', function ($query) {
+                $query->where('stok_tersedia', '>', 0);
+            })
+            ->when($sort === 'terbaru', function ($query) {
+                $query->orderByDesc('id');
+            })
+            ->when($sort === 'terlama', function ($query) {
+                $query->orderBy('id');
+            })
+            ->when($sort === 'az', function ($query) {
+                $query->orderBy('judul_buku');
+            })
+            ->when($sort === 'za', function ($query) {
+                $query->orderByDesc('judul_buku');
+            })
+            ->when(!in_array($sort, ['terbaru', 'terlama', 'az', 'za', 'tersedia']), function ($query) {
+                $query->orderByDesc('id');
+            })
             ->paginate(8)
             ->withQueryString();
 
         $kategoris = Kategori::orderBy('nama_kategori')->get();
 
-        return view('katalog', compact('bukus', 'kategoris', 'search', 'kategori'));
+        return view('katalog', compact('bukus', 'kategoris', 'search', 'kategori', 'sort'));
     }
 
     public function katalogAnggota(Request $request)
     {
         $search = $request->query('search');
         $kategori = $request->query('kategori');
+        $sort = $request->query('sort', 'terbaru');
 
         $bukus = Buku::with(['kategori', 'rak'])
             ->when($search, function ($query) use ($search) {
@@ -56,13 +75,30 @@ class BukuController extends Controller
                     $q->where('nama_kategori', $kategori);
                 });
             })
-            ->latest()
+            ->when($sort === 'tersedia', function ($query) {
+                $query->where('stok_tersedia', '>', 0);
+            })
+            ->when($sort === 'terbaru', function ($query) {
+                $query->orderByDesc('id');
+            })
+            ->when($sort === 'terlama', function ($query) {
+                $query->orderBy('id');
+            })
+            ->when($sort === 'az', function ($query) {
+                $query->orderBy('judul_buku');
+            })
+            ->when($sort === 'za', function ($query) {
+                $query->orderByDesc('judul_buku');
+            })
+            ->when(!in_array($sort, ['terbaru', 'terlama', 'az', 'za', 'tersedia']), function ($query) {
+                $query->orderByDesc('id');
+            })
             ->paginate(8)
             ->withQueryString();
 
         $kategoris = Kategori::orderBy('nama_kategori')->get();
 
-        return view('katalog-anggota', compact('bukus', 'kategoris', 'search', 'kategori'));
+        return view('katalog-anggota', compact('bukus', 'kategoris', 'search', 'kategori', 'sort'));
     }
 
     public function katalogAdmin(Request $request)

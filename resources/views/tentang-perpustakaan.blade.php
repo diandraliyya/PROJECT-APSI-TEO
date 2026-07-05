@@ -14,19 +14,19 @@
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home') }}" class="nav-brand">
+            <a href="{{ url('/home') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('home') }}" class="nav-link">Beranda</a>
-                <a href="{{ route('katalog') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan') }}" class="nav-link active">Tentang</a>
-                <a href="{{ route('register') }}" class="nav-link">Daftar Anggota</a>
+                <a href="{{ url('/home') }}" class="nav-link">Beranda</a>
+                <a href="{{ url('/katalog') }}" class="nav-link">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan') }}" class="nav-link active">Tentang</a>
+                <a href="{{ url('/register') }}" class="nav-link">Daftar Anggota</a>
             </nav>
 
-            <a href="{{ route('log-in') }}" class="btn-nav-cta">Masuk</a>
+            <a href="{{ url('/log-in') }}" class="btn-nav-cta">Masuk</a>
         </div>
     </header>
 
@@ -258,6 +258,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-tentang-perpustakaan.js') }}"></script>
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-tentang-perpustakaan.js') }}"></script> --}}
 </body>
 </html>

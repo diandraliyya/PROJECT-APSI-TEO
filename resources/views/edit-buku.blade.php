@@ -70,15 +70,16 @@
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ url('/dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ url('/kelola-buku') }}" class="nav-link active">Buku</a>
-                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-admin') }}" class="nav-link {{ request()->is('home-admin') ? 'active' : '' }}">Home</a>
+            <a href="{{ url('/dashboard-admin') }}" class="nav-link {{ request()->is('dashboard-admin') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ url('/katalog-admin') }}" class="nav-link {{ request()->is('katalog-admin') ? 'active' : '' }}">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link {{ request()->is('tentang-perpustakaan-admin') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ url('/kelola-buku') }}" class="nav-link {{ request()->is('kelola-buku') ? 'active' : '' }}">Buku</a>
+            <a href="{{ url('/kelola-anggota') }}" class="nav-link {{ request()->is('kelola-anggota') ? 'active' : '' }}">Anggota</a>
+            <a href="{{ url('/riwayat-transaksi') }}" class="nav-link {{ request()->is('riwayat-transaksi') ? 'active' : '' }}">Transaksi</a>
+            <a href="{{ url('/kelola-denda') }}" class="nav-link {{ request()->is('kelola-denda') ? 'active' : '' }}">Denda</a>
+        </nav>
 
             <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">

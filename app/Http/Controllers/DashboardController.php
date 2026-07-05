@@ -6,6 +6,7 @@ use App\Models\Anggota;
 use App\Models\Buku;
 use App\Models\Denda;
 use App\Models\DetailTransaksi;
+use App\Models\PembayaranDenda;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,25 +17,32 @@ class DashboardController extends Controller
     public function admin()
     {
         $totalBuku = Buku::count();
-
         $totalStokTersedia = Buku::sum('stok_tersedia');
-
         $totalAnggotaAktif = Anggota::where('status_anggota', 'aktif')->count();
-
         $totalPendaftaranMenunggu = Anggota::where('status_pendaftaran', 'menunggu')->count();
 
+        // TOTAL PINJAM HARI INI
         $totalPinjamHariIni = Transaksi::whereDate('tanggal_pinjam', Carbon::today())->count();
 
-        $totalDipinjam = Transaksi::where('status_transaksi', 'dipinjam')->count();
+        // BUKU SEDANG DIPINJAM - hitung detail transaksi yang masih dipinjam
+        $totalBukuSedangDipinjam = DetailTransaksi::whereIn('status_item', ['dipinjam', 'terlambat'])
+            ->whereHas('transaksi', function ($query) {
+                $query->whereIn('status_transaksi', ['dipinjam', 'terlambat']);
+            })
+            ->sum('jumlah');
 
-        $totalTerlambat = Transaksi::where('status_transaksi', 'terlambat')->count();
+        // KETERLAMBATAN AKTIF - hanya yang belum dikembalikan
+        $totalTerlambat = DetailTransaksi::where('status_item', 'terlambat')
+            ->whereHas('transaksi', function ($query) {
+                $query->where('status_transaksi', 'terlambat');
+            })
+            ->count();
 
-        $totalBukuSedangDipinjam = DB::table('detail_transaksis')
-            ->join('transaksis', 'detail_transaksis.transaksi_id', '=', 'transaksis.id')
-            ->whereIn('transaksis.status_transaksi', ['dipinjam', 'terlambat'])
-            ->whereIn('detail_transaksis.status_item', ['dipinjam', 'terlambat'])
-            ->sum('detail_transaksis.jumlah');
+        // DENDA TERKUMPUL - dari pembayaran yang sudah divalidasi
+        $totalDendaTerkumpul = PembayaranDenda::where('status_validasi', 'valid')
+            ->sum('nominal_bayar');
 
+        // DENDA BELUM LUNAS
         $totalDendaBelumLunas = Denda::where('status_denda', 'belum_lunas')
             ->sum('total_denda');
 
@@ -138,9 +146,9 @@ class DashboardController extends Controller
             'totalAnggotaAktif',
             'totalPendaftaranMenunggu',
             'totalPinjamHariIni',
-            'totalDipinjam',
-            'totalTerlambat',
             'totalBukuSedangDipinjam',
+            'totalTerlambat',
+            'totalDendaTerkumpul',
             'totalDendaBelumLunas',
             'transaksiTerbaru',
             'bukuStokSedikit',
@@ -335,5 +343,50 @@ class DashboardController extends Controller
             'targetPeringkat',
             'sisaTargetPeringkat'
         ));
+    }
+
+    public function homeAdmin()
+    {
+        if (session('auth_role') !== 'admin' || !session('auth_id')) {
+            return redirect('/log-in')->withErrors(['login' => 'Silakan login sebagai admin terlebih dahulu.']);
+        }
+
+        $totalBuku = Buku::count();
+        $totalAnggota = Anggota::count();
+        $totalPeminjaman = Transaksi::whereIn('status_transaksi', ['dipinjam', 'terlambat'])->count();
+        $totalDenda = Denda::where('status_denda', 'belum_lunas')->sum('total_denda');
+
+        $bukuPopuler = Buku::with(['kategori'])
+            ->orderBy('stok_tersedia', 'asc')
+            ->limit(4)
+            ->get();
+
+        return view('home-admin', compact(
+            'totalBuku',
+            'totalAnggota',
+            'totalPeminjaman',
+            'totalDenda',
+            'bukuPopuler'
+        ));
+    }
+
+    public function homeAnggota()
+    {
+        if (session('auth_role') !== 'anggota' || !session('auth_id')) {
+            return redirect('/log-in')->withErrors(['login' => 'Silakan login sebagai anggota terlebih dahulu.']);
+        }
+
+        $bukuPopuler = Buku::with(['kategori'])
+            ->orderBy('stok_tersedia', 'asc')
+            ->limit(4)
+            ->get();
+
+        $rekomendasiBuku = Buku::with(['kategori'])
+            ->where('stok_tersedia', '>', 0)
+            ->orderByDesc('id')
+            ->limit(4)
+            ->get();
+
+        return view('home-anggota', compact('bukuPopuler', 'rekomendasiBuku'));
     }
 }

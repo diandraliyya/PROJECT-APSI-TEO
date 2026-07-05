@@ -134,16 +134,21 @@
                             <div class="select-wrap">
                                 <select id="kelas" name="kelas">
                                     <option value="">Pilih Kelas</option>
-                                    <option value="X-A">X-A</option>
-                                    <option value="X-B">X-B</option>
-                                    <option value="X-C">X-C</option>
-                                    <option value="XI-A">XI-A</option>
-                                    <option value="XI-B">XI-B</option>
-                                    <option value="XI-C">XI-C</option>
-                                    <option value="XII-A">XII-A</option>
-                                    <option value="XII-B">XII-B</option>
-                                    <option value="XII-C">XII-C</option>
-                                    <option value="guru">Guru / Staff</option>
+                                    <option value="X MIPA 1">X MIPA 1</option>
+                                    <option value="X MIPA 2">X MIPA 2</option>
+                                    <option value="X IPS 1">X IPS 1</option>
+                                    <option value="X IPS 2">X IPS 2</option>
+                                    <option value="X IPS 3">X IPS 3</option>
+                                    <option value="XI MIPA 1">XI MIPA 1</option>
+                                    <option value="XI MIPA 2">XI MIPA 2</option>
+                                    <option value="XI IPS 1">XI IPS 1</option>
+                                    <option value="XI IPS 2">XI IPS 2</option>
+                                    <option value="XII MIPA 1">XII MIPA 1</option>
+                                    <option value="XII MIPA 2">XII MIPA 2</option>
+                                    <option value="XII IPS 1">XII IPS 1</option>
+                                    <option value="XII IPS 2">XII IPS 2</option>
+                                    <option value="Guru">Guru</option>
+                                    <option value="Staf">Staf</option>
                                 </select>
                                 <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                             </div>

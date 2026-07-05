@@ -88,13 +88,14 @@
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ url('/dashboard-anggota') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ url('/katalog-anggota') }}" class="nav-link">Katalog</a>
-                <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link">Tentang</a>
-                <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link">Riwayat</a>
-                <a href="{{ url('/status-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-anggota') }}" class="nav-link {{ request()->is('home-anggota') ? 'active' : '' }}">Home</a>
+            <a href="{{ url('/dashboard-anggota') }}" class="nav-link {{ request()->is('dashboard-anggota') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ url('/katalog-anggota') }}" class="nav-link {{ request()->is('katalog-anggota') ? 'active' : '' }}">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-anggota') }}" class="nav-link {{ request()->is('tentang-perpustakaan-anggota') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ url('/riwayat-peminjaman') }}" class="nav-link {{ request()->is('riwayat-peminjaman') ? 'active' : '' }}">Riwayat</a>
+            <a href="{{ url('/status-denda') }}" class="nav-link {{ request()->is('status-denda') ? 'active' : '' }}">Denda</a>
+        </nav>
 
             <a href="{{ url('/profil-anggota') }}" class="nav-profile">
                 <div class="nav-avatar">

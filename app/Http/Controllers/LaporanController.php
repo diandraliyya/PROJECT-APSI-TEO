@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\Buku;
 use App\Models\Denda;
 use App\Models\DetailTransaksi;
 use App\Models\Laporan;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -25,12 +27,20 @@ class LaporanController extends Controller
             ->limit(10)
             ->get();
 
+        // ===== DATA CHART PER JENIS LAPORAN =====
+        $chartData = $this->getChartData($jenis, $tanggalMulai, $tanggalSelesai);
+        $chartTitle = $this->getChartTitle($jenis);
+        $chartLabel = $this->getChartLabel($jenis);
+
         return view('laporan', compact(
             'jenis',
             'tanggalMulai',
             'tanggalSelesai',
             'dataLaporan',
-            'riwayatLaporan'
+            'riwayatLaporan',
+            'chartData',
+            'chartTitle',
+            'chartLabel'
         ));
     }
 
@@ -46,6 +56,7 @@ class LaporanController extends Controller
         $periodeMulai = $validated['periode_mulai'] ?? now()->startOfMonth()->toDateString();
         $periodeSelesai = $validated['periode_selesai'] ?? now()->toDateString();
 
+        // Simpan riwayat laporan
         Laporan::create([
             'admin_id' => session('auth_role') === 'admin' ? session('auth_id') : null,
             'jenis_laporan' => $validated['jenis_laporan'],
@@ -55,6 +66,24 @@ class LaporanController extends Controller
             'tanggal_cetak' => now(),
         ]);
 
+        // Ambil data laporan
+        $dataLaporan = $this->ambilDataLaporan($validated['jenis_laporan'], $periodeMulai, $periodeSelesai);
+
+        // ===== EXPORT PDF =====
+        if ($validated['format_laporan'] === 'pdf') {
+            $pdf = Pdf::loadView('laporan-pdf', [
+                'jenis' => $validated['jenis_laporan'],
+                'periodeMulai' => $periodeMulai,
+                'periodeSelesai' => $periodeSelesai,
+                'data' => $dataLaporan,
+            ]);
+
+            $filename = 'laporan-' . $validated['jenis_laporan'] . '-' . date('Y-m-d') . '.pdf';
+
+            return $pdf->download($filename);
+        }
+
+        // ===== EXPORT EXCEL (CSV) =====
         if ($validated['format_laporan'] === 'excel') {
             return $this->exportCsv(
                 $validated['jenis_laporan'],
@@ -69,7 +98,7 @@ class LaporanController extends Controller
                 'tanggal_mulai' => $periodeMulai,
                 'tanggal_selesai' => $periodeSelesai,
             ])
-            ->with('success', 'Laporan berhasil dibuat. Untuk PDF, gunakan fitur print dari browser dulu.');
+            ->with('success', 'Laporan berhasil dibuat.');
     }
 
     private function ambilDataLaporan(string $jenis, string $tanggalMulai, string $tanggalSelesai)
@@ -107,6 +136,97 @@ class LaporanController extends Controller
         }
 
         return collect();
+    }
+
+    private function getChartData(string $jenis, string $tanggalMulai, string $tanggalSelesai)
+    {
+        $bulanList = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        $data = [];
+        $maxValue = 0;
+
+        if ($jenis === 'peminjaman') {
+            for ($i = 1; $i <= 12; $i++) {
+                $total = Transaksi::whereYear('tanggal_pinjam', date('Y'))
+                    ->whereMonth('tanggal_pinjam', $i)
+                    ->count();
+                $data[$i] = $total;
+                if ($total > $maxValue) $maxValue = $total;
+            }
+        } elseif ($jenis === 'buku_terpopuler') {
+            $topBuku = DetailTransaksi::select('buku_id', DB::raw('SUM(jumlah) as total_dipinjam'))
+                ->with('buku')
+                ->whereHas('transaksi', function ($query) use ($tanggalMulai, $tanggalSelesai) {
+                    $query->whereBetween('tanggal_pinjam', [$tanggalMulai, $tanggalSelesai]);
+                })
+                ->groupBy('buku_id')
+                ->orderByDesc('total_dipinjam')
+                ->limit(5)
+                ->get();
+
+            foreach ($topBuku as $item) {
+                $judul = $item->buku->judul_buku ?? 'Tidak Diketahui';
+                if (strlen($judul) > 15) {
+                    $judul = substr($judul, 0, 12) . '...';
+                }
+                $data[$judul] = $item->total_dipinjam;
+                if ($item->total_dipinjam > $maxValue) $maxValue = $item->total_dipinjam;
+            }
+        } elseif ($jenis === 'anggota_aktif') {
+            $topAnggota = Anggota::withCount('transaksis')
+                ->where('status_anggota', 'aktif')
+                ->orderByDesc('transaksis_count')
+                ->limit(5)
+                ->get();
+
+            foreach ($topAnggota as $item) {
+                $nama = $item->nama_anggota ?? 'Tidak Diketahui';
+                if (strlen($nama) > 15) {
+                    $nama = substr($nama, 0, 12) . '...';
+                }
+                $data[$nama] = $item->transaksis_count;
+                if ($item->transaksis_count > $maxValue) $maxValue = $item->transaksis_count;
+            }
+        } elseif ($jenis === 'denda') {
+            for ($i = 1; $i <= 12; $i++) {
+                $total = Denda::whereYear('tanggal_denda', date('Y'))
+                    ->whereMonth('tanggal_denda', $i)
+                    ->sum('total_denda');
+                $data[$i] = $total;
+                if ($total > $maxValue) $maxValue = $total;
+            }
+        }
+
+        $maxValue = $maxValue > 0 ? $maxValue : 1;
+
+        return [
+            'data' => $data,
+            'maxValue' => $maxValue,
+            'bulanList' => $bulanList,
+        ];
+    }
+
+    private function getChartTitle(string $jenis): string
+    {
+        $titles = [
+            'peminjaman' => 'Statistik Peminjaman ' . date('Y'),
+            'buku_terpopuler' => 'Buku Terpopuler',
+            'anggota_aktif' => 'Anggota Paling Aktif',
+            'denda' => 'Statistik Denda ' . date('Y'),
+        ];
+
+        return $titles[$jenis] ?? 'Statistik';
+    }
+
+    private function getChartLabel(string $jenis): string
+    {
+        $labels = [
+            'peminjaman' => 'Total Peminjaman',
+            'buku_terpopuler' => 'Jumlah Dipinjam',
+            'anggota_aktif' => 'Total Transaksi',
+            'denda' => 'Total Denda (Rp)',
+        ];
+
+        return $labels[$jenis] ?? 'Total';
     }
 
     private function exportCsv(string $jenis, string $tanggalMulai, string $tanggalSelesai)

@@ -50,15 +50,16 @@
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
-            <nav class="nav-links">
-                <a href="{{ url('/dashboard-admin') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ url('/katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link">Tentang</a>
-                <a href="{{ url('/kelola-buku') }}" class="nav-link">Buku</a>
-                <a href="{{ url('/kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ url('/kelola-denda') }}" class="nav-link">Denda</a>
-            </nav>
+        <nav class="nav-links">
+            <a href="{{ url('/home-admin') }}" class="nav-link {{ request()->is('home-admin') ? 'active' : '' }}">Home</a>
+            <a href="{{ url('/dashboard-admin') }}" class="nav-link {{ request()->is('dashboard-admin') ? 'active' : '' }}">Dashboard</a>
+            <a href="{{ url('/katalog-admin') }}" class="nav-link {{ request()->is('katalog-admin') ? 'active' : '' }}">Katalog</a>
+            <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link {{ request()->is('tentang-perpustakaan-admin') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ url('/kelola-buku') }}" class="nav-link {{ request()->is('kelola-buku') ? 'active' : '' }}">Buku</a>
+            <a href="{{ url('/kelola-anggota') }}" class="nav-link {{ request()->is('kelola-anggota') ? 'active' : '' }}">Anggota</a>
+            <a href="{{ url('/riwayat-transaksi') }}" class="nav-link {{ request()->is('riwayat-transaksi') ? 'active' : '' }}">Transaksi</a>
+            <a href="{{ url('/kelola-denda') }}" class="nav-link {{ request()->is('kelola-denda') ? 'active' : '' }}">Denda</a>
+        </nav>
 
             <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
@@ -138,8 +139,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7076" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                 </div>
                 <span class="admin-stat-label">DENDA TERKUMPUL</span>
-                <span class="admin-stat-value">Rp {{ number_format($totalDendaBelumLunas, 0, ',', '.') }}</span>
-                <span class="admin-stat-trend">Denda belum lunas saat ini</span>
+                <span class="admin-stat-value">Rp {{ number_format($totalDendaTerkumpul ?? 0, 0, ',', '.') }}</span>
+                <span class="admin-stat-trend">Total denda yang sudah dibayar</span>
             </div>
 
         </div>

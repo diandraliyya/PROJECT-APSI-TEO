@@ -60,50 +60,39 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $login = $validated['login'];
-        $password = $validated['password'];
-
-        $admin = Admin::where('username', $login)
-            ->orWhere('email', $login)
+        // Cek di tabel admins
+        $admin = Admin::where('username', $validated['login'])
+            ->orWhere('email', $validated['login'])
             ->first();
 
-        if ($admin && Hash::check($password, $admin->password)) {
-            if ($admin->status_admin !== 'aktif') {
-                return back()
-                    ->withErrors(['login' => 'Akun admin tidak aktif.'])
-                    ->withInput();
-            }
-
-            $request->session()->regenerate();
-
+        if ($admin && Hash::check($validated['password'], $admin->password)) {
             session([
                 'auth_role' => 'admin',
                 'auth_id' => $admin->id,
                 'auth_name' => $admin->nama_admin,
             ]);
 
-            return redirect('/dashboard-admin');
+            return redirect('/home-admin');  // ← Ubah ini
         }
 
-        $anggota = Anggota::where('username', $login)
-            ->orWhere('email', $login)
-            ->orWhere('nis', $login)
+        // Cek di tabel anggotas
+        $anggota = Anggota::where('username', $validated['login'])
+            ->orWhere('email', $validated['login'])
+            ->orWhere('nis', $validated['login'])
             ->first();
 
-        if ($anggota && Hash::check($password, $anggota->password)) {
+        if ($anggota && Hash::check($validated['password'], $anggota->password)) {
             if ($anggota->status_pendaftaran !== 'disetujui') {
                 return back()
-                    ->withErrors(['login' => 'Pendaftaran akun Anda belum disetujui admin.'])
+                    ->withErrors(['login' => 'Akun Anda belum disetujui oleh admin.'])
                     ->withInput();
             }
 
             if ($anggota->status_anggota !== 'aktif') {
                 return back()
-                    ->withErrors(['login' => 'Akun anggota Anda belum aktif.'])
+                    ->withErrors(['login' => 'Akun Anda sedang tidak aktif. Hubungi admin.'])
                     ->withInput();
             }
-
-            $request->session()->regenerate();
 
             session([
                 'auth_role' => 'anggota',
@@ -111,7 +100,7 @@ class AuthController extends Controller
                 'auth_name' => $anggota->nama_anggota,
             ]);
 
-            return redirect()->route('dashboard-anggota');
+            return redirect('/home-anggota');  // ← Ubah ini
         }
 
         return back()
@@ -121,15 +110,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget([
-            'auth_role',
-            'auth_id',
-            'auth_name',
-        ]);
+        // 1. Hapus session kita sendiri
+        $request->session()->forget(['auth_role', 'auth_id', 'auth_name']);
 
+        // 2. Hapus semua data session (paksa)
+        $request->session()->flush();
+
+        // 3. Invalidate session biar token lama gak dipakai
         $request->session()->invalidate();
+
+        // 4. Buat token baru
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        // 5. Redirect ke halaman login dengan pesan sukses
+        return redirect('/log-in')->with('success', 'Anda berhasil logout.');
     }
 }

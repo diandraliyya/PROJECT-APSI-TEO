@@ -7,37 +7,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style-home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style-home-anggota.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/style-home-admin.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style-tentang-perpustakaan.css') }}">
 </head>
-<body class="admin-page">
+<body>
 
     {{-- ===== NAVBAR ===== --}}
     <header class="navbar">
         <div class="navbar-inner">
-            <a href="{{ route('home-admin') }}" class="nav-brand">
+            <a href="{{ url('/home-admin') }}" class="nav-brand">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="nav-logo">
                 <span class="nav-brand-name">Al-Uswah Library</span>
             </a>
 
             <nav class="nav-links">
-                <a href="{{ route('dashboard-admin') }}" class="nav-link">Dashboard</a>
-                <a href="{{ route('katalog-admin') }}" class="nav-link">Katalog</a>
-                <a href="{{ route('tentang-perpustakaan-admin') }}" class="nav-link active">Tentang</a>
-                <a href="{{ route('kelola-buku') }}" class="nav-link">Buku</a>
-                <a href="{{ route('kelola-anggota') }}" class="nav-link">Anggota</a>
-                <a href="{{ route('riwayat-transaksi') }}" class="nav-link">Transaksi</a>
-                <a href="{{ route('kelola-denda') }}" class="nav-link">Denda</a>
+                <a href="{{ url('/home-admin') }}" class="nav-link {{ request()->is('home-admin') ? 'active' : '' }}">Home</a>
+                <a href="{{ url('/dashboard-admin') }}" class="nav-link {{ request()->is('dashboard-admin') ? 'active' : '' }}">Dashboard</a>
+                <a href="{{ url('/katalog-admin') }}" class="nav-link {{ request()->is('katalog-admin') ? 'active' : '' }}">Katalog</a>
+                <a href="{{ url('/tentang-perpustakaan-admin') }}" class="nav-link {{ request()->is('tentang-perpustakaan-admin') ? 'active' : '' }}">Tentang</a>
+                <a href="{{ url('/kelola-buku') }}" class="nav-link {{ request()->is('kelola-buku') ? 'active' : '' }}">Buku</a>
+                <a href="{{ url('/kelola-anggota') }}" class="nav-link {{ request()->is('kelola-anggota') ? 'active' : '' }}">Anggota</a>
+                <a href="{{ url('/riwayat-transaksi') }}" class="nav-link {{ request()->is('riwayat-transaksi') ? 'active' : '' }}">Transaksi</a>
+                <a href="{{ url('/kelola-denda') }}" class="nav-link {{ request()->is('kelola-denda') ? 'active' : '' }}">Denda</a>
             </nav>
 
-            <a href="{{ route('setting') }}" class="nav-profile">
+            <a href="{{ url('/setting') }}" class="nav-profile">
                 <div class="nav-avatar">
                     <div class="avatar-placeholder admin-avatar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                 </div>
                 <div class="nav-profile-info">
-                    <span class="nav-username">{{ auth()->user()->nama_lengkap ?? 'Admin' }}</span>
+                    <span class="nav-username">{{ session('auth_name') ?? 'Admin' }}</span>
                     <span class="nav-role">Administrator</span>
                 </div>
             </a>
@@ -272,6 +272,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/script-tentang-perpustakaan.js') }}"></script>
+    {{-- Matikan script JS yang mengganggu --}}
+    {{-- <script src="{{ asset('js/script-tentang-perpustakaan.js') }}"></script> --}}
 </body>
 </html>
