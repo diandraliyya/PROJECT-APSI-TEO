@@ -35,10 +35,11 @@
                 $fotoUser = null;
                 $inisialUser = strtoupper(substr($namaUser, 0, 1));
                 
-                if(session('auth_role') === 'anggota' && session('auth_id')) {
+                if (session('auth_role') === 'anggota' && session('auth_id')) {
                     $anggota = App\Models\Anggota::find(session('auth_id'));
-                    if($anggota && $anggota->foto) {
-                        $fotoUser = $anggota->foto;
+
+                    if ($anggota && $anggota->foto_url) {
+                        $fotoUser = $anggota->foto_url;
                     }
                 }
             @endphp
@@ -46,7 +47,7 @@
             <a href="{{ url('/profil-anggota') }}" class="nav-profile">
                 <div class="nav-avatar">
                     @if($fotoUser)
-                        <img src="{{ asset('storage/' . $fotoUser) }}" alt="Foto Profil" class="avatar-img">
+                        <img src="{{ $fotoUser }}" alt="Foto Profil" class="avatar-img">
                     @else
                         <span class="avatar-placeholder">{{ $inisialUser }}</span>
                     @endif

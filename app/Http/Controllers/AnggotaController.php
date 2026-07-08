@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class AnggotaController extends Controller
 {
@@ -153,7 +154,11 @@ class AnggotaController extends Controller
                 ->with('error', 'Anggota tidak bisa dihapus karena sudah memiliki riwayat transaksi atau denda.');
         }
 
-        if ($anggota->foto) {
+        if (
+            $anggota->foto &&
+            !Str::startsWith($anggota->foto, 'assets/') &&
+            Storage::disk('public')->exists($anggota->foto)
+        ) {
             Storage::disk('public')->delete($anggota->foto);
         }
 
@@ -211,7 +216,11 @@ class AnggotaController extends Controller
         ]);
 
         if ($request->hasFile('foto')) {
-            if ($anggota->foto) {
+            if (
+                $anggota->foto &&
+                !Str::startsWith($anggota->foto, 'assets/') &&
+                Storage::disk('public')->exists($anggota->foto)
+            ) {
                 Storage::disk('public')->delete($anggota->foto);
             }
 

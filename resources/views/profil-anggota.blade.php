@@ -2,24 +2,7 @@
     $namaAnggota = optional($anggota)->nama_anggota ?? session('auth_name') ?? 'Anggota';
     $inisialAnggota = strtoupper(substr($namaAnggota ?: 'A', 0, 1));
 
-    $fotoUrl = function ($foto) {
-        if (!$foto) {
-            return null;
-        }
-
-        if (str_starts_with($foto, 'http://') || str_starts_with($foto, 'https://')) {
-            return $foto;
-        }
-
-        if (str_starts_with($foto, 'assets/')) {
-            return asset($foto);
-        }
-
-        return asset('storage/' . $foto);
-    };
-
-    $fotoAnggota = optional($anggota)->foto;
-    $fotoAnggotaUrl = $fotoUrl($fotoAnggota);
+    $fotoAnggotaUrl = optional($anggota)->foto_url;
 
     $formatTanggal = function ($tanggal) {
         if (!$tanggal) {

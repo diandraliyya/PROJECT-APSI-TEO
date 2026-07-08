@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Anggota extends Model
 {
@@ -26,6 +27,25 @@ class Anggota extends Model
     protected $hidden = [
         'password',
     ];
+
+    protected $appends = ['foto_url'];
+
+    public function getFotoUrlAttribute()
+    {
+        if (!$this->foto) {
+            return null;
+        }
+
+        if (Str::startsWith($this->foto, ['http://', 'https://'])) {
+            return $this->foto;
+        }
+
+        if (Str::startsWith($this->foto, 'assets/')) {
+            return asset($this->foto);
+        }
+
+        return asset('storage/' . ltrim($this->foto, '/'));
+    }
 
     public function admin()
     {
