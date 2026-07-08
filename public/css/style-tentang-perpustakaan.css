@@ -460,3 +460,60 @@
 @media (max-width: 480px) {
     .layanan-grid { grid-template-columns: 1fr; }
 }
+
+.nav-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    max-width: 260px;
+    padding: 8px 16px 8px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #d9e7e8;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.nav-avatar,
+.avatar-placeholder {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.admin-avatar {
+    background: #2D7076;
+}
+
+.nav-profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    line-height: 1.1;
+    min-width: 0;
+}
+
+.nav-username {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #444;
+    white-space: nowrap;
+}
+
+.nav-role {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2D7076;
+    white-space: nowrap;
+}
