@@ -116,11 +116,7 @@
                             <span class="book-badge badge-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
                                 {{ $buku->kategori->nama_kategori ?? 'Umum' }}
                             </span>
-                            @if($buku->cover)
-                                <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
-                            @else
-                                <img src="{{ asset('assets/icon buku.png') }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
-                            @endif
+                            <img src="{{ $buku->cover_url }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
                             @if(!session('auth_role'))
                                 <div class="book-lock-overlay">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

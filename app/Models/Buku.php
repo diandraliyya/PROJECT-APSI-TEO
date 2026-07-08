@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Buku extends Model
 {
@@ -21,6 +22,25 @@ class Buku extends Model
         'sinopsis',
         'cover',
     ];
+
+    protected $appends = ['cover_url'];
+
+    public function getCoverUrlAttribute()
+    {
+        if (!$this->cover) {
+            return asset('assets/icon buku.png');
+        }
+
+        if (Str::startsWith($this->cover, ['http://', 'https://'])) {
+            return $this->cover;
+        }
+
+        if (Str::startsWith($this->cover, 'assets/')) {
+            return asset($this->cover);
+        }
+
+        return asset('storage/' . ltrim($this->cover, '/'));
+    }
 
     public function kategori()
     {

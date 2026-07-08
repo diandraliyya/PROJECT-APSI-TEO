@@ -36,21 +36,6 @@
         return 'kat-' . $nama;
     };
 
-    $coverUrl = function ($buku) {
-        if (empty($buku->cover)) {
-            return asset('assets/icon buku.png');
-        }
-
-        if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
-            return $buku->cover;
-        }
-
-        if (str_starts_with($buku->cover, 'assets/')) {
-            return asset($buku->cover);
-        }
-
-        return asset('storage/' . $buku->cover);
-    };
 @endphp
 
 <!DOCTYPE html>
@@ -204,7 +189,7 @@
                                 data-status="{{ $dataStatus }}">
 
                                 <td>
-                                    <img src="{{ $coverUrl($buku) }}" alt="Cover {{ $buku->judul_buku }}" class="kb-cover">
+                                    <img src="{{ $buku->cover_url }}" alt="Cover {{ $buku->judul_buku }}" class="kb-cover">
                                 </td>
 
                                 <td>

@@ -7,6 +7,7 @@ use App\Models\Kategori;
 use App\Models\Rak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class BukuController extends Controller
@@ -260,7 +261,11 @@ class BukuController extends Controller
         $validated['status_buku'] = $this->hitungStatusBuku($validated['stok_tersedia']);
 
         if ($request->hasFile('cover')) {
-            if ($buku->cover) {
+            if (
+                $buku->cover &&
+                !Str::startsWith($buku->cover, 'assets/') &&
+                Storage::disk('public')->exists($buku->cover)
+            ) {
                 Storage::disk('public')->delete($buku->cover);
             }
 
@@ -282,7 +287,11 @@ class BukuController extends Controller
                 ->with('error', 'Buku tidak bisa dihapus karena sudah memiliki riwayat transaksi.');
         }
 
-        if ($buku->cover) {
+        if (
+            $buku->cover &&
+            !Str::startsWith($buku->cover, 'assets/') &&
+            Storage::disk('public')->exists($buku->cover)
+        ) {
             Storage::disk('public')->delete($buku->cover);
         }
 

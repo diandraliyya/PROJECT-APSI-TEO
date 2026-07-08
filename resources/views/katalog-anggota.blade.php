@@ -135,11 +135,7 @@
                 @forelse($bukus as $buku)
                     <div class="buku-card" data-kategori="{{ $buku->kategori->nama_kategori ?? '' }}" data-judul="{{ $buku->judul_buku }}" data-penulis="{{ $buku->penulis }}" data-status="{{ $buku->stok_tersedia > 0 ? 'tersedia' : 'tidak_tersedia' }}" data-tahun="{{ $buku->tahun_terbit ?? '' }}">
                         <div class="buku-cover-wrap">
-                            @if($buku->cover)
-                                <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="buku-cover">
-                            @else
-                                <img src="{{ asset('assets/default-book.jpg') }}" alt="Default Cover" class="buku-cover">
-                            @endif
+                            <img src="{{ $buku->cover_url }}" alt="{{ $buku->judul_buku }}" class="buku-cover">
                         </div>
                         <div class="buku-info">
                             <div class="buku-meta-top">

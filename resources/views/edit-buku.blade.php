@@ -21,22 +21,6 @@
     $labelStatus = $statusLabel[$statusBuku] ?? ucfirst(str_replace('_', ' ', $statusBuku));
     $badgeClass = $statusBadgeClass[$statusBuku] ?? 'habis';
 
-    $coverUrl = function ($buku) {
-        if (empty($buku->cover)) {
-            return asset('assets/icon buku.png');
-        }
-
-        if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
-            return $buku->cover;
-        }
-
-        if (str_starts_with($buku->cover, 'assets/')) {
-            return asset($buku->cover);
-        }
-
-        return asset('storage/' . $buku->cover);
-    };
-
     $totalPeminjaman = 0;
 
     try {
@@ -133,7 +117,7 @@
                             </div>
 
                             <div class="eb-cover-wrap" id="ebCoverWrap">
-                                <img src="{{ $coverUrl($buku) }}" alt="{{ $buku->judul_buku }}" class="eb-cover-img" id="ebCoverImg">
+                                <img src="{{ $buku->cover_url }}" alt="{{ $buku->judul_buku }}" class="eb-cover-img" id="ebCoverImg">
                                 <input type="file" id="ebCoverInput" name="cover" accept="image/jpeg,image/png,image/webp" hidden>
                             </div>
 

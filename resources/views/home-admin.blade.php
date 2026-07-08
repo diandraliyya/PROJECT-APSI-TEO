@@ -177,11 +177,7 @@
                                 <span class="book-badge badge-{{ strtolower(str_replace(' ', '-', $buku->kategori->nama_kategori ?? 'umum')) }}">
                                     {{ $buku->kategori->nama_kategori ?? 'Umum' }}
                                 </span>
-                                @if($buku->cover)
-                                    <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
-                                @else
-                                    <img src="{{ asset('assets/icon buku.png') }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
-                                @endif
+                                <img src="{{ $buku->cover_url }}" alt="{{ $buku->judul_buku }}" class="book-cover-img">
                             </div>
                             <h4 class="book-title">{{ $buku->judul_buku }}</h4>
                             <p class="book-author">{{ $buku->penulis }}</p>

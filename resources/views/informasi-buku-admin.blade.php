@@ -21,21 +21,6 @@
 
     $statusTampilan = $statusLabel[$statusBuku] ?? ucfirst(str_replace('_', ' ', $statusBuku));
 
-    $coverUrl = function ($buku) {
-        if (empty($buku->cover)) {
-            return asset('assets/icon buku.png');
-        }
-
-        if (str_starts_with($buku->cover, 'http://') || str_starts_with($buku->cover, 'https://')) {
-            return $buku->cover;
-        }
-
-        if (str_starts_with($buku->cover, 'assets/')) {
-            return asset($buku->cover);
-        }
-
-        return asset('storage/' . $buku->cover);
-    };
 @endphp
 
 <!DOCTYPE html>
@@ -116,7 +101,7 @@
                     <span class="info-bookmark">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#8a5a2b" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                     </span>
-                    <img src="{{ $coverUrl($buku) }}" alt="{{ $buku->judul_buku }}" class="info-cover">
+                    <img src="{{ $buku->cover_url }}" alt="{{ $buku->judul_buku }}" class="info-cover">
                 </div>
 
                 <a href="{{ url('/edit-buku/' . $buku->id) }}" class="btn-pinjam">
